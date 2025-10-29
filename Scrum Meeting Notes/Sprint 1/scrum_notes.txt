@@ -10,7 +10,7 @@
   What we worked on previously:
     ***First scrum meeting***
 
-
+  What we are working on:
     Assigned roles for the project:
       Yuqing & Paola - Cashier GUI
       Arya - Menu GUI
