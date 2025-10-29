@@ -1,1 +1,21 @@
-Test
+10/29/25, 6:00 P.M. - 6:15 P.M.
+
+  What we worked on previously:
+    ***First scrum meeting***
+
+  What will be working:
+    - Assigning roles
+    - Setting goals for the sprint
+    - Setting up Jira for sprints
+
+    Assigning roles for the project:
+      Yuqing & Paola - Cashier GUI
+      Arya - Menu GUI
+      Vishal - Customer GUI
+      Martin - Manager GUI
+
+    Goals for the sprint:
+      - Assign roles
+      - Create all needed files
+      - 
+  
