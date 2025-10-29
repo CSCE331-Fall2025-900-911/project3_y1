@@ -1,21 +1,24 @@
 10/29/25, 6:00 P.M. - 6:15 P.M.
 
+  Agenda:
+    - Assign tasks for sprint equally
+    - Ensure everyone knows their tasks
+    - Setting goals for the sprint
+
+  Meeting Notes:
+
   What we worked on previously:
     ***First scrum meeting***
 
-  What will be working:
-    - Assigning roles
-    - Setting goals for the sprint
-    - Setting up Jira for sprints
 
-    Assigning roles for the project:
+    Assigned roles for the project:
       Yuqing & Paola - Cashier GUI
       Arya - Menu GUI
       Vishal - Customer GUI
       Martin - Manager GUI
 
-    Goals for the sprint:
+    Set goals for the sprint:
       - Assign roles
       - Create all needed files
-      - 
+      - Create basic functional pages for all necessary components
   
