@@ -25,6 +25,6 @@
       - Build basic framework for Customer GUI
       - Build basic framework for Manager GUI
 
-    Other notes:
+  Other notes:
       N/A
 ----------------------------------------------------------------
