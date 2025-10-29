@@ -1,5 +1,5 @@
 10/29/25, 6:00 P.M. - 6:15 P.M.
-
+----------------------------------------------------------------
   What we worked on previously:
     ***First scrum meeting***
 
@@ -17,5 +17,14 @@
     Goals for the sprint:
       - Assign roles
       - Create all needed files
-      - 
+      - Build basic framework for Menu GUI
+      - Build basic framework for Cashier GUI
+      - Build basic framework for Customer GUI
+      - Build basic framework for Manager GUI
+
+    Other notes:
+      N/A
+----------------------------------------------------------------
+11/3/25, 6:00 P.M. - 6:15 P.M.
+----------------------------------------------------------------
   
