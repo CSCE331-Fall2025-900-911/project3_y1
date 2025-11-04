@@ -1,0 +1,50 @@
+11/3/2025, 6:30 pm - 6:45 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - setup database connection setup and basic webpage
+- Will work on:
+    - specific function calls and stuff for next meeting
+- Roadblocks:
+    - Learning the structure of the nextjs project folder
+
+Vishal:
+- Worked on:
+    - Basic UI and database connection for customer kiosk
+    - Basic database functionality
+- Will work on:
+    - Refining UI and more database calls
+- Roadblock:
+    - Trying to make customer implementation differnt than cashier
+
+Paola:
+- Worked on:
+    - Learning to project folder setup
+Will work on:
+    - Communicate with Yuqing to figure out what to work on and build off of it
+Roadblocks:
+    - Splitting the work with Yuqing to avoid merge conflicts and stuff
+
+Arya:
+- Worked on:
+    - Added code for basic menu webpage
+- Will work on:
+    - Setup basic database connection files
+- Roadblocks:
+    - Learning NextJS and stuff
+
+Martin:
+- Worked on:
+    - Setting up basic webpage and database connection for manager view
+- Will work on: 
+    - Setting up a different page for each section of the manager view and adding more database calls
+- Roadblocks:
+    - N/A so far...
+
+Other:
+    - N/A 
