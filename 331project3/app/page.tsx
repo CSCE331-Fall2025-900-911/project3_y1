@@ -40,7 +40,11 @@ export default function ManagerHomePage() {
       <h1>Manager Home Page</h1>
       <p>Welcome to the manager&apos;s dashboard!</p>
 
-      <button onClick={handleDbTest} disabled={isLoading}>
+      <button 
+        onClick={handleDbTest} 
+        disabled={isLoading}
+        style={{ padding: '10px 20px', fontSize: '16px', color: 'blue', backgroundColor: 'lightgray', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+      >
         {isLoading ? 'Testing...' : 'Test Database Connection'}
       </button>
 
