@@ -1,5 +1,6 @@
 import React from 'react';
 import { SelectedView } from '../types';
+import { get } from 'http';
 
 type SidebarProps = {
     selectedView: SelectedView;
@@ -10,7 +11,20 @@ export default function Sidebar({
     selectedView, 
     setSelectedView 
 }: SidebarProps) {
-    
+
+    const styleButton = (view: SelectedView) => {
+        const isActive = selectedView === view;
+        
+        const base = 'p-2 text-left rounded border text-sm transition-colors mb-2';
+
+        //define active and inactive styles
+        const active = 'bg-blue-600 text-white font-bold border-blue-600';
+        const inactive = 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100';
+
+        // Combine and return
+        return `${base} ${isActive ? active : inactive}`;
+    };
+
     return (
         <nav style={{
             display: 'flex',
@@ -21,37 +35,37 @@ export default function Sidebar({
         }}>
             <button
                 onClick={() => setSelectedView('dashboard')}
-                style={{ fontWeight: selectedView === 'dashboard' ? 'bold' : 'normal' }}
+                className={styleButton('dashboard')}
             >
                 Dashboard
             </button>
             <button
                 onClick={() => setSelectedView('trends')}
-                style={{ fontWeight: selectedView === 'trends' ? 'bold' : 'normal' }}
+                className={styleButton('trends')}
             >
                 Trends
             </button>
             <button
                 onClick={() => setSelectedView('reports')}
-                style={{ fontWeight: selectedView === 'reports' ? 'bold' : 'normal' }}
+                className={styleButton('reports')}
             >
                 Reports
             </button>
             <button
                 onClick={() => setSelectedView('employee')}
-                style={{ fontWeight: selectedView === 'employee' ? 'bold' : 'normal' }}
+                className={styleButton('employee')}
             >
                 Employee
             </button>
             <button
                 onClick={() => setSelectedView('inventory')}
-                style={{ fontWeight: selectedView === 'inventory' ? 'bold' : 'normal' }}
+                className={styleButton('inventory')}
             >
                 Inventory
             </button>
             <button
                 onClick={() => setSelectedView('menuitems')}
-                style={{ fontWeight: selectedView === 'menuitems' ? 'bold' : 'normal' }}
+                className={styleButton('menuitems')}
             >
                 Menu Items
             </button>
