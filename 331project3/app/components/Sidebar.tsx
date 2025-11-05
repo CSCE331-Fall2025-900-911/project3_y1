@@ -1,6 +1,5 @@
 import React from 'react';
 import { SelectedView } from '../types';
-import { get } from 'http';
 
 type SidebarProps = {
     selectedView: SelectedView;
