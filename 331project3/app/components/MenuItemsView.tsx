@@ -94,11 +94,12 @@ export default function MenuitemsView() {
 
     return (
         <div>
-            <div>
-                <h1>Menu Items</h1>
+            <div className="flex items-center justify-between mb-4">
+                <h1 className="text-2xl font-bold">Menu Items</h1>
                 <button
                     onClick={fetchMenuItems}
                     disabled={isLoading}
+					className="rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium"
                 >
                     {isLoading ? 'Refreshing...' : 'Refresh'}
                 </button>
