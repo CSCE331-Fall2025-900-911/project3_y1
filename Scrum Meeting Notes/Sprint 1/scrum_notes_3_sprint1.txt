@@ -1,0 +1,51 @@
+11/10/2025, 6:20 pm - 6:35 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Setup basic frontend page and basic functionaltiy
+- Will work on:
+    - Linking the two and polishing up both backend and frontend
+- Roadblocks:
+    - Making sure everything in frontend matches the backend
+
+Vishal:
+- Worked on:
+    - Setup a basic frontend for the customer page
+    - verified working database connection
+- Will work on:
+    - work on backend and make sure there is submitting orders functioanlity
+- Roadblock:
+    - N/A
+
+Paola:
+- Worked on:
+    - Learning to project folder setup
+Will work on:
+    - Communicate with Yuqing to figure out what to work on and build off of it
+Roadblocks:
+    - Splitting the work with Yuqing to avoid merge conflicts and stuff
+
+Arya:
+- Worked on:
+    - Completed the basic frontend webpage
+- Will work on:
+    - Get images for all the menu items
+    - Database work
+- Roadblocks:
+    - N/A
+
+Martin:
+- Worked on:
+    - Setting up basic webpage and database connection for manager view
+- Will work on: 
+    - Setting up a different page for each section of the manager view and adding more database calls
+- Roadblocks:
+    - N/A so far...
+
+Other:
+    - N/A 
