@@ -1,0 +1,13 @@
+.summary {
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.summary ul {
+  list-style: none;
+  padding: 0;
+}
+
+.summary li {
+  margin-bottom: 5px;
+}
