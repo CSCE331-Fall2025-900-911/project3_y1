@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import MenuList, { MenuItem } from "../components_cashier/menulist";
-import OrderSummary, { CustomOrderItem } from "../components_cashier/ordersummary";
-import CustomizationModal from "../components_cashier/CustomizationModal";
+import MenuList, { MenuItem } from "./menulist";
+import OrderSummary, { CustomOrderItem } from "./ordersummary";
+import CustomizationModal from "./CustomizationModal";
 import "../styles_cashier/customizationModal.css";
 
 const mockMenuItems: MenuItem[] = [
