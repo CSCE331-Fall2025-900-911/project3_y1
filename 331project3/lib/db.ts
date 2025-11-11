@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import { Pool } from 'pg';
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
-
-export default pool;
-=======
 import {Pool} from 'pg';
 
 let pool: Pool | undefined;
@@ -24,4 +15,3 @@ export function getDbPool() {
     }
     return pool;
 }
->>>>>>> fb035af4120f109e3822c9b8a1cbed8e808ddce8
