@@ -12,3 +12,11 @@ export type MenuItem = {
     item_category: string;
     item_price: number;
 };
+
+export type Employee = {
+    employee_id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    password: string;
+}
