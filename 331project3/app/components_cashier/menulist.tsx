@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles_cashier/menulist.css";
 
-interface MenuItem {
+export interface MenuItem {
   id: number;
   name: string;
   price: number;
@@ -9,10 +9,10 @@ interface MenuItem {
 
 interface Props {
   menuItems: MenuItem[];
-  addToOrder: (id: number) => void;
+  onSelectItem: (item: MenuItem) => void;
 }
 
-export default function MenuList({ menuItems, addToOrder }: Props) {
+export default function MenuList({ menuItems, onSelectItem }: Props) {
   return (
     <section className="menu">
       <h2>Menu</h2>
@@ -20,7 +20,7 @@ export default function MenuList({ menuItems, addToOrder }: Props) {
         {menuItems.map(item => (
           <li key={item.id}>
             {item.name} — ${item.price.toFixed(2)}
-            <button onClick={() => addToOrder(item.id)}>Add</button>
+            <button onClick={() => onSelectItem(item)}>Add</button>
           </li>
         ))}
       </ul>

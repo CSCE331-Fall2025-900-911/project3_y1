@@ -1,43 +1,57 @@
 import React from "react";
 import "../styles_cashier/ordersummary.css";
 
-interface MenuItem {
-  id: number;
+export interface CustomOrderItem {
+  uniqueId: string;
   name: string;
-  price: number;
-}
-
-interface OrderItem {
-  id: number;
-  qty: number;
+  basePrice: number;
+  finalPrice: number;
+  customizations: {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: string[];
+  };
 }
 
 interface Props {
-  order: OrderItem[];
-  menuItems: MenuItem[];
+  order: CustomOrderItem[];
 }
 
-export default function OrderSummary({ order, menuItems }: Props) {
-  const total = order.reduce((sum, o) => {
-    const item = menuItems.find(i => i.id === o.id);
-    return item ? sum + item.price * o.qty : sum;
-  }, 0);
+export default function OrderSummary({ order }: Props) {
+  const total = order.reduce((sum, item) => sum + (item.finalPrice || 0), 0);
 
   return (
     <section className="summary">
       <h2>Order Summary</h2>
-      <ul>
-        {order.map(o => {
-          const item = menuItems.find(i => i.id === o.id);
-          if (!item) return null;
-          return (
-            <li key={o.id}>
-              {item.name} x{o.qty} = ${(item.price * o.qty).toFixed(2)}
+      {order.length === 0 ? (
+        <p>Your order is empty.</p>
+      ) : (
+        <ul>
+          {order.map(item => (
+            <li key={item.uniqueId} className="order-item-details">
+              <span className="item-name">{item.name || "Unknown Item"}</span>
+              <span className="item-price">
+                ${(item.finalPrice || 0).toFixed(2)}
+              </span>
+              
+              {item.customizations ? (
+                <ul className="customizations-list">
+                  <li>{item.customizations.size}</li>
+                  <li>{item.customizations.iceLevel}</li>
+                  <li>{item.customizations.sugarLevel}</li>
+                  {item.customizations.toppings?.length > 0 && (
+                    <li>Toppings: {item.customizations.toppings.join(', ')}</li>
+                  )}
+                </ul>
+              ) : (
+                <ul className="customizations-list"><li>No customizations</li></ul>
+              )}
             </li>
-          );
-        })}
-      </ul>
-      <p>Total: ${total.toFixed(2)}</p>
+          ))}
+        </ul>
+      )}
+      <p className="summary-total">Total: ${total.toFixed(2)}</p>
     </section>
   );
 }
