@@ -1,0 +1,36 @@
+11/10/2025, 6:30 pm - 6:45 pm
+
+Agenda:
+- What went wrong during the sprint?
+- What went right during the sprint?
+- What changes should be made to procedure?
+- Explanation of goals not being met if so.
+
+Meeting Minutes:
+
+    - First we talked about what went wrong during the sprint?
+
+    Some people talked about how they waited till towards the end to start working instead of working on it gradually throughought the sprint.
+    
+    Talked about how some of our Jira tasks weren't specific enough making it difficult to actually mark them off as completed. Talked about how 
+    we will make sure to be more specific with tasks in the future to avoid this.
+
+    - Next we talked about what went right during the sprint?
+
+    We talked about how we did a good job with the meetings whether that be related to scheduling them, but also just making sure they actaully happened.
+    Overall we also had good communication throughought the duration of the sprint. 
+
+    Talked about how we did a good job with splitting up the work and following through on that for the most part. 
+
+    Also all staisfied with the overall result of the sprint, with all pages having working MVPs.
+
+    - What changes should be made to procedure?
+
+    Talked about agreeing to work on things more consistently throughought the duration of the sprint instead of all towards the end.
+
+    - Explanation of goals not met if applicable
+
+    We were a bit ambitious with the amount of tasks we assigned and the work associated with them due to us not being specific enough
+    with what was required to mark them as complete. This led to some tasks being not fully complete even though a large part of them may have been.
+
+
