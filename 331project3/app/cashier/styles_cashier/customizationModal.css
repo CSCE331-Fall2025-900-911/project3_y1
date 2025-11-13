@@ -136,12 +136,12 @@
 }
 
 .add-to-order-btn {
-  background-color: #8a2be2;
+  background-color: #c111ed;
   color: white;
 }
 
 .add-to-order-btn:hover {
-  background-color: #7a1edb;
+  background-color: #c7a1ef;
   transform: translateY(-1px);
 }
 
