@@ -1,3 +1,7 @@
+//Link For my Local Host http://localhost:3000/cashier
+
+
+
 import React, { useState } from 'react';
 import "../styles_cashier/customizationModal.css";
 

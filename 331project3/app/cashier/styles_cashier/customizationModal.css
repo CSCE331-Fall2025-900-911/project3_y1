@@ -20,6 +20,15 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   font-family: Arial, sans-serif;
   color: #333;
+
+  /* ADDED */
+  /* Sets a max height relative to the user's screen */
+  max-height: 90vh; 
+  /* Fallback to allow the whole modal to scroll if screen is tiny */
+  overflow-y: auto; 
+  /* Use flex to help position the buttons at the bottom */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-title {
@@ -29,6 +38,8 @@
   font-size: 1.8em;
   font-weight: bold;
   letter-spacing: 1px;
+  /* ADDED: Ensure title doesn't shrink */
+  flex-shrink: 0;
 }
 
 .customization-section {
@@ -38,6 +49,14 @@
   margin-bottom: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
+  
+  /* ADDED */
+  /* This is the main fix. Sections like "Toppings" will now scroll */
+  /* if their content is taller than 200px. Adjust as you like. */
+  max-height: 200px;
+  overflow-y: auto;
+  /* ADDED: Ensure sections don't shrink */
+  flex-shrink: 0;
 }
 
 .customization-section h3 {
@@ -110,7 +129,10 @@
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 25px;
+  /* ADDED: Pushes buttons to the bottom of the modal */
+  margin-top: auto; 
+  /* ADDED: Add some space above buttons */
+  padding-top: 20px;
   gap: 15px; 
 }
 
