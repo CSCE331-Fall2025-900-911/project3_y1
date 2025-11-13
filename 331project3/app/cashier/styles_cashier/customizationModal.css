@@ -20,13 +20,9 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   font-family: Arial, sans-serif;
   color: #333;
-
-  /* ADDED */
-  /* Sets a max height relative to the user's screen */
+  font-size: 1em; 
   max-height: 90vh; 
-  /* Fallback to allow the whole modal to scroll if screen is tiny */
   overflow-y: auto; 
-  /* Use flex to help position the buttons at the bottom */
   display: flex;
   flex-direction: column;
 }
@@ -35,10 +31,9 @@
   text-align: center;
   color: #8a2be2; 
   margin-bottom: 25px;
-  font-size: 1.8em;
+  font-size: 1.8em; 
   font-weight: bold;
   letter-spacing: 1px;
-  /* ADDED: Ensure title doesn't shrink */
   flex-shrink: 0;
 }
 
@@ -49,19 +44,14 @@
   margin-bottom: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
-  
-  /* ADDED */
-  /* This is the main fix. Sections like "Toppings" will now scroll */
-  /* if their content is taller than 200px. Adjust as you like. */
   max-height: 200px;
   overflow-y: auto;
-  /* ADDED: Ensure sections don't shrink */
   flex-shrink: 0;
 }
 
 .customization-section h3 {
   color: #666;
-  font-size: 1.1em;
+  font-size: 1.2em; 
   margin-top: 0;
   margin-bottom: 12px;
   border-bottom: 1px solid #eee;
@@ -72,7 +62,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  font-size: 0.95em;
+  font-size: 1.1em; 
   cursor: pointer;
 }
 
@@ -115,7 +105,7 @@
   content: '✔';
   display: block;
   color: white;
-  font-size: 14px;
+  font-size: 14px; 
   line-height: 16px;
   text-align: center;
   position: absolute;
@@ -129,9 +119,7 @@
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  /* ADDED: Pushes buttons to the bottom of the modal */
   margin-top: auto; 
-  /* ADDED: Add some space above buttons */
   padding-top: 20px;
   gap: 15px; 
 }
@@ -141,7 +129,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 1.1em; 
   font-weight: bold;
   transition: background-color 0.2s ease, transform 0.1s ease;
   flex-grow: 1;
@@ -171,15 +159,16 @@
   .modal-content {
     padding: 20px;
     margin: 10px;
+    font-size: 1.1em;
   }
   .modal-title {
     font-size: 1.5em;
   }
   .customization-section h3 {
-    font-size: 1em;
+    font-size: 1.1em;
   }
   .customization-section label {
-    font-size: 0.9em;
+    font-size: 1em;
   }
   .modal-actions {
     flex-direction: column;
@@ -187,5 +176,6 @@
   .modal-actions button {
     width: 100%;
     margin-bottom: 10px; 
+    font-size: 1.1em;
   }
 }
