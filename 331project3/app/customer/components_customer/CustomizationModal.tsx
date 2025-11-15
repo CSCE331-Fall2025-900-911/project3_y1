@@ -73,11 +73,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">{itemName}</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">{itemName}</h2>
         
         <div className="mb-4">
-          <h3 className="font-semibold mb-2">Size</h3>
-          <label className="block mb-2">
+          <h3 className="font-semibold mb-2 text-black">Size</h3>
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="size"
@@ -88,7 +88,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             />
             Small (-$0.50)
           </label>
-          <label className="block mb-2">
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="size"
@@ -99,7 +99,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             />
             Medium
           </label>
-          <label className="block mb-2">
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="size"
@@ -113,8 +113,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </div>
 
         <div className="mb-4">
-          <h3 className="font-semibold mb-2">Ice Level</h3>
-          <label className="block mb-2">
+          <h3 className="font-semibold mb-2 text-black">Ice Level</h3>
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="iceLevel"
@@ -125,7 +125,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             />
             Regular Ice
           </label>
-          <label className="block mb-2">
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="iceLevel"
@@ -136,7 +136,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             />
             Less Ice
           </label>
-          <label className="block mb-2">
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="iceLevel"
@@ -147,7 +147,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             />
             No Ice
           </label>
-          <label className="block mb-2">
+          <label className="block mb-2 text-black">
             <input
               type="radio"
               name="iceLevel"
@@ -161,9 +161,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </div>
 
         <div className="mb-4">
-          <h3 className="font-semibold mb-2">Sugar Level</h3>
+          <h3 className="font-semibold mb-2 text-black">Sugar Level</h3>
           {['0%', '25%', '50%', '75%', '100%'].map((level) => (
-            <label key={level} className="block mb-2">
+            <label key={level} className="block mb-2 text-black">
               <input
                 type="radio"
                 name="sugarLevel"
@@ -178,9 +178,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </div>
 
         <div className="mb-4">
-          <h3 className="font-semibold mb-2">Toppings (+$0.50 each)</h3>
+          <h3 className="font-semibold mb-2 text-black">Toppings (+$0.50 each)</h3>
           {availableToppings.map((topping) => (
-            <label key={topping} className="block mb-2 capitalize">
+            <label key={topping} className="block mb-2 capitalize text-black">
               <input
                 type="checkbox"
                 value={topping}
@@ -194,7 +194,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         </div>
 
         <div className="mb-4 p-3 bg-gray-100 rounded">
-          <p className="font-semibold">Price: ${finalPrice.toFixed(2)}</p>
+          <p className="font-semibold text-black">Price: ${finalPrice.toFixed(2)}</p>
         </div>
 
         <div className="flex gap-2">
