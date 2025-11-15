@@ -7,15 +7,9 @@ interface MenuItemButtonProps {
 }
 
 export default function MenuItemButton({ item }: MenuItemButtonProps) {
-  const handleClick = () => {
-    // Add your button click handler here
-    console.log('Selected:', item.item_name);
-  };
-
   return (
     <button
-      className="flex flex-col items-start justify-between p-6 rounded-lg border border-solid border-black/[.08] dark:border-white/[.145] hover:border-transparent hover:bg-black/[.04] dark:hover:bg-[#1a1a1a] transition-colors text-left"
-      onClick={handleClick}
+      className="flex flex-col items-start justify-between p-6 rounded-lg border border-solid border-black/[.08] dark:border-white/[.145] hover:border-transparent hover:bg-black/[.04] dark:hover:bg-[#1a1a1a] transition-colors text-left w-full cursor-pointer"
     >
       <div className="w-full">
         <h2 className="text-xl font-semibold text-black dark:text-zinc-50 mb-2">
@@ -35,4 +29,3 @@ export default function MenuItemButton({ item }: MenuItemButtonProps) {
     </button>
   );
 }
-
