@@ -39,22 +39,10 @@ export default function Sidebar({
                 Dashboard
             </button>
             <button
-                onClick={() => setSelectedView('trends')}
-                className={styleButton('trends')}
-            >
-                Trends
-            </button>
-            <button
-                onClick={() => setSelectedView('reports')}
-                className={styleButton('reports')}
-            >
-                Reports
-            </button>
-            <button
                 onClick={() => setSelectedView('employee')}
                 className={styleButton('employee')}
             >
-                Employee
+                Employees
             </button>
             <button
                 onClick={() => setSelectedView('inventory')}
@@ -67,6 +55,18 @@ export default function Sidebar({
                 className={styleButton('menuitems')}
             >
                 Menu Items
+            </button>
+            <button
+                onClick={() => setSelectedView('trends')}
+                className={styleButton('trends')}
+            >
+                Trends
+            </button>
+            <button
+                onClick={() => setSelectedView('reports')}
+                className={styleButton('reports')}
+            >
+                Reports
             </button>
         </nav>
     );
