@@ -40,3 +40,9 @@ export type InventoryItem = {
     unit: string;
     current_quantity: number;
 }
+
+export type NewInventoryItem = {
+    ingredient_name: string;
+    unit: string;
+    current_quantity: number;
+}
