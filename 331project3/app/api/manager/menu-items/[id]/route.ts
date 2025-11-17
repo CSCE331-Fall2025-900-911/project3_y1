@@ -3,13 +3,13 @@ import { getDbPool } from '@/lib/db';
 import { PoolClient } from 'pg';
 
 interface Params {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }
 
 export async function PUT(request: Request, { params }: Params) {
     let client: PoolClient | undefined;
     try {
-        const { id } = params;
+        const { id } = await params;
         const { field, value } : { field: string, value: string } = await request.json();
 
         const validFields = ['item_name', 'item_category', 'item_price'];
@@ -50,7 +50,7 @@ export async function PUT(request: Request, { params }: Params) {
 export async function DELETE(request: Request, { params }: Params) {
     let client: PoolClient | undefined;
     try {
-        const { id } = params;
+        const { id } = await params;
         const pool = getDbPool();
         client = await pool.connect();
         
