@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ApiResponse } from "../../types";
+import { ApiResponse } from "../../types/manager";
 
 export default function DashboardView() {
     const [apiResponse, setApiResponse] = useState<ApiResponse>(null);

@@ -12,7 +12,7 @@ import InventoryView from "./components/InventoryView";
 import MenuitemsView from "./components/MenuItemsView";
 
 //types imports
-import { SelectedView } from "../types";
+import { SelectedView } from "../types/manager";
 
 //main manager homepage component
 export default function ManagerHomePage() {

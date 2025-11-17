@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { MenuItem } from '../../types';
+import { MenuItem } from '../../types/manager';
 
 export default function MenuitemsView() {
 	const [menuItems, setMenuItems] = useState<MenuItem[]>([]);

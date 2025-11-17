@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { Employee } from '../../types';
+import { Employee } from '../../types/manager';
 
 export default function EmployeeView() {
 	const [employees, setEmployees] = useState<Employee[]>([]);
