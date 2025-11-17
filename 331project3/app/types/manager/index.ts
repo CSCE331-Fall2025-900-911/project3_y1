@@ -20,3 +20,10 @@ export type Employee = {
     username: string;
     password: string;
 }
+
+export type InventoryItem = {
+    ingredient_id: number;
+    ingredient_name: string;
+    unit: string;
+    current_quantity: number;
+}
