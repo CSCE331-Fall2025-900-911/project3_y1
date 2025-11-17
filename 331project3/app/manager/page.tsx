@@ -3,13 +3,13 @@
 import React, {useState} from "react";
 
 //components imports
-import Sidebar from "../components/Sidebar";
-import DashboardView from "../components/DashboardView";
-import TrendsView from "../components/TrendsView";
-import ReportsView from "../components/ReportsView";
-import EmployeeView from "../components/EmployeeView";
-import InventoryView from "../components/InventoryView";
-import MenuitemsView from "../components/MenuItemsView";
+import Sidebar from "./components/Sidebar";
+import DashboardView from "./components/DashboardView";
+import TrendsView from "./components/TrendsView";
+import ReportsView from "./components/ReportsView";
+import EmployeeView from "./components/EmployeeView";
+import InventoryView from "./components/InventoryView";
+import MenuitemsView from "./components/MenuItemsView";
 
 //types imports
 import { SelectedView } from "../types";

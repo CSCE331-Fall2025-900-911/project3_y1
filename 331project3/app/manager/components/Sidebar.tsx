@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectedView } from '../types';
+import { SelectedView } from '../../types';
 
 type SidebarProps = {
     selectedView: SelectedView;

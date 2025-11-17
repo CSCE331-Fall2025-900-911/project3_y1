@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ApiResponse } from "../types";
+import { ApiResponse } from "../../types";
 
 export default function DashboardView() {
     const [apiResponse, setApiResponse] = useState<ApiResponse>(null);
@@ -12,7 +12,7 @@ export default function DashboardView() {
         setIsLoading(true);
 
         try {
-            const response = await fetch('/api/db-test')
+            const response = await fetch('/api/manager/db-test')
             const data = await response.json();
 
             if (!response.ok) {
