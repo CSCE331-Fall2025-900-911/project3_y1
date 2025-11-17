@@ -44,6 +44,37 @@ export default function HomePage() {
     fetchMenuItems();
   }, []);
 
+  // --- Fetch sizeId from backend ---
+  const fetchSizeId = async (menuItemId: number, sizeName: string): Promise<number> => {
+    try {
+      const res = await fetch(
+        `/api/cashier/getSizeId?menuItemId=${menuItemId}&sizeName=${encodeURIComponent(sizeName)}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch size ID");
+      const data = await res.json();
+      return data.sizeId;
+    } catch (err) {
+      console.error(err);
+      return -1;
+    }
+  };
+
+  // --- Fetch price for certain size ---
+  const fetchPriceForSize = async (menuItemId: number, sizeId: number): Promise<number> => {
+    try {
+      const res = await fetch(
+        `/api/cashier/getPrice?menuItemId=${menuItemId}&sizeId=${sizeId}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch price");
+      const data = await res.json();
+      return data.price;
+    } catch (err) {
+      console.error(err);
+      return -1;
+    }
+  };
+
+  // --- Modal handlers ---
   const handleSelectItem = (item: MenuItem) => {
     setSelectedItem(item);
     setIsModalOpen(true);
@@ -54,19 +85,22 @@ export default function HomePage() {
     setSelectedItem(null);
   };
 
-  const handleAddToOrder = (customizations: any) => {
+  const handleAddToOrder = async (customizations: any) => {
     if (!selectedItem) return;
 
-    let finalPrice = selectedItem.price;
-    if (customizations.size === "Small") finalPrice -= 0.50;
-    if (customizations.size === "Large") finalPrice += 0.70;
-    finalPrice += customizations.toppings.length * 0.50;
+    // Fetch the sizeId from backend
+    const sizeId = await fetchSizeId(selectedItem.id, customizations.size);
+    // Get price for selected size
+    const finalPrice = await fetchPriceForSize(selectedItem.id, sizeId);
 
     const newOrderItem: CustomOrderItem = {
       uniqueId: `${selectedItem.id}-${new Date().getTime()}`,
       name: selectedItem.name,
       basePrice: selectedItem.price,
-      customizations: customizations,
+      customizations: {
+        ...customizations,
+        sizeId,
+      },
       finalPrice: finalPrice,
     };
 

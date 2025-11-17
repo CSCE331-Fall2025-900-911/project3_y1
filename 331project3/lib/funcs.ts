@@ -83,6 +83,24 @@ export async function completeOrderTransaction(items: OrderItem[], totalAmount: 
 }
 
 /**
+ * Get the price for a certain size
+ */
+
+export async function getPrice(menuItemId: number, sizeId: number): Promise<number> {
+  const pool = getDbPool();
+  const sql = `
+    SELECT price 
+    FROM menuitemsizes 
+    WHERE menu_item_id = $1 AND size_id = $2
+  `;
+
+  const result = await pool.query(sql, [menuItemId, sizeId]);
+  if (result.rows.length > 0) return result.rows[0].price;
+
+  return -1; 
+}
+
+/**
  * Add other cashier-related functions here:
  * - calculate subtotal/total (if not handled in frontend)
  * - fetch size prices
