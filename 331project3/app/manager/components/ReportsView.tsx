@@ -25,6 +25,7 @@ export default function ReportsView() {
     const [date, setDate] = useState(getTodayString());
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isClearing, setIsClearing] = useState(false);
 
     // xreport state
     const [xReportData, setXReportData] = useState<XReportData[]>([]);
@@ -71,6 +72,30 @@ export default function ReportsView() {
             setError((err as Error).message);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleClearZHistory = async () => {
+        if (!window.confirm("Are you sure you want to clear ALL Z-Report history? This is for testing only.")) {
+            return;
+        }
+
+        setIsClearing(true);
+        setError(null);
+        try {
+            const response = await fetch('/api/manager/reports/z-report', {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to clear history');
+            }
+            alert('Z-Report history cleared successfully.');
+            setZReportData(null);
+        } catch (err) {
+            setError((err as Error).message);
+        } finally {
+            setIsClearing(false);
         }
     };
     
@@ -131,6 +156,17 @@ export default function ReportsView() {
                 >
                     {isLoading ? 'Generating...' : 'Generate Z-Report'}
                 </button>
+
+                {/* --- Debug clear z report button --- */}
+                { <button
+                        onClick={handleClearZHistory}
+                        disabled={isClearing}
+                        className="rounded-md bg-red-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:bg-gray-400"
+                        title="FOR TESTING ONLY"
+                    >
+                        {isClearing ? 'Clearing...' : 'Clear Z-History'}
+                    </button>
+                }
             </div>
             
             {error && <p className="text-red-500">Error: {error}</p>}

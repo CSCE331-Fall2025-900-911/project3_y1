@@ -116,3 +116,26 @@ export async function POST(request: Request) {
         }
     }
 }
+
+export async function DELETE(request: Request) {
+    let client: PoolClient | undefined;
+    try {
+        const pool = getDbPool();
+        client = await pool.connect();
+        
+        await client.query('DELETE FROM zreporthistory');
+        
+        return NextResponse.json({ message: 'Z-Report history cleared successfully.' }, { status: 200 });
+
+    } catch (error) {
+        console.error('Database query error:', error);
+        return NextResponse.json({
+            message: 'Failed to clear Z-Report history.',
+            error: (error as Error).message,
+        }, { status: 500 });
+    } finally {
+        if (client) {
+            client.release();
+        }
+    }
+}
