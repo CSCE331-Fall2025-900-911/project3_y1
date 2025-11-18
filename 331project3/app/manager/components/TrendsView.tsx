@@ -5,7 +5,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { SalesData, UsageData } from '../../types/manager';
 
 const getTodayString = () => {
-    return new Date().toISOString().split('T')[0];
+    const date = new Date(2025, 9, 1);
+    return date.toISOString().split('T')[0];
 };
 
 type ReportType = 'sales' | 'usage';
@@ -16,8 +17,11 @@ export default function TrendsView() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
-    // Set default dates
-    const [startDate, setStartDate] = useState(getTodayString());
+    //set start to -7 days from start
+    const startDateDate = new Date(getTodayString());
+    startDateDate.setDate(startDateDate.getDate() - 7);
+    const [startDate, setStartDate] = useState(startDateDate.toISOString().split('T')[0]);
+
     const [endDate, setEndDate] = useState(getTodayString());
 
     const fetchReportData = async () => {
