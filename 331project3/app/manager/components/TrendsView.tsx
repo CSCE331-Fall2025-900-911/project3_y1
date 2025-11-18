@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { SalesData, UsageData } from '../../types/manager';
 
 const getTodayString = () => {
-    const date = new Date(2025, 9, 1);
+    const date = new Date(2025, 8, 29);
     return date.toISOString().split('T')[0];
 };
 
@@ -42,7 +42,9 @@ export default function TrendsView() {
             const rawData = await response.json();
 
             // Convert numeric strings to numbers for charting
+            /* eslint-disable @typescript-eslint/no-explicit-any */
             const processedData = rawData.map((item: any) => ({
+            /* eslint-enable @typescript-eslint/no-explicit-any */
                 ...item,
                 total_revenue: parseFloat(item.total_revenue),
                 total_quantity: parseInt(item.total_quantity, 10),
