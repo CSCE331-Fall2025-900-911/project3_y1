@@ -1,6 +1,6 @@
 import { getDbPool } from '@/lib/db';
 import { MenuItem } from '@/types/menu';
-import MenuItemButton from '../components/MenuItemButton';
+import MenuItemButton from './components/MenuItemButton';
 
 async function getMenuItems(): Promise<MenuItem[]> {
   const client = await getDbPool().connect();

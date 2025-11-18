@@ -2,28 +2,28 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { MenuItem } from '../types';
+import { Employee } from '../../types/manager';
 
-export default function MenuitemsView() {
-	const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+export default function EmployeeView() {
+	const [employees, setEmployees] = useState<Employee[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchMenuItems = async () => {
+	const fetchEmployees = async () => {
 		setIsLoading(true);
 		setError(null);
 
 		try {
-			const response = await fetch('/api/menu-items');
+			const response = await fetch('/api/manager/employees');
 			if (!response.ok) {
 				throw new Error(`Error: ${response.status}`);
 			}
 
-			const data: MenuItem[] = await response.json();
-			const sortedData = data.sort((a, b) => a.item_id - b.item_id);
-			setMenuItems(sortedData);
+			const data: Employee[] = await response.json();
+			const sortedData = data.sort((a, b) => a.employee_id - b.employee_id);
+			setEmployees(sortedData);
 		} catch (error) {
-			console.error("Failed to fetch menu items", error);
+			console.error("Failed to fetch employees", error);
 			setError((error as Error).message);
 		} finally {
 			setIsLoading(false);
@@ -31,12 +31,12 @@ export default function MenuitemsView() {
 	}
 
 	useEffect(() => {
-		fetchMenuItems();
+		fetchEmployees();
 	}, [])
 
 	const renderContent = () => {
         if (isLoading) {
-            return <p>Loading menu items...</p>;
+            return <p>Loading employees...</p>;
         }
 
         if (error) {
@@ -47,43 +47,49 @@ export default function MenuitemsView() {
             );
         }
 
-        if (menuItems.length === 0) {
-            return <p>No menu items found.</p>;
+        if (employees.length === 0) {
+            return <p>No employees found.</p>;
         }
 
-        //load table of menu items
+        //load table of employees
         return (
 			<table>
 				<thead className="bg-gray-50">
 					<tr>
 						<th className="px-4 py-3 text-left font-medium text-gray-900">
-							Item ID
+							Employee ID
 						</th>
 						<th className="px-4 py-3 text-left font-medium text-gray-900">
-							Name
+							First Name
 						</th>
 						<th className="px-4 py-3 text-left font-medium text-gray-900">
-							Category
+							Last Name
 						</th>
 						<th className="px-4 py-3 text-left font-medium text-gray-900">
-							Price
+							Username
+						</th>
+						<th className="px-4 py-3 text-left font-medium text-gray-900">
+							Password
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					{menuItems.map((item) => (
-						<tr key={item.item_id}>
+					{employees.map((employee) => (
+						<tr key={employee.employee_id}>
 							<td className="px-4 py-3 text-gray-700">
-								{item.item_id}
+								{employee.employee_id}
 							</td>
 							<td className="px-4 py-3 text-gray-900">
-								{item.item_name}
+								{employee.first_name}
 							</td>
 							<td className="px-4 py-3 text-gray-700">
-								{item.item_category}
+								{employee.last_name}
 							</td>
 							<td className="px-4 py-3 text-gray-700">
-								${item.item_price}
+								{employee.username}
+							</td>
+							<td className="px-4 py-3 text-gray-700">
+								{employee.password}
 							</td>
 						</tr>
 					))}
@@ -95,9 +101,9 @@ export default function MenuitemsView() {
     return (
         <div>
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Menu Items</h1>
+                <h1 className="text-2xl font-bold">Employees</h1>
                 <button
-                    onClick={fetchMenuItems}
+                    onClick={fetchEmployees}
                     disabled={isLoading}
 					className="rounded-md bg-blue-600 px-4 py-2 text-white text-sm font-medium"
                 >
