@@ -50,11 +50,30 @@ export type NewInventoryItem = {
 // Trends types
 
 export type SalesData = {
-    sale_date: string; // YYYY-MM-DD
-    total_sales: number;
+    item_name: string;
+    total_quantity: string;
+    total_revenue: string;
 };
 
 export type UsageData = {
     ingredient_name: string;
-    total_used_quantity: number;
+    unit: string;
+    total_used_quantity: string;
+};
+
+// Reports types
+
+export type XReportData = {
+    hour: number;
+    sales_totals: number;
+};
+
+export type ZReportData = {
+    status: 'SUCCESS' | 'ALREADY_RUN' | 'ERROR';
+    totalSales?: number;
+    totalItemsSold?: number;
+    salesByCategory?: { [key: string]: number };
+    ingredientUsage?: { [key: string]: number };
+    message?: string;
+    error?: string;
 };
