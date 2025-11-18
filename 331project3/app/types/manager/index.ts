@@ -46,3 +46,15 @@ export type NewInventoryItem = {
     unit: string;
     current_quantity: number;
 }
+
+// Trends types
+
+export type SalesData = {
+    sale_date: string; // YYYY-MM-DD
+    total_sales: number;
+};
+
+export type UsageData = {
+    ingredient_name: string;
+    total_used_quantity: number;
+};
