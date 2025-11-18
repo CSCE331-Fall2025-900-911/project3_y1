@@ -19,7 +19,7 @@ export default function CustomerPage() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('/api/menu-items');
+      const response = await fetch('/api/customer/menu-items');
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -77,7 +77,7 @@ export default function CustomerPage() {
     const totalAmount = bag.reduce((sum, item) => sum + item.finalPrice, 0);
 
     try {
-      const response = await fetch('/api/orders', {
+      const response = await fetch('/api/customer/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
