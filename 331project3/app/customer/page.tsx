@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { MenuItem } from '@/types/menu';
 import CustomizationModal from './components_customer/CustomizationModal';
 import OrderBag, { BagItem } from './components_customer/OrderBag';
-import MenuItemButton from './components/MenuItemButton';
+import MenuItemButton from './components_customer/MenuItemButton';
 
 export default function CustomerPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
