@@ -159,13 +159,13 @@ export default function HomePage() {
 
       {/* --- Right Column: Sidebar --- */}
       <div className="pos-sidebar">
-        {/* Loyalty Card */}
+        {/* Loyalty Card 
         <div className="sidebar-card">
           <button className="loyalty-btn">
             🏷️ Apply Loyalty Discount
           </button>
         </div>
-
+      */}
         {/* Total Card */}
         <div className="sidebar-card total-card">
           <div className="total-row">
