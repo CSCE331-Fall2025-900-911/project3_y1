@@ -54,7 +54,7 @@ export default function LandingPage() {
                         Customer Kiosk
                     </Link>
                     <Link 
-                        href="/menu-board"
+                        href="/menu"
                         className="w-full max-w-sm p-6 bg-blue-600 text-white text-2xl text-center font-bold rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105 block"
                     >
                         Menu Board
