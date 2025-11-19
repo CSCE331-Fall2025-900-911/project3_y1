@@ -1,8 +1,11 @@
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Darker dimmer */
-  backdrop-filter: blur(4px); /* Blur effect for focus */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -11,21 +14,19 @@
 }
 
 .modal-content {
-  background-color: #fff;
-  border-radius: 16px; /* Modern rounded corners */
+  background-color: #ffffff;
+  border-radius: 16px;
   width: 90%;
   max-width: 550px;
   max-height: 90vh;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   color: #1f2937;
   display: flex;
   flex-direction: column;
-  position: relative; /* For absolute positioning of close button */
+  position: relative;
   overflow: hidden;
 }
-
-/* Close "X" Button */
 .close-icon-btn {
   position: absolute;
   top: 15px;
@@ -36,11 +37,12 @@
   line-height: 1;
   color: #9ca3af;
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 5px;
   border-radius: 50%;
   transition: all 0.2s;
   z-index: 10;
 }
+
 .close-icon-btn:hover {
   background-color: #f3f4f6;
   color: #ef4444;
@@ -56,45 +58,40 @@
   flex-shrink: 0;
 }
 
-/* Scrollable Area */
 .customization-scroll-area {
   overflow-y: auto;
   padding: 0 30px 20px;
   flex-grow: 1;
 }
-
 .customization-section {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
-
 .customization-section h3 {
   color: #4b5563;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
   border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
+  padding-bottom: 5px;
+  margin-top: 10px;
 }
-
-/* --- Option Cards (The Chip Style) --- */
 .options-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-
-.toppings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 Columns for toppings */
+.options-grid.compact .option-card {
+  padding: 8px 12px;
+  font-size: 0.9rem;
 }
 
 .option-card {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 10px 16px;
+  padding: 12px 16px;
   background-color: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -104,40 +101,129 @@
   transition: all 0.15s ease;
   user-select: none;
 }
-
 .option-card:hover {
   background-color: #f9fafb;
   border-color: #d1d5db;
 }
-
-/* Selected State */
 .option-card.selected {
-  background-color: #f3e8ff; /* Light purple bg */
-  border-color: #a855f7; /* Purple border */
-  color: #7e22ce; /* Dark purple text */
+  background-color: #f3e8ff;
+  border-color: #a855f7;
+  color: #7e22ce; 
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 2px 4px rgba(168, 85, 247, 0.15);
 }
-
-/* Hide default radio/checkbox but keep accessible */
 .option-card input {
   display: none; 
 }
+.toppings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.topping-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #f3f4f6;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background-color: #fff;
+}
 
-/* --- Action Buttons --- */
+.topping-row.active {
+  background-color: #faf5ff;
+  border-color: #d8b4fe;
+}
+
+.topping-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.topping-name {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.topping-price {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.topping-row.active .topping-name {
+  color: #6b21a8;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.qty-btn.minus {
+  background-color: transparent;
+  color: #ef4444; 
+}
+.qty-btn.minus:hover {
+  background-color: #fee2e2;
+}
+.qty-btn.minus:disabled {
+  color: #e5e7eb;
+  cursor: default;
+  background: transparent;
+}
+
+.qty-btn.plus {
+  background-color: #f3e8ff;
+  color: #a855f7;
+}
+.qty-btn.plus:hover {
+  background-color: #d8b4fe;
+  color: #fff;
+}
+
+.qty-display {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
 .modal-actions {
   border-top: 1px solid #e5e7eb;
   padding: 20px 30px;
   background-color: #f9fafb;
   display: flex;
   gap: 12px;
-  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .modal-actions button {
-  padding: 12px 20px;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -169,15 +255,36 @@
 .add-to-order-btn {
   background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
   color: white;
-  flex: 2; /* Make this button larger */
+  flex: 2; 
   box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3);
 }
 .add-to-order-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 500px) {
+  .modal-content {
+    width: 95%;
+    height: 95vh;
+    max-height: none;
+    border-radius: 12px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+  }
+  
+  .topping-row {
+    padding: 8px 10px;
+  }
 }

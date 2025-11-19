@@ -13,7 +13,7 @@ const menuItems = [
   { id: 7, name: "Mango Green Tea", price: 5.80 },
   { id: 9, name: "Honey Lemonade", price: 5.20 },
   { id: 10, name: "Mango & Passion Fruit Tea", price: 6.25 },
-  { id: 11, name: "Tiger Passion Chess", price: 6.25 },
+  { id: 11, name: "Tiger Passion Cheese", price: 6.25 },
   { id: 12, name: "Mango Boba", price: 6.50 },
   { id: 13, name: "Strawberry Coconut", price: 6.50 },
   { id: 14, name: "Halo Halo", price: 6.95 },

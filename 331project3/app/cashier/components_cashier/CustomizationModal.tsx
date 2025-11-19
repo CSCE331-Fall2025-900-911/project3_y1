@@ -6,7 +6,6 @@ interface ToppingItem {
   price: number;
 }
 
-// Centralized list of toppings with prices for reference
 const TOPPING_OPTIONS: ToppingItem[] = [
   { name: 'Boba (Tapioca Pearls)', price: 0.50 },
   { name: 'Crystal Boba', price: 0.50 },
@@ -22,52 +21,51 @@ interface CustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToOrder: (customizations: any) => void;
-  currentItemName?: string; // Added to detect defaults
+  currentItemName?: string; 
 }
 
 const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose, onAddToOrder, currentItemName = '' }) => {
   const [size, setSize] = useState<string>('Small');
   const [iceLevel, setIceLevel] = useState<string>('Less Ice');
   const [sugarLevel, setSugarLevel] = useState<string>('50% Sugar');
-  // Changed toppings to a map of Name -> Quantity
   const [toppings, setToppings] = useState<Record<string, number>>({});
 
-  // Reset and set defaults when modal opens or item changes
+  const getDefaultToppings = (name: string) => {
+    const initialToppings: Record<string, number> = {};
+    const lowerName = name.toLowerCase();
+    
+    // Check for Boba/Pearl
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) {
+      initialToppings['Boba (Tapioca Pearls)'] = 1;
+    }
+    // Check for Pudding
+    if (lowerName.includes('pudding')) {
+      initialToppings['Pudding'] = 1;
+    }
+    // Check for Cheese
+    if (lowerName.includes('cheese')) {
+      initialToppings['Cheese Foam'] = 1;
+    }
+
+    return initialToppings;
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setSize('Small');
-      setIceLevel('Less Ice');
+      setSize('Medium');
+      setIceLevel('Regular Ice');
       setSugarLevel('50% Sugar');
-      
-      // --- Determine Defaults based on Drink Name ---
-      const initialToppings: Record<string, number> = {};
-      
-      const lowerName = currentItemName.toLowerCase();
-      if (lowerName.includes('pearl')) {
-        initialToppings['Boba (Tapioca Pearls)'] = 1;
-      }
-      if (lowerName.includes('pudding')) {
-        initialToppings['Pudding'] = 1;
-      }
-      // Add more defaults here if needed (e.g., 'grass jelly')
-
-      setToppings(initialToppings);
+      setToppings(getDefaultToppings(currentItemName));
     }
   }, [isOpen, currentItemName]);
 
   if (!isOpen) return null;
 
   const handleReset = () => {
-    setSize('Small');
-    setIceLevel('Less Ice');
+    setSize('Medium');
+    setIceLevel('Regular Ice');
     setSugarLevel('50% Sugar');
-    // Resetting clears ALL toppings, even defaults, or should it reset TO defaults? 
-    // Usually "Reset" means "Back to standard", so let's re-run the default logic.
-    const initialToppings: Record<string, number> = {};
-    const lowerName = currentItemName.toLowerCase();
-    if (lowerName.includes('pearl')) initialToppings['Boba (Tapioca Pearls)'] = 1;
-    if (lowerName.includes('pudding')) initialToppings['Pudding'] = 1;
-    setToppings(initialToppings); 
+    setToppings(getDefaultToppings(currentItemName)); 
   };
 
   const handleAddToOrder = () => {
@@ -81,7 +79,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
       const newQty = Math.max(0, currentQty + delta);
       
       const newToppings = { ...prev, [name]: newQty };
-      if (newQty === 0) delete newToppings[name]; // Clean up 0 entries
+      if (newQty === 0) delete newToppings[name]; 
       return newToppings;
     });
   };
@@ -115,8 +113,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
             </div>
           </div>
 
-          {/* Ice & Sugar Sections (Combined row for compactness) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          {/* Ice & Sugar Sections */}
              <div className="customization-section">
               <h3>Ice Level</h3>
               <div className="options-grid compact">
@@ -138,10 +135,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
                   </label>
                 ))}
               </div>
-            </div>
+            
           </div>
 
-          {/* Toppings Section with Counters */}
+          {/* Toppings Section */}
           <div className="customization-section">
             <h3>Toppings</h3>
             <div className="toppings-list">

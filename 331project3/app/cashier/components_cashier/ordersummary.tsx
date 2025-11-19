@@ -10,8 +10,8 @@ export interface CustomOrderItem {
     size: string;
     iceLevel: string;
     sugarLevel: string;
-    toppings: string[];
-    sizeId: number;
+    toppings: Record<string, number>; 
+    sizeId?: number;
   };
 }
 
@@ -36,41 +36,38 @@ export default function OrderSummary({ order, onDelete }: Props) {
           <tr>
             <th>Item</th>
             <th>Qty</th>
-            <th>Price</th>
             <th>Total</th>
-            <th>Action</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {order.map(item => (
-            <tr key={item.uniqueId}>
-              <td>
-                <span className="item-name-text">{item.name}</span>
-                <div className="item-customizations-text">
-                  {item.customizations.size}, {item.customizations.sugarLevel}, {item.customizations.iceLevel}
-                  {item.customizations.toppings?.length > 0 && (
-                    <span> • +{item.customizations.toppings.length} Toppings</span>
+          {order.map(item => {
+            const toppingEntries = Object.entries(item.customizations.toppings || {});
+            const toppingString = toppingEntries.map(([name, qty]) => {
+               return qty > 1 ? `${name} x${qty}` : name;
+            }).join(", ");
+
+            return (
+              <tr key={item.uniqueId}>
+                <td>
+                  <span className="item-name-text">{item.name}</span>
+                  <div className="item-customizations-text">
+                    {item.customizations.size}, {item.customizations.sugarLevel}, {item.customizations.iceLevel}
+                    {toppingString && (
+                      <span> • {toppingString}</span>
+                    )}
+                  </div>
+                </td>
+                <td><span className="qty-badge">1</span></td>
+                <td><strong>${item.finalPrice.toFixed(2)}</strong></td>
+                <td>
+                  {onDelete && (
+                    <button className="delete-btn" onClick={() => onDelete(item.uniqueId)}>🗑</button>
                   )}
-                </div>
-              </td>
-              <td>
-                <span className="qty-badge">1</span>
-              </td>
-              <td>${item.finalPrice.toFixed(2)}</td>
-              <td><strong>${item.finalPrice.toFixed(2)}</strong></td>
-              <td>
-                {onDelete && (
-                  <button 
-                    className="delete-btn" 
-                    onClick={() => onDelete(item.uniqueId)}
-                    title="Remove Item"
-                  >
-                    🗑
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
