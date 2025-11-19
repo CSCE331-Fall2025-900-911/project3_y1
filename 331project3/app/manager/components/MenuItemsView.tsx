@@ -122,7 +122,7 @@ export default function MenuitemsView() {
 
 	const renderAddNewItem = () => (
 		<Card className="p-6 mb-6 border-t-4 border-blue-600">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">Add New Menu Item</h2>
+            <h2 className="text-lg font-medium mb-2">Add New Menu Item</h2>
             <form onSubmit={handleAddItem} className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <Input
                     name="item_name"
