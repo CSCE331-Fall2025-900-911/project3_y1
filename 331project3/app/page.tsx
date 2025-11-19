@@ -74,9 +74,7 @@ export default function LandingPage() {
                 Please sign in to continue
             </p>
             <button
-                onClick={() => signIn("google",
-                    { prompt: "select_account" }
-                )}
+                onClick={() => signIn("google")}
                 className="flex items-center gap-3 px-6 py-4 bg-white text-gray-700 text-xl font-medium rounded-lg shadow-md hover:bg-gray-50 transition-colors"
             >
                 <Image 
