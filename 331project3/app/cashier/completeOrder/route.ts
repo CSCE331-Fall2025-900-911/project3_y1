@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Call your database transaction
+    // Call database transaction
     const success = await completeOrderTransaction(items, totalAmount);
 
     if (!success) {
