@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import MenuList, { MenuItem } from "./components_cashier/menulist";
 import OrderSummary, { CustomOrderItem } from "./components_cashier/ordersummary";
 import CustomizationModal from "./components_cashier/CustomizationModal";
+import Header from "./components_cashier/header"; //
 import "./styles_cashier/menulist.css";
 import "./styles_cashier/ordersummary.css";
 import "./styles_cashier/customizationModal.css";
@@ -132,15 +133,14 @@ export default function HomePage() {
 
  return (
     <div className="pos-container">
+      <div style={{ gridColumn: "1 / -1" }}>
+        <Header />
+      </div>
       {/* --- Left Column: Menu & Order List --- */}
       <div className="pos-main-content">
         
         {/* Quick Add Section */}
         <section className="pos-section">
-          <div className="section-header">
-            <h3>Quick Add Drinks</h3>
-            <span className="section-subtitle">All Drinks</span>
-          </div>
           <MenuList 
             menuItems={menuItems} 
             onSelectItem={handleSelectItem} 
