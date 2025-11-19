@@ -216,10 +216,10 @@ export default function MenuitemsView() {
 							<td 
 								contentEditable
 								suppressContentEditableWarning={true}
-								onBlur={(e) => handleUpdateItem(item.item_id, 'item_price', e.currentTarget.textContent || '')}
+								onBlur={(e) => handleUpdateItem(item.item_id, 'item_price', e.currentTarget.textContent.replace(/[$,]/g, '') || '')}
 								className="px-4 py-3 text-gray-700"
 							>
-								${item.item_price}
+								${item.item_price} 
 							</td>
 							<td>
 								<button

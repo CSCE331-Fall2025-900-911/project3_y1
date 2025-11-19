@@ -27,6 +27,7 @@ export async function PUT(request: Request, { params }: Params) {
             RETURNING *
         `;
         
+        // console.log('Executing query:', query, 'with values:', [value, id]);
         const result = await client.query(query, [value, id]);
 
         if (result.rowCount === 0) {
