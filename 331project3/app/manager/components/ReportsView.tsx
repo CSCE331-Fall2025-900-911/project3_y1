@@ -1,17 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { 
-    BarChart, 
-    Bar, 
-    XAxis, 
-    YAxis, 
-    Tooltip, 
-    Legend, 
-    ResponsiveContainer,
-    CartesianGrid
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { XReportData, ZReportData } from '../../types/manager';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 
 const getTodayString = () => {
     const date = new Date(2025, 8, 29);
@@ -100,137 +94,170 @@ export default function ReportsView() {
     };
     
     const renderXReport = () => (
-        <div>
-            <div className="flex items-center gap-4 mb-4">
-                <label htmlFor="x-date" className="font-medium">Date:</label>
-                <input
+
+        <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">Hourly Sales (X-Report)</h2>
+            <div className="flex flex-wrap items-end gap-4 mb-4">
+                <Input
+                    label="Date:"
+                    name="x-date"
                     id="x-date"
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="p-2 border rounded-md"
+                    className="p-2"
                 />
-                <button
+                <Button
                     onClick={() => fetchXReport(date)}
-                    disabled={isLoading}
-                    className="rounded-md bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:bg-gray-400"
+                    isLoading={isLoading}
+                    variant="primary"
                 >
-                    {isLoading ? 'Loading...' : 'Run X-Report'}
-                </button>
+                    Run X-Report
+                </Button>
             </div>
             
-            {error && <p className="text-red-500">Error: {error}</p>}
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mt-6">
+                    <strong>Error:</strong> {error}
+                </div>
+            )}
+            
+            {isLoading && xReportData.length === 0 && (
+                 <div className="flex items-center justify-center h-[400px]">
+                    <p className="text-gray-500">Loading chart...</p>
+                 </div>
+            )}
+            {!isLoading && xReportData.length === 0 && (
+                 <div className="flex items-center justify-center h-[400px]">
+                    <p className="text-gray-500">No sales data for this day.</p>
+                 </div>
+            )}
             
             {xReportData.length > 0 && (
                 <div className="w-full h-[400px] mt-6">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={xReportData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="hour" label={{ value: 'Hour of the Day', position: 'insideBottom', offset: -5 }} />
-                            <YAxis label={{ value: 'Total Sales ($)', angle: -90, position: 'insideLeft' }} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="hour" label={{ value: 'Hour of the Day', position: 'insideBottom', offset: -5 }} stroke="#374151" />
+                            <YAxis label={{ value: 'Total Sales ($)', angle: -90, position: 'insideLeft' }} stroke="#374151" />
                             <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
                             <Legend />
-                            <Bar dataKey="sales_totals" name="Total Sales" fill="#8884d8" />
+                            {/* CHANGED: Added color and radius */}
+                            <Bar dataKey="sales_totals" name="Total Sales" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
             )}
-        </div>
+        </Card>
     );
 
     const renderZReport = () => (
-        <div>
-            <div className="flex items-center gap-4 mb-4">
-                <label htmlFor="z-date" className="font-medium">Date:</label>
-                <input
+        <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">End-of-Day (Z-Report)</h2>
+            <div className="flex flex-wrap items-end gap-4 mb-4">
+                <Input
+                    label="Date:"
+                    name="z-date"
                     id="z-date"
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="p-2 border rounded-md"
+                    className="p-2"
                 />
-                <button
+                <Button
                     onClick={generateZReport}
-                    disabled={isLoading}
-                    className="rounded-md bg-green-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 disabled:bg-gray-400"
+                    isLoading={isLoading}
+                    className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-500"
                 >
-                    {isLoading ? 'Generating...' : 'Generate Z-Report'}
-                </button>
+                    Generate Z-Report
+                </Button>
 
-                {/* --- Debug clear z report button --- */}
-                { <button
-                        onClick={handleClearZHistory}
-                        disabled={isClearing}
-                        className="rounded-md bg-red-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 disabled:bg-gray-400"
-                        title="FOR TESTING ONLY"
-                    >
-                        {isClearing ? 'Clearing...' : 'Clear Z-History'}
-                    </button>
-                }
+                <Button
+                    onClick={handleClearZHistory}
+                    isLoading={isClearing}
+                    variant="danger"
+                    title="FOR TESTING"
+                >
+                    Clear Z-History
+                </Button>
             </div>
             
-            {error && <p className="text-red-500">Error: {error}</p>}
-
-            {zReportData && (
-                <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
-                    <h3 className="text-xl font-semibold mb-4">Z-Report for {date}</h3>
-                    <pre className="text-sm font-mono whitespace-pre-wrap">
-                        {zReportData.status === 'SUCCESS' && (
-                            <>
-                                <strong>--- REPORT GENERATED SUCCESSFULLY ---</strong><br /><br />
-                                <strong>Total Sales:</strong> ${zReportData.totalSales?.toFixed(2) ?? '0.00'}<br />
-                                <strong>Total Items Sold:</strong> {zReportData.totalItemsSold ?? '0'}<br /><br />
-                                
-                                <strong>--- Sales by Category ---</strong><br />
-                                {Object.entries(zReportData.salesByCategory ?? {}).length > 0 ?
-                                    Object.entries(zReportData.salesByCategory ?? {}).map(([category, total]) => (
-                                        `${category}: $${total.toFixed(2)}\n`
-                                    )) : 'No category sales recorded.\n'}
-                                <br />
-                                
-                                <strong>--- Ingredient Usage Summary ---</strong><br />
-                                {Object.entries(zReportData.ingredientUsage ?? {}).length > 0 ?
-                                    Object.entries(zReportData.ingredientUsage ?? {}).map(([name, total]) => (
-                                        `${name}: ${total.toFixed(2)} units\n`
-                                    )) : 'No ingredients used today.\n'}
-                                <br />
-                                <strong>ACTION:</strong> Report generated and logged.
-                            </>
-                        )}
-                        {zReportData.status === 'ALREADY_RUN' && (
-                            <strong>REPORT ALREADY RUN FOR THIS DAY.</strong>
-                        )}
-                        {zReportData.status === 'ERROR' && (
-                            <strong>FATAL ERROR: {zReportData.message}</strong>
-                        )}
-                    </pre>
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mt-6">
+                    <strong>Error:</strong> {error}
                 </div>
             )}
-        </div>
+
+            {zReportData && (
+                <div className="mt-6">
+                    {zReportData.status === 'SUCCESS' && (
+                        <div className="border border-green-300 bg-green-50 rounded-lg p-6">
+                            <h3 className="text-lg font-semibold text-green-800 mb-4">
+                                Report Generated Successfully for {date}
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                {/* Totals */}
+                                <div className="space-y-2">
+                                    <strong className="text-green-700 block">Totals</strong>
+                                    <p><strong>Total Sales:</strong> ${zReportData.totalSales?.toFixed(2) ?? '0.00'}</p>
+                                    <p><strong>Total Items Sold:</strong> {zReportData.totalItemsSold ?? '0'}</p>
+                                </div>
+                                {/* Category Sales */}
+                                <div className="space-y-2">
+                                    <strong className="text-green-700 block">Sales by Category</strong>
+                                    {Object.entries(zReportData.salesByCategory ?? {}).length > 0 ?
+                                        Object.entries(zReportData.salesByCategory ?? {}).map(([category, total]) => (
+                                            <p key={category}>{category}: ${total.toFixed(2)}</p>
+                                        )) : <p className="text-gray-500">No category sales.</p>}
+                                </div>
+                                {/* Ingredient Usage */}
+                                <div className="space-y-2">
+                                    <strong className="text-green-700 block">Ingredient Usage</strong>
+                                    {Object.entries(zReportData.ingredientUsage ?? {}).length > 0 ?
+                                        Object.entries(zReportData.ingredientUsage ?? {}).map(([name, total]) => (
+                                            <p key={name}>{name}: {total.toFixed(2)} units</p>
+                                        )) : <p className="text-gray-500">No ingredients used.</p>}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {/* ALREADY RUN */}
+                    {zReportData.status === 'ALREADY_RUN' && (
+                        <div className="border border-yellow-300 bg-yellow-50 rounded-lg p-6">
+                             <strong className="text-yellow-800">REPORT ALREADY RUN FOR THIS DAY.</strong>
+                        </div>
+                    )}
+                    {/* ERROR */}
+                    {zReportData.status === 'ERROR' && (
+                        <div className="border border-red-300 bg-red-50 rounded-lg p-6">
+                             <strong className="text-red-800">FATAL ERROR: {zReportData.message}</strong>
+                        </div>
+                    )}
+                </div>
+            )}
+        </Card>
     );
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Daily Reports</h1>
-            
-            {/* Report Type Toggle */}
+        <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">Daily Reports</h1>
             <div className="flex rounded-md shadow-sm mb-6">
                 <button
                     onClick={() => setReportType('x-report')}
-                    className={`px-4 py-2 text-sm font-medium rounded-l-md ${
+                    className={`px-6 py-3 text-sm font-medium rounded-l-md transition-colors ${
                         reportType === 'x-report' 
                         ? 'bg-blue-600 text-white' 
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                     }`}
                 >
                     X-Report (Hourly Sales)
                 </button>
                 <button
                     onClick={() => setReportType('z-report')}
-                    className={`px-4 py-2 text-sm font-medium rounded-r-md border-l border-gray-200 ${
+                    className={`px-6 py-3 text-sm font-medium rounded-r-md transition-colors ${
                         reportType === 'z-report' 
                         ? 'bg-blue-600 text-white' 
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-y border-r border-gray-300'
                     }`}
                 >
                     Z-Report (End-of-Day)
