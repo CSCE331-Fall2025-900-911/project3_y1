@@ -1,5 +1,6 @@
 import React from 'react';
 import { SelectedView } from '../../types/manager';
+import Image from 'next/image';
 
 type SidebarProps = {
     selectedView: SelectedView;
@@ -14,60 +15,65 @@ export default function Sidebar({
     const styleButton = (view: SelectedView) => {
         const isActive = selectedView === view;
         
-        const base = 'p-2 text-left rounded border text-sm transition-colors mb-2';
+        const base = 'flex items-center space-x-2 w-full p-3 text-left rounded-lg text-sm font-medium transition-colors';
 
         //define active and inactive styles
-        const active = 'bg-blue-600 text-white font-bold border-blue-600';
-        const inactive = 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100';
+        const active = 'bg-blue-600 text-white';
+        const inactive = 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
 
-        // Combine and return
         return `${base} ${isActive ? active : inactive}`;
     };
 
     return (
-        <nav style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '200px',
-            borderRight: '1px solid #ccc',
-            padding: '1rem'
-        }}>
-            <button
-                onClick={() => setSelectedView('dashboard')}
-                className={styleButton('dashboard')}
-            >
-                Dashboard
-            </button>
-            <button
-                onClick={() => setSelectedView('employee')}
-                className={styleButton('employee')}
-            >
-                Employees
-            </button>
-            <button
-                onClick={() => setSelectedView('inventory')}
-                className={styleButton('inventory')}
-            >
-                Inventory
-            </button>
-            <button
-                onClick={() => setSelectedView('menuitems')}
-                className={styleButton('menuitems')}
-            >
-                Menu Items
-            </button>
-            <button
-                onClick={() => setSelectedView('trends')}
-                className={styleButton('trends')}
-            >
-                Trends
-            </button>
-            <button
-                onClick={() => setSelectedView('reports')}
-                className={styleButton('reports')}
-            >
-                Reports
-            </button>
+        <nav className="flex flex-col w-64 h-screen p-4 bg-white border-r border-gray-200"> 
+            <div className="mb-6">
+                <Image 
+                    src="/images/sharetea.webp" 
+                    alt="ShareTea logo" 
+                    className="w-60 h-15"
+                    width={96}
+                    height={96}
+                />
+                <h2 className="text-xl font-bold text-gray-900">POS Manager</h2>
+            </div>
+            <div className="flex flex-col space-y-2">
+                <button
+                    onClick={() => setSelectedView('dashboard')}
+                    className={styleButton('dashboard')}
+                >
+                    Dashboard
+                </button>
+                <button
+                    onClick={() => setSelectedView('employee')}
+                    className={styleButton('employee')}
+                >
+                    Employees
+                </button>
+                <button
+                    onClick={() => setSelectedView('inventory')}
+                    className={styleButton('inventory')}
+                >
+                    Inventory
+                </button>
+                <button
+                    onClick={() => setSelectedView('menuitems')}
+                    className={styleButton('menuitems')}
+                >
+                    Menu Items
+                </button>
+                <button
+                    onClick={() => setSelectedView('trends')}
+                    className={styleButton('trends')}
+                >
+                    Trends
+                </button>
+                <button
+                    onClick={() => setSelectedView('reports')}
+                    className={styleButton('reports')}
+                >
+                    Reports
+                </button>
+            </div>
         </nav>
     );
 }
