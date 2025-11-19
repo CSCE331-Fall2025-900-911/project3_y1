@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { SalesData, UsageData } from '../../types/manager';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 
 const getTodayString = () => {
     const date = new Date(2025, 8, 29);
@@ -67,46 +70,49 @@ export default function TrendsView() {
                 nameKey: 'item_name',
                 barKey: 'total_revenue',
                 barName: 'Total Revenue ($)',
-                fill: '#8884d8'
+                fill: '#3b82f6'
             };
         } else {
             return {
                 nameKey: 'ingredient_name',
                 barKey: 'total_used_quantity',
                 barName: 'Total Used (units)',
-                fill: '#82ca9d'
+                fill: '#22c55e'
             };
         }
     };
 
     const { nameKey, barKey, barName, fill } = getChartKeys();
 
+    const themeColor = reportType === 'sales' ? 'blue' : 'green';
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Trends & Reports</h1>
+        <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">Trends</h1>
 
             {/* Controls */}
-            <div className="flex flex-wrap gap-4 items-end p-4 bg-gray-50 rounded-lg border mb-6">
+            <Card className={`p-6 mb-6 border-t-4 ${themeColor === 'blue' ? 'border-blue-600' : 'border-green-600'}`}>
+            <div className="flex flex-wrap gap-4 items-end">
                 {/* Report Type Toggle */}
                 <div className="flex flex-col">
                     <label className="text-sm font-medium text-gray-700 mb-1">Report Type</label>
                     <div className="flex rounded-md shadow-sm">
                         <button
                             onClick={() => setReportType('sales')}
-                            className={`px-4 py-2 text-sm font-medium rounded-l-md ${
+                            className={`px-4 py-2 text-sm font-medium rounded-l-md transition-colors ${
                                 reportType === 'sales' 
                                 ? 'bg-blue-600 text-white' 
-                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                             }`}
                         >
                             Sales Report
                         </button>
                         <button
                             onClick={() => setReportType('usage')}
-                            className={`px-4 py-2 text-sm font-medium rounded-r-md border-l border-gray-200 ${
+                            className={`px-4 py-2 text-sm font-medium rounded-r-md transition-colors ${
                                 reportType === 'usage' 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                                ? 'bg-green-600 text-white' 
+                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-y border-r border-gray-300'
                             }`}
                         >
                             Usage Report
@@ -115,47 +121,48 @@ export default function TrendsView() {
                 </div>
                 
                 {/* Date Selection */}
-                <div className="flex flex-col">
-                    <label htmlFor="start-date" className="text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <input
-                        id="start-date"
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="p-2 border rounded-md"
-                    />
-                </div>
-                <div className="flex flex-col">
-                    <label htmlFor="end-date" className="text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <input
-                        id="end-date"
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="p-2 border rounded-md"
-                    />
-                </div>
+                <Input
+                    label="Start Date"
+                    id="start-date"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="p-2"
+                />
+                <Input
+                    label="End Date"
+                    id="end-date"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="p-2"
+                />
                 
                 {/* Generation Button */}
-                <button
+                <Button
                     onClick={fetchReportData}
                     disabled={isLoading}
-                    className="rounded-md bg-green-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 disabled:bg-gray-400"
+                    className={`${themeColor === 'blue' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'}`}
                 >
                     {isLoading ? 'Loading...' : 'Generate Report'}
-                </button>
+                </Button>
             </div>
+            </Card>
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6">
+                    <strong>Error:</strong> {error}
+                </div>
+            )}
 
             {/* Chart */}
-            <div className="w-full h-[500px] bg-white p-4 rounded-lg border shadow-sm">
-                {isLoading && <p className="text-gray-500">Loading chart...</p>}
-                
-                {error && (
-                    <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                        <strong>Error:</strong> {error}
+            <Card className="w-full h-[500px] p-6">
+                {isLoading && (
+                    <div className="flex items-center justify-center h-full">
+                        <p className="text-gray-500">Loading chart...</p>
                     </div>
                 )}
-
+                
                 {!isLoading && !error && data.length === 0 && (
                     <div className="flex items-center justify-center h-full">
                         <p className="text-gray-500">
@@ -170,7 +177,7 @@ export default function TrendsView() {
                             data={data}
                             margin={{ top: 5, right: 30, left: 20, bottom: 50 }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                             <XAxis 
                                 dataKey={nameKey}
                                 angle={-45}
@@ -178,17 +185,25 @@ export default function TrendsView() {
                                 interval={0}
                                 height={60}
                                 fontSize={12}
+                                stroke="#374151"
                             />
-                            <YAxis />
-                            <Tooltip formatter={(value) => 
-                                typeof value === 'number' ? value.toFixed(2) : value 
-                            }/>
+                            <YAxis stroke="#374151" />
+                            <Tooltip 
+                                formatter={(value) => 
+                                    typeof value === 'number' ? value.toFixed(2) : value 
+                                }
+                                contentStyle={{ 
+                                    backgroundColor: 'white', 
+                                    border: '1px solid #e5e7eb', 
+                                    borderRadius: '0.5rem' 
+                                }}
+                            />
                             <Legend />
-                            <Bar dataKey={barKey} name={barName} fill={fill} />
+                            <Bar dataKey={barKey} name={barName} fill={fill} radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 )}
-            </div>
+            </Card>
         </div>
     );
 }
