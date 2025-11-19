@@ -25,7 +25,15 @@ export default function CashierPage() {
     setSelectedItem(null);
   };
 
-  const handleAddToOrder = (customizations: any) => {
+  type Customizations = {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: Record<string, number>;
+    sizeId?: number;
+  };
+
+  const handleAddToOrder = (customizations: Customizations) => {
     if (!selectedItem) return; // Should never happen if modal is open
 
 
@@ -42,6 +50,7 @@ export default function CashierPage() {
       basePrice: selectedItem.price,
       customizations: customizations,
       finalPrice: finalPrice,
+      quantity: 1,
     };
 
     // Add the new item to the order state
@@ -66,3 +75,6 @@ export default function CashierPage() {
     </div>
   );
 }
+
+
+
