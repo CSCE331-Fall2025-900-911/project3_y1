@@ -15,7 +15,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
   const [size, setSize] = useState<string>('Small');
   const [iceLevel, setIceLevel] = useState<string>('Less Ice');
   const [sugarLevel, setSugarLevel] = useState<string>('50% Sugar');
-  const [toppings, setToppings] = useState<string[]>(['Boba']);
+  const [toppings, setToppings] = useState<string[]>([]);
 
   if (!isOpen) {
     return null;
@@ -25,7 +25,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
     setSize('Small');
     setIceLevel('Less Ice');
     setSugarLevel('50% Sugar');
-    setToppings(['Boba']);
+    // CHANGE 2: Reset to empty array so 'Reset Options' doesn't re-select Boba
+    setToppings([]); 
   };
 
   const handleAddToOrder = () => {

@@ -90,11 +90,28 @@ export default function HomePage() {
   const handleAddToOrder = async (customizations: any) => {
     if (!selectedItem) return;
 
-    // Fetch the sizeId from backend
+    // 1. Fetch the sizeId from backend
     const sizeId = await fetchSizeId(selectedItem.id, customizations.size);
-    // Get price for selected size
-    const finalPrice = await fetchPriceForSize(selectedItem.id, sizeId);
+    
+    // 2. Get base price for the selected size
+    let fetchedPrice = await fetchPriceForSize(selectedItem.id, sizeId);
 
+    // Fallback to base price if fetch fails or returns invalid price
+    if (fetchedPrice <= 0) {
+      fetchedPrice = selectedItem.price;
+    }
+
+    // 3. Calculate Toppings Cost
+    // According to your Modal: Standard toppings are +$0.50, Cheese Foam is +$1.00
+    const toppingsCost = customizations.toppings.reduce((sum: number, topping: string) => {
+      if (topping.includes("Cheese Foam")) {
+        return sum + 1.00;
+      }
+      return sum + 0.50;
+    }, 0);
+
+    // 4. Calculate Final Price
+    const finalPrice = fetchedPrice + toppingsCost;
     const newOrderItem: CustomOrderItem = {
       uniqueId: `${selectedItem.id}-${new Date().getTime()}`,
       name: selectedItem.name,
@@ -103,7 +120,7 @@ export default function HomePage() {
         ...customizations,
         sizeId,
       },
-      finalPrice: finalPrice > 0 ? finalPrice : selectedItem.price,
+      finalPrice: finalPrice, // <--- Updated to include toppings
     };
 
     setOrder((prevOrder) => [...prevOrder, newOrderItem]);
