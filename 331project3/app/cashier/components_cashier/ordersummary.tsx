@@ -11,47 +11,68 @@ export interface CustomOrderItem {
     iceLevel: string;
     sugarLevel: string;
     toppings: string[];
+    sizeId: number;
   };
 }
 
 interface Props {
   order: CustomOrderItem[];
+  onDelete?: (id: string) => void;
 }
 
-export default function OrderSummary({ order }: Props) {
-  const total = order.reduce((sum, item) => sum + (item.finalPrice || 0), 0);
+export default function OrderSummary({ order, onDelete }: Props) {
+  if (order.length === 0) {
+    return (
+      <div className="summary-table-card" style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
+        <p>No items in current order.</p>
+      </div>
+    );
+  }
 
   return (
-    <section className="summary">
-      <h2>Order Summary</h2>
-      {order.length === 0 ? (
-        <p>Your order is empty.</p>
-      ) : (
-        <ul>
+    <div className="summary-table-card">
+      <table className="order-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
           {order.map(item => (
-            <li key={item.uniqueId} className="order-item-details">
-              <span className="item-name">{item.name || "Unknown Item"}</span>
-              <span className="item-price">
-                ${(item.finalPrice || 0).toFixed(2)}
-              </span>
-              
-              {item.customizations ? (
-                <ul className="customizations-list">
-                  <li>{item.customizations.size}</li>
-                  <li>{item.customizations.iceLevel}</li>
-                  <li>{item.customizations.sugarLevel}</li>
+            <tr key={item.uniqueId}>
+              <td>
+                <span className="item-name-text">{item.name}</span>
+                <div className="item-customizations-text">
+                  {item.customizations.size}, {item.customizations.sugarLevel}, {item.customizations.iceLevel}
                   {item.customizations.toppings?.length > 0 && (
-                    <li>Toppings: {item.customizations.toppings.join(', ')}</li>
+                    <span> • +{item.customizations.toppings.length} Toppings</span>
                   )}
-                </ul>
-              ) : (
-                <ul className="customizations-list"><li>No customizations</li></ul>
-              )}
-            </li>
+                </div>
+              </td>
+              <td>
+                <span className="qty-badge">1</span>
+              </td>
+              <td>${item.finalPrice.toFixed(2)}</td>
+              <td><strong>${item.finalPrice.toFixed(2)}</strong></td>
+              <td>
+                {onDelete && (
+                  <button 
+                    className="delete-btn" 
+                    onClick={() => onDelete(item.uniqueId)}
+                    title="Remove Item"
+                  >
+                    🗑
+                  </button>
+                )}
+              </td>
+            </tr>
           ))}
-        </ul>
-      )}
-      <p className="summary-total">Total: ${total.toFixed(2)}</p>
-    </section>
+        </tbody>
+      </table>
+    </div>
   );
 }

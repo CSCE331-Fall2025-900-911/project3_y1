@@ -15,7 +15,9 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [loadingMenu, setLoadingMenu] = useState(true);
-
+// Calculate Totals
+  const subtotal = order.reduce((sum, item) => sum + (item.finalPrice || 0), 0);
+  const total = subtotal; // Add tax logic here if needed later
   // Fetch menu items from the backend when the page loads
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -101,21 +103,73 @@ export default function HomePage() {
         ...customizations,
         sizeId,
       },
-      finalPrice: finalPrice,
+      finalPrice: finalPrice > 0 ? finalPrice : selectedItem.price,
     };
 
     setOrder((prevOrder) => [...prevOrder, newOrderItem]);
     handleCloseModal();
   };
+  const handleDeleteItem = (uniqueId: string) => {
+    setOrder(prev => prev.filter(item => item.uniqueId !== uniqueId));
+  };
 
-  return (
-    <div style={{ display: "flex", gap: "20px", padding: "20px" }}>
-      <MenuList
-        menuItems={menuItems}
-        onSelectItem={handleSelectItem}
-      />
-      
-      <OrderSummary order={order} />
+ return (
+    <div className="pos-container">
+      {/* --- Left Column: Menu & Order List --- */}
+      <div className="pos-main-content">
+        
+        {/* Quick Add Section */}
+        <section className="pos-section">
+          <div className="section-header">
+            <h3>Quick Add Drinks</h3>
+            <span className="section-subtitle">All Drinks</span>
+          </div>
+          <MenuList 
+            menuItems={menuItems} 
+            onSelectItem={handleSelectItem} 
+          />
+        </section>
+
+        {/* Purchase List Section */}
+        <section className="pos-section">
+           <div className="section-header">
+            <h3>Purchase List</h3>
+            <span className="item-count-badge">{order.length} item(s)</span>
+          </div>
+          <OrderSummary order={order} onDelete={handleDeleteItem} />
+        </section>
+      </div>
+
+      {/* --- Right Column: Sidebar --- */}
+      <div className="pos-sidebar">
+        {/* Loyalty Card */}
+        <div className="sidebar-card">
+          <button className="loyalty-btn">
+            🏷️ Apply Loyalty Discount
+          </button>
+        </div>
+
+        {/* Total Card */}
+        <div className="sidebar-card total-card">
+          <div className="total-row">
+            <span>Subtotal:</span>
+            <span>${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="total-row">
+            <span>Tax:</span>
+            <span>$0.00</span>
+          </div>
+          <div className="total-row final-total">
+            <span>Total:</span>
+            <span>${total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Checkout Button */}
+        <button className="checkout-btn">
+          Proceed to Payment
+        </button>
+      </div>
 
       <CustomizationModal
         isOpen={isModalOpen}

@@ -14,16 +14,15 @@ interface Props {
 
 export default function MenuList({ menuItems, onSelectItem }: Props) {
   return (
-    <section className="menu">
-      <h2>Menu</h2>
-      <ul>
-        {menuItems.map(item => (
-          <li key={item.id}>
-            {item.name} — ${item.price.toFixed(2)}
-            <button onClick={() => onSelectItem(item)}>Add</button>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <ul className="menu-grid">
+      {menuItems.map(item => (
+        <li key={item.id} className="menu-card" onClick={() => onSelectItem(item)}>
+          {/* Mock Category Tag for visuals */}
+          <span className="card-tag">DRINK • {item.id}</span>
+          <span className="card-name">{item.name}</span>
+          <span className="card-price">${item.price.toFixed(2)}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
