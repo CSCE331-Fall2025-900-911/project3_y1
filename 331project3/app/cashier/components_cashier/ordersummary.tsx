@@ -6,6 +6,7 @@ export interface CustomOrderItem {
   name: string;
   basePrice: number;
   finalPrice: number;
+  quantity: number; 
   customizations: {
     size: string;
     iceLevel: string;
@@ -18,9 +19,10 @@ export interface CustomOrderItem {
 interface Props {
   order: CustomOrderItem[];
   onDelete?: (id: string) => void;
+  onQuantityChange?: (id: string, delta: number) => void; 
 }
 
-export default function OrderSummary({ order, onDelete }: Props) {
+export default function OrderSummary({ order, onDelete, onQuantityChange }: Props) {
   if (order.length === 0) {
     return (
       <div className="summary-table-card" style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
@@ -58,8 +60,25 @@ export default function OrderSummary({ order, onDelete }: Props) {
                     )}
                   </div>
                 </td>
-                <td><span className="qty-badge">1</span></td>
-                <td><strong>${item.finalPrice.toFixed(2)}</strong></td>
+                <td>
+                  <div className="qty-controls-row">
+                    {onQuantityChange && (
+                      <button 
+                        className="qty-mini-btn"
+                        onClick={() => onQuantityChange(item.uniqueId, -1)}
+                        disabled={item.quantity <= 1}
+                      >−</button>
+                    )}
+                    <span className="qty-badge">{item.quantity}</span>
+                    {onQuantityChange && (
+                      <button 
+                        className="qty-mini-btn"
+                        onClick={() => onQuantityChange(item.uniqueId, 1)}
+                      >+</button>
+                    )}
+                  </div>
+                </td>
+                <td><strong>${(item.finalPrice * item.quantity).toFixed(2)}</strong></td>
                 <td>
                   {onDelete && (
                     <button className="delete-btn" onClick={() => onDelete(item.uniqueId)}>🗑</button>

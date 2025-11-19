@@ -1,11 +1,10 @@
 .pos-container {
   display: grid;
-  /* CHANGED: Add row definition so Header sits at top */
-  grid-template-columns: 1fr 380px; /* Widen sidebar slightly */
+  grid-template-columns: 1fr 380px; 
   grid-template-rows: auto 1fr;
   gap: 30px;
-  padding: 20px 40px; /* More breathing room */
-  background-color: #f3f4f6; /* Slightly cooler grey */
+  padding: 20px 40px;
+  background-color: #f3f4f6;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   min-height: 100vh;
 }
@@ -17,9 +16,7 @@
 }
 
 .pos-section {
-  /* optional fade-in animation could go here */
 }
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -44,11 +41,10 @@
   border-radius: 20px;
 }
 
-/* --- Order Summary Table Styles --- */
 .summary-table-card {
   background: white;
-  border-radius: 16px; /* Softer corners */
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); /* Premium shadow */
+  border-radius: 16px; 
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
   overflow: hidden;
   border: 1px solid #f3f4f6;
 }
@@ -105,7 +101,7 @@
   color: #ef4444;
   width: 32px;
   height: 32px;
-  border-radius: 50%; /* Circle button */
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -118,7 +114,6 @@
   transform: scale(1.1);
 }
 
-/* --- Sidebar Styles --- */
 .pos-sidebar {
   display: flex;
   flex-direction: column;
@@ -175,13 +170,13 @@
   border-top: 2px dashed #e5e7eb;
   font-size: 1.75rem;
   font-weight: 800;
-  color: #111827; /* Darker for contrast */
+  color: #111827;
   align-items: center;
 }
 
 .checkout-btn {
   width: 100%;
-  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); /* Gradient */
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
   color: white;
   padding: 20px;
   border: none;
@@ -200,4 +195,40 @@
 
 .checkout-btn:active {
   transform: translateY(0);
+}
+
+.qty-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-mini-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #4b5563;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.qty-mini-btn:hover {
+  border-color: #a855f7;
+  color: #a855f7;
+  background-color: #faf5ff;
+}
+
+.qty-mini-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  border-color: #e5e7eb;
+  background: transparent;
+  color: #9ca3af;
 }

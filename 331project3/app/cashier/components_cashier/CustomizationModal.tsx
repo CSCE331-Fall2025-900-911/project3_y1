@@ -14,6 +14,7 @@ const TOPPING_OPTIONS: ToppingItem[] = [
   { name: 'Aloe Vera', price: 0.50 },
   { name: 'Grass Jelly', price: 0.50 },
   { name: 'Red Bean', price: 0.50 },
+  { name: 'Coffee Jelly', price: 0.50 }, 
   { name: 'Cheese Foam', price: 1.00 },
 ];
 
@@ -45,6 +46,10 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
     // Check for Cheese
     if (lowerName.includes('cheese')) {
       initialToppings['Cheese Foam'] = 1;
+    }
+    // Check for Coffee Jelly
+    if (lowerName.includes('coffee jelly')) {
+      initialToppings['Coffee Jelly'] = 1;
     }
 
     return initialToppings;

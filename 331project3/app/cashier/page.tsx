@@ -39,7 +39,7 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
-  const subtotal = order.reduce((sum, item) => sum + (item.finalPrice || 0), 0);
+  const subtotal = order.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const total = subtotal;
 
   const handleSelectItem = (item: MenuItem) => {
@@ -70,6 +70,7 @@ export default function HomePage() {
       hasBoba: drinkNameLower.includes('pearl') || drinkNameLower.includes('boba'),
       hasPudding: drinkNameLower.includes('pudding'),
       hasCheese: drinkNameLower.includes('cheese'),
+      hasCoffeeJelly: drinkNameLower.includes('coffee jelly'),
     };
 
     for (const [name, qty] of Object.entries(toppingsMap)) {
@@ -87,6 +88,10 @@ export default function HomePage() {
       if (defaults.hasCheese && name === 'Cheese Foam') {
         freeQty = 1;
       }
+      // Check Coffee Jelly
+      if (defaults.hasCoffeeJelly && name === 'Coffee Jelly') {
+        freeQty = 1;
+      }
 
       // Calculate how many we charge for
       const paidQty = Math.max(0, qty - freeQty);
@@ -101,6 +106,7 @@ export default function HomePage() {
       uniqueId: `${selectedItem.id}-${new Date().getTime()}`,
       name: selectedItem.name,
       basePrice: selectedItem.price,
+      quantity: 1,
       customizations: {
         ...customizations,
         toppings: toppingsMap 
@@ -114,6 +120,16 @@ export default function HomePage() {
 
   const handleDeleteItem = (uniqueId: string) => {
     setOrder(prev => prev.filter(item => item.uniqueId !== uniqueId));
+  };
+
+  const handleQuantityChange = (id: string, delta: number) => {
+    setOrder(prev => prev.map(item => {
+      if (item.uniqueId === id) {
+        const newQty = Math.max(1, item.quantity + delta);
+        return { ...item, quantity: newQty };
+      }
+      return item;
+    }));
   };
 
   return (
@@ -130,9 +146,15 @@ export default function HomePage() {
         <section className="pos-section">
            <div className="section-header">
             <h3>Purchase List</h3>
-            <span className="item-count-badge">{order.length} item(s)</span>
+            <span className="item-count-badge">
+              {order.reduce((acc, item) => acc + item.quantity, 0)} item(s)
+            </span>
           </div>
-          <OrderSummary order={order} onDelete={handleDeleteItem} />
+          <OrderSummary 
+            order={order} 
+            onDelete={handleDeleteItem}
+            onQuantityChange={handleQuantityChange} 
+          />
         </section>
       </div>
 
