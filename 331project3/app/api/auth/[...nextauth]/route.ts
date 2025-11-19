@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import type { User } from "next-auth"
 
 const ALLOWED_EMAILS = [
     "martin00dan@gmail.com",
@@ -25,9 +26,8 @@ export const authOptions = {
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
-
     callbacks: {
-        async signIn({ user }) {
+        async signIn({ user }: { user?: User | null }) {
             if (!user || !user.email) {
                 return false;
             }
