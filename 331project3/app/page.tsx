@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function LandingPage() {
@@ -73,13 +74,17 @@ export default function LandingPage() {
                 Please sign in to continue
             </p>
             <button
-                onClick={() => signIn("google")}
+                onClick={() => signIn("google",
+                    { prompt: "select_account" }
+                )}
                 className="flex items-center gap-3 px-6 py-4 bg-white text-gray-700 text-xl font-medium rounded-lg shadow-md hover:bg-gray-50 transition-colors"
             >
-                <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" 
+                <Image 
+                    src="/images/googlelogo.png" 
                     alt="Google logo" 
                     className="w-6 h-6"
+                    width={24}
+                    height={24}
                 />
                 Sign in with Google
             </button>
