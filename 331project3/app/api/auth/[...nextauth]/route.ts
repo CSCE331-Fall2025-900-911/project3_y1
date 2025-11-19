@@ -1,6 +1,11 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
+const ALLOWED_EMAILS = [
+    "martin00dan@gmail.com",
+    "reveille.bubbletea@gmail.com"
+]
+
 if (!process.env.GOOGLE_CLIENT_ID) {
   throw new Error("Missing GOOGLE_CLIENT_ID environment variable")
 }
@@ -20,6 +25,19 @@ export const authOptions = {
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
+
+    callbacks: {
+        async signIn({ user }) {
+            if (!user || !user.email) {
+                return false;
+            }
+
+            if (ALLOWED_EMAILS.includes(user.email)) {  
+                return true;
+            }
+            return '/auth/error';
+        }
+    }
 }
 
 const handler = NextAuth(authOptions)
