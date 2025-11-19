@@ -1,22 +1,53 @@
-.menu {
-  padding: 20px;
-}
-
-.menu ul {
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.menu li {
-  margin: 10px 0;
+.menu-card {
+  background-color: white;
+  border: 1px solid #eef0f2;
+  border-radius: 10px;
+  padding: 15px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  /* CHANGED: Replaced fixed height with min-height to allow expansion */
+  min-height: 110px; 
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.01);
 }
 
-.menu button {
-  background-color: #ffcf66;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
+.menu-card:hover {
+  border-color: #d8b4fe;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-tag {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.card-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: auto; /* Pushes price to bottom */
+  line-height: 1.3;
+}
+
+.card-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #a855f7; /* Purple Accent */
+  margin-top: 8px;
 }

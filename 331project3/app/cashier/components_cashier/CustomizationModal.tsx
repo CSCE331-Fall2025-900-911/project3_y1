@@ -1,27 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "../styles_cashier/customizationModal.css";
+
+interface ToppingItem {
+  name: string;
+  price: number;
+}
+
+const TOPPING_OPTIONS: ToppingItem[] = [
+  { name: 'Boba (Tapioca Pearls)', price: 0.50 },
+  { name: 'Crystal Boba', price: 0.50 },
+  { name: 'Popping Boba', price: 0.50 },
+  { name: 'Pudding', price: 0.50 },
+  { name: 'Aloe Vera', price: 0.50 },
+  { name: 'Grass Jelly', price: 0.50 },
+  { name: 'Red Bean', price: 0.50 },
+  { name: 'Coffee Jelly', price: 0.50 }, 
+  { name: 'Cheese Foam', price: 1.00 },
+];
 
 interface CustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToOrder: (customizations: any) => void;
+  currentItemName?: string; 
 }
 
-const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose, onAddToOrder }) => {
+const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose, onAddToOrder, currentItemName = '' }) => {
   const [size, setSize] = useState<string>('Small');
   const [iceLevel, setIceLevel] = useState<string>('Less Ice');
   const [sugarLevel, setSugarLevel] = useState<string>('50% Sugar');
-  const [toppings, setToppings] = useState<string[]>(['Boba']);
+  const [toppings, setToppings] = useState<Record<string, number>>({});
 
-  if (!isOpen) {
-    return null;
+  const getDefaultToppings = (name: string) => {
+    const initialToppings: Record<string, number> = {};
+    const lowerName = name.toLowerCase();
+    
+    // Check for Boba/Pearl
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) {
+      initialToppings['Boba (Tapioca Pearls)'] = 1;
+    }
+    // Check for Pudding
+    if (lowerName.includes('pudding')) {
+      initialToppings['Pudding'] = 1;
+    }
+    // Check for Cheese
+    if (lowerName.includes('cheese')) {
+      initialToppings['Cheese Foam'] = 1;
+    }
+    // Check for Coffee Jelly
+    if (lowerName.includes('coffee jelly')) {
+      initialToppings['Coffee Jelly'] = 1;
+    }
+
+    return initialToppings;
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      setSize('Medium');
+      setIceLevel('Regular Ice');
+      setSugarLevel('50% Sugar');
+      setToppings(getDefaultToppings(currentItemName));
+    }
+  }, [isOpen, currentItemName]);
+
+  if (!isOpen) return null;
+
   const handleReset = () => {
-    setSize('Small');
-    setIceLevel('Less Ice');
+    setSize('Medium');
+    setIceLevel('Regular Ice');
     setSugarLevel('50% Sugar');
-    setToppings(['Boba']);
+    setToppings(getDefaultToppings(currentItemName)); 
   };
 
   const handleAddToOrder = () => {
@@ -29,243 +78,109 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
     onClose();
   };
 
-  const handleToppingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setToppings((prevToppings) => [...prevToppings, value]);
-    } else {
-      setToppings((prevToppings) => prevToppings.filter((topping) => topping !== value));
-    }
+  const updateToppingCount = (name: string, delta: number) => {
+    setToppings(prev => {
+      const currentQty = prev[name] || 0;
+      const newQty = Math.max(0, currentQty + delta);
+      
+      const newToppings = { ...prev, [name]: newQty };
+      if (newQty === 0) delete newToppings[name]; 
+      return newToppings;
+    });
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2 className="modal-title">CUSTOMIZATIONS</h2>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-icon-btn" onClick={onClose}>×</button>
+        
+        <h2 className="modal-title">
+          Customize <span style={{color: '#8a2be2', fontSize:'0.8em', display:'block', marginTop:'5px'}}>{currentItemName}</span>
+        </h2>
 
-        <div className="customization-section">
-          <h3>Size</h3>
-          <label>
-            <input
-              type="radio"
-              name="size"
-              value="Small"
-              checked={size === 'Small'}
-              onChange={(e) => setSize(e.target.value)}
-            />
-            Small (-$0.50)
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="size"
-              value="Medium"
-              checked={size === 'Medium'}
-              onChange={(e) => setSize(e.target.value)}
-            />
-            Medium
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="size"
-              value="Large"
-              checked={size === 'Large'}
-              onChange={(e) => setSize(e.target.value)}
-            />
-            Large (+$0.70)
-          </label>
-        </div>
+        <div className="customization-scroll-area">
+          {/* Size Section */}
+          <div className="customization-section">
+            <h3>Size</h3>
+            <div className="options-grid">
+              {['Small', 'Medium', 'Large'].map((opt) => (
+                <label key={opt} className={`option-card ${size === opt ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="size"
+                    value={opt}
+                    checked={size === opt}
+                    onChange={(e) => setSize(e.target.value)}
+                  />
+                  <span>{opt} {opt === 'Small' ? '(-$0.50)' : opt === 'Large' ? '(+$0.70)' : ''}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-        <div className="customization-section">
-          <h3>Ice Level</h3>
-          <label>
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Regular Ice"
-              checked={iceLevel === 'Regular Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-            />
-            Regular Ice
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Less Ice"
-              checked={iceLevel === 'Less Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-            />
-            Less Ice
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="iceLevel"
-              value="No Ice"
-              checked={iceLevel === 'No Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-            />
-            No Ice
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Extra Ice"
-              checked={iceLevel === 'Extra Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-            />
-            Extra Ice
-          </label>
-        </div>
+          {/* Ice & Sugar Sections */}
+             <div className="customization-section">
+              <h3>Ice Level</h3>
+              <div className="options-grid compact">
+                {['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'].map((opt) => (
+                  <label key={opt} className={`option-card ${iceLevel === opt ? 'selected' : ''}`}>
+                    <input type="radio" name="iceLevel" value={opt} checked={iceLevel === opt} onChange={(e) => setIceLevel(e.target.value)} />
+                    <span>{opt.replace(' Ice', '')}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="customization-section">
+              <h3>Sugar Level</h3>
+              <div className="options-grid compact">
+                {['0%', '25%', '50%', '75%', '100%'].map((opt) => (
+                  <label key={opt} className={`option-card ${sugarLevel === opt + ' Sugar' ? 'selected' : ''}`}>
+                    <input type="radio" name="sugarLevel" value={opt + ' Sugar'} checked={sugarLevel === opt + ' Sugar'} onChange={(e) => setSugarLevel(e.target.value)} />
+                    <span>{opt}</span>
+                  </label>
+                ))}
+              </div>
+            
+          </div>
 
-        <div className="customization-section">
-          <h3>Sugar Level</h3>
-          <label>
-            <input
-              type="radio"
-              name="sugarLevel"
-              value="0% Sugar"
-              checked={sugarLevel === '0% Sugar'}
-              onChange={(e) => setSugarLevel(e.target.value)}
-            />
-            0% Sugar
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="sugarLevel"
-              value="25% Sugar"
-              checked={sugarLevel === '25% Sugar'}
-              onChange={(e) => setSugarLevel(e.target.value)}
-            />
-            25% Sugar
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="sugarLevel"
-              value="50% Sugar"
-              checked={sugarLevel === '50% Sugar'}
-              onChange={(e) => setSugarLevel(e.target.value)}
-            />
-            50% Sugar
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="sugarLevel"
-              value="75% Sugar"
-              checked={sugarLevel === '75% Sugar'}
-              onChange={(e) => setSugarLevel(e.target.value)}
-            />
-            75% Sugar
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="sugarLevel"
-              value="100% Sugar"
-              checked={sugarLevel === '100% Sugar'}
-              onChange={(e) => setSugarLevel(e.target.value)}
-            />
-            100% Sugar
-          </label>
-        </div>
-
-        <div className="customization-section">
-          <h3>Toppings (+$0.50 each)</h3>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Boba (Tapioca Pearls)"
-              checked={toppings.includes('Boba (Tapioca Pearls)')}
-              onChange={handleToppingChange}
-            />
-            Boba (Tapioca Pearls)
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Crystal Boba"
-              checked={toppings.includes('Crystal Boba')}
-              onChange={handleToppingChange}
-            />
-            Crystal Boba
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Popping Boba"
-              checked={toppings.includes('Popping Boba')}
-              onChange={handleToppingChange}
-            />
-            Popping Boba
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Pudding"
-              checked={toppings.includes('Pudding')}
-              onChange={handleToppingChange}
-            />
-            Pudding
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Aloe Vera"
-              checked={toppings.includes('Aloe Vera')}
-              onChange={handleToppingChange}
-            />
-            Aloe Vera
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Grass Jelly"
-              checked={toppings.includes('Grass Jelly')}
-              onChange={handleToppingChange}
-            />
-            Grass Jelly
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Red Bean"
-              checked={toppings.includes('Red Bean')}
-              onChange={handleToppingChange}
-            />
-            Red Bean
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="topping"
-              value="Cheese Foam (+$1.00)"
-              checked={toppings.includes('Cheese Foam (+$1.00)')}
-              onChange={handleToppingChange}
-            />
-            Cheese Foam (+$1.00)
-          </label>
+          {/* Toppings Section */}
+          <div className="customization-section">
+            <h3>Toppings</h3>
+            <div className="toppings-list">
+              {TOPPING_OPTIONS.map((topping) => {
+                const qty = toppings[topping.name] || 0;
+                const isSelected = qty > 0;
+                
+                return (
+                  <div key={topping.name} className={`topping-row ${isSelected ? 'active' : ''}`}>
+                    <div className="topping-info">
+                      <span className="topping-name">{topping.name}</span>
+                      <span className="topping-price">+${topping.price.toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="qty-control">
+                      <button 
+                        className="qty-btn minus" 
+                        onClick={() => updateToppingCount(topping.name, -1)}
+                        disabled={qty === 0}
+                      >−</button>
+                      <span className="qty-display">{qty}</span>
+                      <button 
+                        className="qty-btn plus" 
+                        onClick={() => updateToppingCount(topping.name, 1)}
+                      >+</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="modal-actions">
-          <button className="add-to-order-btn" onClick={handleAddToOrder}>
-            Add to Order
-          </button>
-          <button className="reset-options-btn" onClick={handleReset}>
-            Reset Options
-          </button>
+          <button className="cancel-btn" onClick={onClose}>Cancel</button>
+          <button className="reset-options-btn" onClick={handleReset}>Reset</button>
+          <button className="add-to-order-btn" onClick={handleAddToOrder}>Add to Order</button>
         </div>
       </div>
     </div>
