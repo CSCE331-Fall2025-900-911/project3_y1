@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MenuItem } from '@/types/menu';
 import CustomizationModal from './components_customer/CustomizationModal';
 import OrderBag, { BagItem } from './components_customer/OrderBag';
 import MenuItemButton from './components_customer/MenuItemButton';
+
+declare global {
+  interface Window {
+    google: any;
+    googleTranslateElementInit: () => void;
+  }
+}
 
 export default function CustomerPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -12,9 +19,76 @@ export default function CustomerPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const translateElementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchMenuItems();
+  }, []);
+
+  useEffect(() => {
+    // Wait for the DOM element to be available
+    const initGoogleTranslate = () => {
+      const element = document.getElementById('google_translate_element');
+      if (!element) {
+        // Retry after a short delay if element doesn't exist yet
+        setTimeout(initGoogleTranslate, 100);
+        return;
+      }
+
+      // Define the callback function globally before loading the script
+      window.googleTranslateElementInit = () => {
+        const translateElement = document.getElementById('google_translate_element');
+        if (window.google && window.google.translate && translateElement) {
+          try {
+            new window.google.translate.TranslateElement(
+              {
+                pageLanguage: 'en',
+                layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+              },
+              'google_translate_element'
+            );
+          } catch (error) {
+            console.error('Error initializing Google Translate:', error);
+          }
+        }
+      };
+
+      // Check if script already exists
+      if (document.getElementById('google-translate-script')) {
+        // Script already loaded, just initialize if Google Translate is available
+        if (window.google && window.google.translate) {
+          setTimeout(() => {
+            window.googleTranslateElementInit();
+          }, 100);
+        }
+        return;
+      }
+
+      // Add script tag
+      const script = document.createElement('script');
+      script.id = 'google-translate-script';
+      script.type = 'text/javascript';
+      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      
+      // Handle script load errors
+      script.onerror = () => {
+        console.error('Failed to load Google Translate script');
+      };
+      
+      document.body.appendChild(script);
+    };
+
+    // Start initialization
+    initGoogleTranslate();
+
+    // Cleanup function
+    return () => {
+      const existingScript = document.getElementById('google-translate-script');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
   }, []);
 
   const fetchMenuItems = async () => {
@@ -114,9 +188,12 @@ export default function CustomerPage() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <div className="w-full">
-          <h1 className="text-4xl font-bold mb-8 text-black dark:text-zinc-50">
-            Menu Items
-          </h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-black dark:text-zinc-50">
+              Menu Items
+            </h1>
+            <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             {menuItems.map((item) => (
