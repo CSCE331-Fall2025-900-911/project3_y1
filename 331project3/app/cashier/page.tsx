@@ -9,32 +9,8 @@ import "./styles_cashier/menulist.css";
 import "./styles_cashier/ordersummary.css";
 import "./styles_cashier/customizationModal.css";
 
-const MENU_ITEMS: MenuItem[] = [
-  { id: 1, name: "Classic Pearl Milk Tea 2", price: 5.80 },
-  { id: 2, name: "Honey Pearl Milk Tea", price: 6.00 },
-  { id: 3, name: "Coffee Creama", price: 6.00 },
-  { id: 4, name: "Coffee Milk Tea w/ Coffee Jelly", price: 6.25 },
-  { id: 5, name: "Hokkaido Pearl Milk Tea", price: 6.25 },
-  { id: 6, name: "Thai Pearl Milk Tea", price: 6.25 },
-  { id: 7, name: "Mango Green Tea", price: 5.80 },
-  { id: 9, name: "Honey Lemonade", price: 5.20 },
-  { id: 10, name: "Mango & Passion Fruit Tea", price: 6.25 },
-  { id: 11, name: "Tiger Passion Cheese", price: 6.25 },
-  { id: 12, name: "Mango Boba", price: 6.50 },
-  { id: 13, name: "Strawberry Coconut", price: 6.50 },
-  { id: 14, name: "Halo Halo", price: 6.95 },
-  { id: 15, name: "Matcha Pearl Milk Tea", price: 6.50 },
-  { id: 16, name: "Strawberry Matcha Fresh Milk", price: 6.45 },
-  { id: 17, name: "Matcha Fresh Milk", price: 6.25 },
-  { id: 18, name: "Mango Matcha Fresh Milk", price: 6.50 },
-  { id: 19, name: "Oreo w/ Pearl", price: 6.75 },
-  { id: 20, name: "Taro w/ Pudding", price: 6.75 },
-  { id: 21, name: "Thai Tea w/ Pearl", price: 6.75 },
-  { id: 22, name: "Coffee w/ Ice Cream", price: 6.75 },
-];
-
 export default function HomePage() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(MENU_ITEMS);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [order, setOrder] = useState<CustomOrderItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -43,18 +19,23 @@ export default function HomePage() {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
+        setLoadingMenu(true);
         const res = await fetch("/api/cashier");
         if (!res.ok) throw new Error("Failed to fetch menu items");
         
-        const data = await res.json();
+        type BackendMenuItem = {
+          item_id: number | string;
+          item_name: string;
+          item_price: number | string;
+        };
+
+        const data = await res.json() as BackendMenuItem[];
         
-        // Map backend data to your MenuItem interface if needed
-        const mappedMenu: MenuItem[] = data.map((item: any) => ({
-          id: item.item_id,
-          name: item.item_name,
+        const mappedMenu: MenuItem[] = data.map((item: BackendMenuItem) => ({
+          id: Number(item.item_id),
+          name: String(item.item_name),
           price: Number(item.item_price),
         }));
-
 
         console.log("Fetched Menu Items:", mappedMenu);
 
@@ -83,7 +64,15 @@ export default function HomePage() {
     setSelectedItem(null);
   };
 
-  const handleAddToOrder = async (customizations: any) => {
+  type customizations = {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: Record<string, number>; 
+    sizeId?: number;
+  };
+
+  const handleAddToOrder = async (customizations: customizations) => {
     if (!selectedItem) return;
 
     // Get Base Price
@@ -171,7 +160,11 @@ export default function HomePage() {
 
       <div className="pos-main-content">
         <section className="pos-section">
-          <MenuList menuItems={menuItems} onSelectItem={handleSelectItem} />
+          {loadingMenu ? (
+            <div className="loading-message">Loading menu...</div>
+          ) : (
+            <MenuList menuItems={menuItems} onSelectItem={handleSelectItem} />
+          )}
         </section>
 
         <section className="pos-section">
