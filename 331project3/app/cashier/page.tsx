@@ -19,7 +19,7 @@ const MENU_ITEMS: MenuItem[] = [
   { id: 7, name: "Mango Green Tea", price: 5.80 },
   { id: 9, name: "Honey Lemonade", price: 5.20 },
   { id: 10, name: "Mango & Passion Fruit Tea", price: 6.25 },
-  { id: 11, name: "Tiger Passion Cheese", price: 6.25 }, // Corrected name
+  { id: 11, name: "Tiger Passion Cheese", price: 6.25 },
   { id: 12, name: "Mango Boba", price: 6.50 },
   { id: 13, name: "Strawberry Coconut", price: 6.50 },
   { id: 14, name: "Halo Halo", price: 6.95 },
@@ -38,6 +38,37 @@ export default function HomePage() {
   const [order, setOrder] = useState<CustomOrderItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [loadingMenu, setLoadingMenu] = useState(true);
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const res = await fetch("/api/cashier");
+        if (!res.ok) throw new Error("Failed to fetch menu items");
+        
+        const data = await res.json();
+        
+        // Map backend data to your MenuItem interface if needed
+        const mappedMenu: MenuItem[] = data.map((item: any) => ({
+          id: item.item_id,
+          name: item.item_name,
+          price: Number(item.item_price),
+        }));
+
+
+        console.log("Fetched Menu Items:", mappedMenu);
+
+        setMenuItems(mappedMenu);
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching menu items.");
+      } finally {
+        setLoadingMenu(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const subtotal = order.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const total = subtotal;
