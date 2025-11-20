@@ -1,13 +1,234 @@
-.summary {
+.pos-container {
+  display: grid;
+  grid-template-columns: 1fr 380px; 
+  grid-template-rows: auto 1fr;
+  gap: 30px;
+  padding: 20px 40px;
+  background-color: #f3f4f6;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+.pos-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.pos-section {
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.section-subtitle, .item-count-badge {
+  font-size: 0.9rem;
+  color: #6b7280;
+  background: #e5e7eb;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.summary-table-card {
+  background: white;
+  border-radius: 16px; 
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+  border: 1px solid #f3f4f6;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.order-table th {
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 16px 20px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.order-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.item-name-text {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.item-customizations-text {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+.qty-badge {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  border: none;
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
+  transform: scale(1.1);
+}
+
+.pos-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.sidebar-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.loyalty-btn {
+  width: 100%;
+  padding: 15px;
+  border: 2px dashed #cbd5e1;
+  background: transparent;
+  color: #64748b;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.loyalty-btn:hover {
+  border-color: #a855f7;
+  color: #a855f7;
+  background: #faf5ff;
+}
+
+.total-card {
+  background: linear-gradient(to bottom right, #ffffff, #fafafa);
+  border: 1px solid #e5e7eb;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #4b5563;
+  font-size: 1rem;
+}
+
+.final-total {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 2px dashed #e5e7eb;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  align-items: center;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  color: white;
   padding: 20px;
-  border-top: 1px solid #ccc;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.4);
+  transition: all 0.2s;
 }
 
-.summary ul {
-  list-style: none;
-  padding: 0;
+.checkout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.5);
 }
 
-.summary li {
-  margin-bottom: 5px;
+.checkout-btn:active {
+  transform: translateY(0);
+}
+
+.qty-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-mini-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #4b5563;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.qty-mini-btn:hover {
+  border-color: #a855f7;
+  color: #a855f7;
+  background-color: #faf5ff;
+}
+
+.qty-mini-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  border-color: #e5e7eb;
+  background: transparent;
+  color: #9ca3af;
 }

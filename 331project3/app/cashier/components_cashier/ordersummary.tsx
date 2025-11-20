@@ -6,52 +6,89 @@ export interface CustomOrderItem {
   name: string;
   basePrice: number;
   finalPrice: number;
+  quantity: number; 
   customizations: {
     size: string;
     iceLevel: string;
     sugarLevel: string;
-    toppings: string[];
+    toppings: Record<string, number>; 
+    sizeId?: number;
   };
 }
 
 interface Props {
   order: CustomOrderItem[];
+  onDelete?: (id: string) => void;
+  onQuantityChange?: (id: string, delta: number) => void; 
 }
 
-export default function OrderSummary({ order }: Props) {
-  const total = order.reduce((sum, item) => sum + (item.finalPrice || 0), 0);
+export default function OrderSummary({ order, onDelete, onQuantityChange }: Props) {
+  if (order.length === 0) {
+    return (
+      <div className="summary-table-card" style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
+        <p>No items in current order.</p>
+      </div>
+    );
+  }
 
   return (
-    <section className="summary">
-      <h2>Order Summary</h2>
-      {order.length === 0 ? (
-        <p>Your order is empty.</p>
-      ) : (
-        <ul>
-          {order.map(item => (
-            <li key={item.uniqueId} className="order-item-details">
-              <span className="item-name">{item.name || "Unknown Item"}</span>
-              <span className="item-price">
-                ${(item.finalPrice || 0).toFixed(2)}
-              </span>
-              
-              {item.customizations ? (
-                <ul className="customizations-list">
-                  <li>{item.customizations.size}</li>
-                  <li>{item.customizations.iceLevel}</li>
-                  <li>{item.customizations.sugarLevel}</li>
-                  {item.customizations.toppings?.length > 0 && (
-                    <li>Toppings: {item.customizations.toppings.join(', ')}</li>
+    <div className="summary-table-card">
+      <table className="order-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {order.map(item => {
+            const toppingEntries = Object.entries(item.customizations.toppings || {});
+            const toppingString = toppingEntries.map(([name, qty]) => {
+               return qty > 1 ? `${name} x${qty}` : name;
+            }).join(", ");
+
+            return (
+              <tr key={item.uniqueId}>
+                <td>
+                  <span className="item-name-text">{item.name}</span>
+                  <div className="item-customizations-text">
+                    {item.customizations.size}, {item.customizations.sugarLevel}, {item.customizations.iceLevel}
+                    {toppingString && (
+                      <span> • {toppingString}</span>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <div className="qty-controls-row">
+                    {onQuantityChange && (
+                      <button 
+                        className="qty-mini-btn"
+                        onClick={() => onQuantityChange(item.uniqueId, -1)}
+                        disabled={item.quantity <= 1}
+                      >−</button>
+                    )}
+                    <span className="qty-badge">{item.quantity}</span>
+                    {onQuantityChange && (
+                      <button 
+                        className="qty-mini-btn"
+                        onClick={() => onQuantityChange(item.uniqueId, 1)}
+                      >+</button>
+                    )}
+                  </div>
+                </td>
+                <td><strong>${(item.finalPrice * item.quantity).toFixed(2)}</strong></td>
+                <td>
+                  {onDelete && (
+                    <button className="delete-btn" onClick={() => onDelete(item.uniqueId)}>🗑</button>
                   )}
-                </ul>
-              ) : (
-                <ul className="customizations-list"><li>No customizations</li></ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="summary-total">Total: ${total.toFixed(2)}</p>
-    </section>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
