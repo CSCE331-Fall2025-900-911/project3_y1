@@ -3,6 +3,7 @@ import "../styles_cashier/ordersummary.css";
 
 export interface CustomOrderItem {
   uniqueId: string;
+  item_id: number;
   name: string;
   basePrice: number;
   finalPrice: number;

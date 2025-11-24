@@ -89,13 +89,13 @@ export async function completeOrderTransaction(items: OrderItem[], totalAmount: 
 export async function getPrice(menuItemId: number, sizeId: number): Promise<number> {
   const pool = getDbPool();
   const sql = `
-    SELECT price 
+    SELECT item_price 
     FROM menuitemsizes 
     WHERE menu_item_id = $1 AND size_id = $2
   `;
 
   const result = await pool.query(sql, [menuItemId, sizeId]);
-  if (result.rows.length > 0) return result.rows[0].price;
+  if (result.rows.length > 0) return result.rows[0].item_price;
 
   return -1; 
 }
