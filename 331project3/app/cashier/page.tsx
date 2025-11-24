@@ -72,13 +72,45 @@ export default function HomePage() {
     sizeId?: number;
   };
 
+  // Fetch sizeId from backend
+  async function fetchSizeId(menuItemId: number, sizeName: string): Promise<number> {
+    const res = await fetch(
+      `/api/cashier/getSizeId?menuItemId=${menuItemId}&sizeName=${sizeName}`
+    );
+    if (!res.ok) throw new Error("Failed to fetch sizeId");
+    const data = await res.json();
+    return Number(data.sizeId);
+  }
+
+  // Fetch price for selected size
+  async function fetchPriceForSize(menuItemId: number, sizeId: number): Promise<number> {
+    const res = await fetch(
+      `/api/cashier/getPrice?menuItemId=${menuItemId}&sizeId=${sizeId}`
+    );
+    if (!res.ok) throw new Error("Failed to fetch price");
+    const data = await res.json();
+    return Number(data.price);
+  }
+
   const handleAddToOrder = async (customizations: customizations) => {
     if (!selectedItem) return;
 
+    // get size id from backend
+    const sizeId = await fetchSizeId(selectedItem.id, customizations.size);
+    customizations.sizeId = sizeId;
+    const currentBasePrice = await fetchPriceForSize(selectedItem.id, sizeId);
+    if (isNaN(currentBasePrice)) {
+      console.error(`Price fetch failed for item ${selectedItem.id}, sizeId ${sizeId}`);
+      alert("Failed to fetch item price. Please try again.");
+      return;
+    }
+
+    /*
     // Get Base Price
     let currentBasePrice = selectedItem.price; 
     if (customizations.size === 'Small') currentBasePrice -= 0.50;
     if (customizations.size === 'Large') currentBasePrice += 0.70;
+    */
 
     // Calculate Toppings Cost with Defaults Logic
     let toppingsCost = 0;
@@ -124,8 +156,9 @@ export default function HomePage() {
 
     const newOrderItem: CustomOrderItem = {
       uniqueId: `${selectedItem.id}-${new Date().getTime()}`,
+      item_id: selectedItem.id,
       name: selectedItem.name,
-      basePrice: selectedItem.price,
+      basePrice: currentBasePrice,
       quantity: 1,
       customizations: {
         ...customizations,
@@ -137,6 +170,39 @@ export default function HomePage() {
     setOrder((prevOrder) => [...prevOrder, newOrderItem]);
     handleCloseModal();
   };
+
+const handleCheckout = async () => {
+  try {
+    // Transform the order into the format backend expects
+    const itemsToSend = order.map(item => ({
+      //item_id: item.item_id,                     // database column item_id
+      sizeId: item.customizations.sizeId || 1,   // make sure sizeId exists
+      finalPrice: item.finalPrice,
+      //quantity: item.quantity
+    }));
+
+    const res = await fetch("/api/cashier/submitOrder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: itemsToSend })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Checkout failed:", data);
+      alert("Checkout failed");
+      return;
+    }
+
+    alert(`Order complete! Order ID: ${data.orderId}`);
+    setOrder([]);
+  } catch (err) {
+    console.error(err);
+    alert("Checkout failed");
+  }
+};
+
 
   const handleDeleteItem = (uniqueId: string) => {
     setOrder(prev => prev.filter(item => item.uniqueId !== uniqueId));
@@ -189,7 +255,7 @@ export default function HomePage() {
           <div className="total-row"><span>Tax:</span><span>$0.00</span></div>
           <div className="total-row final-total"><span>Total:</span><span>${total.toFixed(2)}</span></div>
         </div>
-        <button className="checkout-btn">Proceed to Payment</button>
+        <button className="checkout-btn" onClick={handleCheckout}>Proceed to Payment</button>
       </div>
 
       <CustomizationModal
