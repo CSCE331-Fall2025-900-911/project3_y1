@@ -21,6 +21,7 @@ const TOPPING_OPTIONS: ToppingItem[] = [
 interface CustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddToOrder: (customizations: any) => void;
   currentItemName?: string; 
 }
@@ -56,12 +57,19 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({ isOpen, onClose
   }
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
     if (isOpen) {
-      setSize('Medium');
-      setIceLevel('Regular Ice');
-      setSugarLevel('50% Sugar');
-      setToppings(getDefaultToppings(currentItemName));
+      // Defer state updates to the next tick to avoid synchronous setState calls inside the effect
+      timer = setTimeout(() => {
+        setSize('Medium');
+        setIceLevel('Regular Ice');
+        setSugarLevel('50% Sugar');
+        setToppings(getDefaultToppings(currentItemName));
+      }, 0);
     }
+    return () => {
+      if (timer !== null) clearTimeout(timer);
+    };
   }, [isOpen, currentItemName]);
 
   if (!isOpen) return null;

@@ -51,6 +51,7 @@ export default function CashierPage() {
       customizations: customizations,
       finalPrice: finalPrice,
       quantity: 1,
+      item_id: selectedItem.id
     };
 
     // Add the new item to the order state
