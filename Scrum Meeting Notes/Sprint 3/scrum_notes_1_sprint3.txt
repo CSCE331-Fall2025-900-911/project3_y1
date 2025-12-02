@@ -1,0 +1,49 @@
+12/1/2025, 6:10 pm - 6:25 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Finalized functionality for cashier page
+- Will work on:
+    - implementing nutrition facts for each menu item (beyond feature #1)
+- Roadblocks:
+    - 
+
+Vishal:
+- Worked on:
+    - Finalizing translate API and add some touch ups to the UI
+- Will work on:
+    - Improving customer UI & helping others when needed
+- Roadblock:
+    - 
+
+Paola:
+- Worked on:
+    - Finalizing UI for cashier page
+Will work on:
+    - High contrast feature for customer interface
+Roadblocks:
+    - 
+
+Arya:
+- Worked on:
+    - Implementing Weather API to menu board
+- Will work on:
+    - Drink of the day (beyond feature #2)
+- Roadblocks:
+    - 
+
+Martin:
+- Worked on:
+    - Finalizing functionality and ui for manager page
+- Will work on: 
+    - Notifications for order being ready
+- Roadblocks:
+    - 
+
+Other:
+    - N/A 
