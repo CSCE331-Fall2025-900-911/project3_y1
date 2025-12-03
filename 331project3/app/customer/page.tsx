@@ -23,6 +23,8 @@ export default function CustomerPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isCheckingOut, setIsCheckingOut] = useState(false);
 	const translateElementRef = useRef<HTMLDivElement>(null);
+	const [isEditing, setIsEditing] = useState(false);
+	const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
 	useEffect(() => {
 		fetchMenuItems();
@@ -110,33 +112,36 @@ export default function CustomerPage() {
 
 	const handleItemClick = (item: MenuItem) => {
 		setSelectedItem(item);
+		setIsEditing(false);
+		setEditingItemId(null);
 		setIsModalOpen(true);
 	};
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 		setSelectedItem(null);
+		setIsEditing(false);
+		setEditingItemId(null);
 	};
 
-
-
-
-    const getCustomizationKey = (customizations: {
-        size: string;
-        iceLevel: string;
-        sugarLevel: string;
-        toppings: string[];
-    }) => {
-        const toppingsString = [...customizations.toppings].sort().join(',');
-        return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
-    };
+	const getCustomizationKey = (customizations: {
+		size: string;
+		iceLevel: string;
+		sugarLevel: string;
+		toppings: string[];
+	}) => {
+			const toppingsString = [...customizations.toppings].sort().join(',');
+			return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
+	};
 
 	const handleAddToBag = (customizations: {
 		size: string;
 		iceLevel: string;
 		sugarLevel: string;
 		toppings: string[];
-	}) => {
+	},
+		originalQuantity?: number
+	) => {
 		if (!selectedItem) return;
 
 		let finalPrice = Number(selectedItem.item_price) || 0;
@@ -144,56 +149,78 @@ export default function CustomerPage() {
 		if (customizations.size === 'Large') finalPrice += 0.70;
 		finalPrice += customizations.toppings.length * 0.50;
 
-        const customKey = getCustomizationKey(customizations);
-        
-        const existingItemIndex = bag.findIndex(item => 
-            item.itemId === selectedItem.item_id && 
-            getCustomizationKey(item.customizations) === customKey
-        );
+		const newBagItem: BagItem = {
+				uniqueId: `${selectedItem.item_id}-${Date.now()}`,
+				itemId: selectedItem.item_id,
+				name: selectedItem.item_name || 'Unknown Item',
+				basePrice: Number(selectedItem.item_price) || 0,
+				finalPrice: finalPrice,
+				customizations: customizations,
+				quantity: originalQuantity !== undefined ? originalQuantity : 1,
+		};
 
-        if (existingItemIndex !== -1) {
-            setBag(prevBag => prevBag.map((item, index) => 
-                index === existingItemIndex
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item
-            ));
-        } else {
-            const newBagItem: BagItem = {
-                uniqueId: `${selectedItem.item_id}-${Date.now()}`,
-                itemId: selectedItem.item_id,
-                name: selectedItem.item_name || 'Unknown Item',
-                basePrice: Number(selectedItem.item_price) || 0,
-                finalPrice: finalPrice,
-                customizations: customizations,
-                quantity: 1,
-            };
-            setBag((prevBag) => [...prevBag, newBagItem]);
-        }
+		if (isEditing && editingItemId) {
+			setBag((prevBag) =>
+				prevBag.map((item) =>
+					item.uniqueId === editingItemId ? { ...newBagItem, uniqueId: editingItemId } : item
+				)
+			);
+		} else {
+
+			const customKey = getCustomizationKey(customizations);
+			const existingItemIndex = bag.findIndex(item => 
+					item.itemId === selectedItem.item_id && 
+					getCustomizationKey(item.customizations) === customKey
+			);
+
+			if (existingItemIndex !== -1) {
+					setBag(prevBag => prevBag.map((item, index) => 
+							index === existingItemIndex
+									? { ...item, quantity: item.quantity + 1 }
+									: item
+					));
+			} else {
+				setBag((prevBag) => [...prevBag, newBagItem]);
+			}
+		}
+		handleCloseModal();
 	};
+
+	const handleEditItem = (uniqueId: string) => {
+		const itemToEdit = bag.find(item => item.uniqueId === uniqueId);
+        const menuItem = menuItems.find(item => item.item_id === itemToEdit?.itemId);
+
+        if (itemToEdit && menuItem) {
+            setSelectedItem(menuItem);
+            setIsEditing(true);
+            setEditingItemId(uniqueId);
+            setIsModalOpen(true);
+        }
+    };
     
-	  //handle increasing/decreasing quantities
-    const handleQuantityChange = (uniqueId: string, delta: number) => {
-        setBag(prevBag => {
-            const itemIndex = prevBag.findIndex(item => item.uniqueId === uniqueId);
-            if (itemIndex === -1) return prevBag;
+	//handle increasing/decreasing quantities
+	const handleQuantityChange = (uniqueId: string, delta: number) => {
+			setBag(prevBag => {
+					const itemIndex = prevBag.findIndex(item => item.uniqueId === uniqueId);
+					if (itemIndex === -1) return prevBag;
 
-            const newQuantity = prevBag[itemIndex].quantity + delta;
+					const newQuantity = prevBag[itemIndex].quantity + delta;
 
-            if (newQuantity <= 0) {
-                //if quant is 0 remove from the list
-                return prevBag.filter(item => item.uniqueId !== uniqueId);
-            }
+					if (newQuantity <= 0) {
+							//if quant is 0 remove from the list
+							return prevBag.filter(item => item.uniqueId !== uniqueId);
+					}
 
-						//update quant
-            return prevBag.map((item, index) => 
-                index === itemIndex ? { ...item, quantity: newQuantity } : item
-            );
-        });
-    };
+					//update quant
+					return prevBag.map((item, index) => 
+							index === itemIndex ? { ...item, quantity: newQuantity } : item
+					);
+			});
+	};
 
-    const handleDelete = (uniqueId: string) => {
-        setBag((prevBag) => prevBag.filter((item) => item.uniqueId !== uniqueId));
-    };
+	const handleDelete = (uniqueId: string) => {
+			setBag((prevBag) => prevBag.filter((item) => item.uniqueId !== uniqueId));
+	};
 
   //function to handle click of checkout button
 	const handleCheckout = () => {
@@ -255,6 +282,8 @@ export default function CustomerPage() {
 
 	const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
 
+	const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
+
 	if (isCheckingOut) {
 		return (
 			<CheckoutScreen
@@ -298,6 +327,8 @@ export default function CustomerPage() {
 				onQuantityChange={handleQuantityChange}
 				onDelete={handleDelete}
 				onCheckout={handleCheckout} //trigger screen toggle
+				onEdit={handleEditItem}
+				editingItemId={editingItemId}
 			/>
 
 			{selectedItem && (
@@ -307,6 +338,9 @@ export default function CustomerPage() {
 					onAddToBag={handleAddToBag}
 					itemName={selectedItem.item_name || 'Unknown Item'}
 					basePrice={Number(selectedItem.item_price) || 0}
+					initialCustomizations={itemBeingEdited ? itemBeingEdited.customizations : undefined}
+					isEditing={isEditing}
+					currentQuantity={itemBeingEdited ? itemBeingEdited.quantity : undefined}
 				/>
 			)}
 		</div>

@@ -10,9 +10,17 @@ interface CustomizationModalProps {
     iceLevel: string;
     sugarLevel: string;
     toppings: string[];
-  }) => void;
+  }, originalQuantity?: number) => void;
   itemName: string;
   basePrice: number;
+  initialCustomizations?: {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: string[];
+  };
+  currentQuantity?: number;
+  isEditing?: boolean;
 }
 
 const CustomizationModal: React.FC<CustomizationModalProps> = ({ 

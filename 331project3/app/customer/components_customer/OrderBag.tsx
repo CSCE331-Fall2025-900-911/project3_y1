@@ -21,10 +21,12 @@ interface OrderBagProps {
 	bag: BagItem[];
 	onQuantityChange: (uniqueId: string, delta: number) => void;
 	onDelete: (uniqueId: string) => void;
+	onEdit: (uniqueId: string) => void;
 	onCheckout: () => void;
+  editingItemId: string | null;
 }
 
-export default function OrderBag({ bag, onQuantityChange, onDelete, onCheckout }: OrderBagProps) {
+export default function OrderBag({ bag, onQuantityChange, onDelete, onEdit, onCheckout, editingItemId }: OrderBagProps) {
 	const total = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity || 0), 0);
 
 	return (
@@ -71,13 +73,22 @@ export default function OrderBag({ bag, onQuantityChange, onDelete, onCheckout }
 											+
 										</button>
 									</div>
-									<button
-										onClick={() => onDelete(item.uniqueId)}
-										className="text-red-600 p-1 hover:bg-red-50 rounded"
-										title="Delete item permanently"
-									>
-										🗑 Delete
-									</button>
+									<div className="flex gap-2">
+										<button
+											onClick={() => onEdit(item.uniqueId)}
+											className="text-blue-600 p-1 hover:bg-blue-50 rounded"
+											title="Edit customizations"
+										>
+											Edit
+										</button>
+										<button
+											onClick={() => onDelete(item.uniqueId)}
+											className="text-red-600 p-1 hover:bg-red-50 rounded"
+											title="Delete item permanently"
+										>
+											Delete
+										</button>
+									</div>
 								</div>
 							</li>
 						))}
