@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { MenuItem } from '@/types/menu';
 import CustomizationModal from './components_customer/CustomizationModal';
 import OrderBag, { BagItem } from './components_customer/OrderBag';
@@ -10,7 +9,8 @@ import CheckoutScreen from './components_customer/CheckoutScreen';
 
 declare global {
 	interface Window {
-		google: any;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		google: any; 
 		googleTranslateElementInit: () => void;
 	}
 }
@@ -117,8 +117,16 @@ export default function CustomerPage() {
 		setIsModalOpen(false);
 		setSelectedItem(null);
 	};
-    
-    const getCustomizationKey = (customizations: any) => {
+
+
+
+
+    const getCustomizationKey = (customizations: {
+        size: string;
+        iceLevel: string;
+        sugarLevel: string;
+        toppings: string[];
+    }) => {
         const toppingsString = [...customizations.toppings].sort().join(',');
         return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
     };
