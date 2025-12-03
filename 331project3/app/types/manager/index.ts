@@ -77,3 +77,15 @@ export type ZReportData = {
     message?: string;
     error?: string;
 };
+
+// orders
+
+export type OrderStatus = 'PLACED' | 'READY';
+
+export type Order = {
+    order_id: number;
+    total_amount: number;
+    order_timestamp: string;
+    customer_email: string;
+    order_status: OrderStatus;
+};
