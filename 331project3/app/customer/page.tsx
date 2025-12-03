@@ -117,6 +117,11 @@ export default function CustomerPage() {
 		setIsModalOpen(false);
 		setSelectedItem(null);
 	};
+    
+    const getCustomizationKey = (customizations: any) => {
+        const toppingsString = [...customizations.toppings].sort().join(',');
+        return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
+    };
 
 	const handleAddToBag = (customizations: {
 		size: string;
@@ -126,29 +131,63 @@ export default function CustomerPage() {
 	}) => {
 		if (!selectedItem) return;
 
-		// Calculate final price - ensure basePrice is a number
 		let finalPrice = Number(selectedItem.item_price) || 0;
 		if (customizations.size === 'Small') finalPrice -= 0.50;
 		if (customizations.size === 'Large') finalPrice += 0.70;
 		finalPrice += customizations.toppings.length * 0.50;
 
-		const newBagItem: BagItem = {
-			uniqueId: `${selectedItem.item_id}-${Date.now()}`,
-			itemId: selectedItem.item_id,
-			name: selectedItem.item_name || 'Unknown Item',
-			basePrice: Number(selectedItem.item_price) || 0,
-			finalPrice: finalPrice,
-			customizations: customizations,
-		};
+        const customKey = getCustomizationKey(customizations);
+        
+        const existingItemIndex = bag.findIndex(item => 
+            item.itemId === selectedItem.item_id && 
+            getCustomizationKey(item.customizations) === customKey
+        );
 
-		setBag((prevBag) => [...prevBag, newBagItem]);
+        if (existingItemIndex !== -1) {
+            setBag(prevBag => prevBag.map((item, index) => 
+                index === existingItemIndex
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item
+            ));
+        } else {
+            const newBagItem: BagItem = {
+                uniqueId: `${selectedItem.item_id}-${Date.now()}`,
+                itemId: selectedItem.item_id,
+                name: selectedItem.item_name || 'Unknown Item',
+                basePrice: Number(selectedItem.item_price) || 0,
+                finalPrice: finalPrice,
+                customizations: customizations,
+                quantity: 1,
+            };
+            setBag((prevBag) => [...prevBag, newBagItem]);
+        }
 	};
+    
+	  //handle increasing/decreasing quantities
+    const handleQuantityChange = (uniqueId: string, delta: number) => {
+        setBag(prevBag => {
+            const itemIndex = prevBag.findIndex(item => item.uniqueId === uniqueId);
+            if (itemIndex === -1) return prevBag;
 
-	const handleRemoveItem = (uniqueId: string) => {
-		setBag((prevBag) => prevBag.filter((item) => item.uniqueId !== uniqueId));
-	};
+            const newQuantity = prevBag[itemIndex].quantity + delta;
 
-	//function to handle click of checkout button
+            if (newQuantity <= 0) {
+                //if quant is 0 remove from the list
+                return prevBag.filter(item => item.uniqueId !== uniqueId);
+            }
+
+						//update quant
+            return prevBag.map((item, index) => 
+                index === itemIndex ? { ...item, quantity: newQuantity } : item
+            );
+        });
+    };
+
+    const handleDelete = (uniqueId: string) => {
+        setBag((prevBag) => prevBag.filter((item) => item.uniqueId !== uniqueId));
+    };
+
+  //function to handle click of checkout button
 	const handleCheckout = () => {
 		if (bag.length > 0) {
 			setIsCheckingOut(true);
@@ -159,7 +198,15 @@ export default function CustomerPage() {
 	const handleFinalizeOrder = async (customerEmail: string | null) => {
 		if (bag.length === 0) return;
 
-		const totalAmount = bag.reduce((sum, item) => sum + item.finalPrice, 0);
+		const flattenedItems = bag.flatMap(groupedItem => 
+            Array(groupedItem.quantity).fill({
+                itemId: groupedItem.itemId,
+                finalPrice: groupedItem.finalPrice,
+                customizations: groupedItem.customizations
+            })
+        );
+        
+		const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
 
 		try {
 			const response = await fetch('/api/customer/orders', {
@@ -168,7 +215,7 @@ export default function CustomerPage() {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					items: bag,
+					items: flattenedItems,
 					totalAmount: totalAmount,
 					customerEmail: customerEmail,
 				}),
@@ -198,7 +245,7 @@ export default function CustomerPage() {
 		);
 	}
 
-	const totalAmount = bag.reduce((sum, item) => sum + item.finalPrice, 0);
+	const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
 
 	if (isCheckingOut) {
 		return (
@@ -210,7 +257,6 @@ export default function CustomerPage() {
 			/>
 		);
 	}
-
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -241,7 +287,8 @@ export default function CustomerPage() {
 
 			<OrderBag
 				bag={bag}
-				onRemoveItem={handleRemoveItem}
+				onQuantityChange={handleQuantityChange}
+				onDelete={handleDelete}
 				onCheckout={handleCheckout} //trigger screen toggle
 			/>
 
