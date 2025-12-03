@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ApiResponse, Order, OrderStatus } from "@/app/types/manager"; // Import the Order type
+import { ApiResponse, Order, OrderStatus } from "@/app/types/manager";
 
 //display orders
 type OrderItemProps = {
@@ -16,7 +16,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, onOrderReady }) => {
                 <p className="font-semibold text-lg">Order #{order.order_id}</p>
                 {/* customer email display*/}
                 <p className="text-sm text-gray-800 font-mono">
-                    Phone: {order.customer_email || 'N/A'}
+                    Email: {order.customer_email || 'N/A'}
                 </p>
                 <p className="text-sm text-gray-600">
                     Total: <span className="font-mono">${order.total_amount.toFixed(2)}</span>
@@ -41,7 +41,6 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, onOrderReady }) => {
         </div>
     );
 };
-// ----------------------------------------------------
 
 export default function DashboardView() {
     const [orders, setOrders] = useState<Order[]>([]);

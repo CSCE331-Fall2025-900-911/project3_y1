@@ -16,7 +16,8 @@ export async function GET() {
             SELECT order_id, total_amount, order_timestamp, customer_email, order_status
             FROM orders
             WHERE order_status = 'PLACED' 
-              AND order_timestamp >= $1 
+              AND order_timestamp >= $1
+              AND customer_email IS NOT NULL
             ORDER BY order_timestamp ASC
         `;
         
