@@ -119,10 +119,13 @@ export default function CustomerPage() {
   };
 
   const handleOpenNutrition = (item: MenuItem) => {
-    const nutrition = NUTRITION_DATA[item.item_id];
-    if (!nutrition) return;
-    setNutritionItem({ ...item, ...nutrition });
-    setIsNutritionOpen(true);
+    const nutrition = NUTRITION_DATA[item.item_name || ''];
+    if (nutrition) {
+      setNutritionItem({ ...item, ...nutrition });
+      setIsNutritionOpen(true);
+    } else {
+      console.warn('No nutrition data found for item:', item.item_name);
+    }
   };
 
   const handleCloseNutrition = () => {
