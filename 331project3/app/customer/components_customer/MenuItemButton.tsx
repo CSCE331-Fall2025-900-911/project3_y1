@@ -4,24 +4,32 @@ import { MenuItem } from '@/types/menu';
 
 interface MenuItemButtonProps {
   item: MenuItem;
+  isHighContrast: boolean;
 }
 
-export default function MenuItemButton({ item }: MenuItemButtonProps) {
+export default function MenuItemButton({ item, isHighContrast }: MenuItemButtonProps) {
+  // High Contrast Styles: Pure Black BG, Pure White Text, Thick White Border
+  const contrastClasses = "bg-black border-2 border-white text-white hover:bg-white hover:text-black";
+  
+  // Standard Styles: White BG, Black Text, Subtle Border
+  const standardClasses = "bg-white border border-black/[.08] text-black hover:bg-black/[.04] hover:border-transparent";
+
   return (
     <button
-      className="flex flex-col items-start justify-between p-6 rounded-lg border border-solid border-black/[.08] dark:border-white/[.145] hover:border-transparent hover:bg-black/[.04] dark:hover:bg-[#1a1a1a] transition-colors text-left w-full cursor-pointer"
+      className={`flex flex-col items-start justify-between p-6 rounded-lg border-solid transition-colors text-left w-full cursor-pointer
+        ${isHighContrast ? contrastClasses : standardClasses}`}
     >
       <div className="w-full">
-        <h2 className="text-xl font-semibold text-black dark:text-zinc-50 mb-2">
+        <h2 className={`text-xl font-bold mb-2 ${isHighContrast ? 'text-inherit' : 'text-black'}`}>
           {item.item_name}
         </h2>
         {item.item_category && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+          <p className={`text-sm mb-2 font-medium ${isHighContrast ? 'text-inherit' : 'text-zinc-600'}`}>
             {item.item_category}
           </p>
         )}
         {item.item_price && (
-          <p className="text-lg font-medium text-black dark:text-zinc-50">
+          <p className={`text-lg font-bold ${isHighContrast ? 'text-inherit' : 'text-black'}`}>
             ${Number(item.item_price).toFixed(2)}
           </p>
         )}

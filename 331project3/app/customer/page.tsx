@@ -22,6 +22,8 @@ export default function CustomerPage() {
 	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isCheckingOut, setIsCheckingOut] = useState(false);
+    // Default is false (White Background / Standard Mode)
+    const [isHighContrast, setIsHighContrast] = useState(false);
 	const translateElementRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -55,10 +57,10 @@ export default function CustomerPage() {
 					}
 				}
 			};
-
+			
 			// Check if script already exists
 			if (document.getElementById('google-translate-script')) {
-				// Script already loaded, just initialize if Google Translate is available
+			// Script already loaded, just initialize if Google Translate is available
 				if (window.google && window.google.translate) {
 					setTimeout(() => {
 						window.googleTranslateElementInit();
@@ -73,11 +75,6 @@ export default function CustomerPage() {
 			script.type = 'text/javascript';
 			script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
 			script.async = true;
-
-			// Handle script load errors
-			script.onerror = () => {
-				console.error('Failed to load Google Translate script');
-			};
 
 			document.body.appendChild(script);
 		};
@@ -117,9 +114,6 @@ export default function CustomerPage() {
 		setIsModalOpen(false);
 		setSelectedItem(null);
 	};
-
-
-
 
     const getCustomizationKey = (customizations: {
         size: string;
@@ -170,8 +164,8 @@ export default function CustomerPage() {
             setBag((prevBag) => [...prevBag, newBagItem]);
         }
 	};
-    
-	  //handle increasing/decreasing quantities
+	
+    	  //handle increasing/decreasing quantities
     const handleQuantityChange = (uniqueId: string, delta: number) => {
         setBag(prevBag => {
             const itemIndex = prevBag.findIndex(item => item.uniqueId === uniqueId);
@@ -180,11 +174,11 @@ export default function CustomerPage() {
             const newQuantity = prevBag[itemIndex].quantity + delta;
 
             if (newQuantity <= 0) {
-                //if quant is 0 remove from the list
+				//if quant is 0 remove from the list
                 return prevBag.filter(item => item.uniqueId !== uniqueId);
             }
 
-						//update quant
+			//update quant
             return prevBag.map((item, index) => 
                 index === itemIndex ? { ...item, quantity: newQuantity } : item
             );
@@ -244,6 +238,10 @@ export default function CustomerPage() {
 			setIsCheckingOut(false);
 		}
 	};
+    
+    const toggleContrast = () => {
+        setIsHighContrast(!isHighContrast);
+    };
 
 	if (isLoading) {
 		return (
@@ -255,6 +253,7 @@ export default function CustomerPage() {
 
 	const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
 
+    // Apply high contrast to checkout screen as well
 	if (isCheckingOut) {
 		return (
 			<CheckoutScreen
@@ -262,31 +261,51 @@ export default function CustomerPage() {
 				total={totalAmount}
 				onFinalizeOrder={handleFinalizeOrder}
 				onCancel={() => setIsCheckingOut(false)}
+                isHighContrast={isHighContrast}
 			/>
 		);
 	}
+    
+    // Strict colors for accessibility
+    const mainBgClass = isHighContrast ? "bg-black" : "bg-white";
+    const contentBgClass = isHighContrast ? "bg-black" : "bg-white";
+    const textClass = isHighContrast ? "text-white" : "text-black";
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-			<main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+		<div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
+			<main className={`flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 ${contentBgClass} sm:items-start transition-none`}>
 				<div className="w-full">
 					<div className="flex justify-between items-center mb-8">
-						<h1 className="text-4xl font-bold text-black dark:text-zinc-50">
+						<h1 className={`text-4xl font-bold ${textClass}`}>
 							Menu Items
 						</h1>
-						<div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+                        
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={toggleContrast}
+                                aria-pressed={isHighContrast}
+                                className={`px-4 py-2 rounded-lg font-bold border-2 ${
+                                    isHighContrast 
+                                    ? 'bg-yellow-400 text-black border-yellow-400 hover:bg-yellow-300' // Distinct button for contrast mode
+                                    : 'bg-white text-black border-black hover:bg-gray-100'
+                                }`}
+                            >
+                                {isHighContrast ? 'Disable Contrast' : 'High Contrast'}
+                            </button>
+						    <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+                        </div>
 					</div>
 
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
 						{menuItems.map((item) => (
 							<div key={item.item_id} onClick={() => handleItemClick(item)}>
-								<MenuItemButton item={item} />
+								<MenuItemButton item={item} isHighContrast={isHighContrast} />
 							</div>
 						))}
 					</div>
 
 					{menuItems.length === 0 && (
-						<p className="text-zinc-600 dark:text-zinc-400">
+						<p className={isHighContrast ? "text-white font-medium" : "text-zinc-600"}>
 							No menu items found.
 						</p>
 					)}
@@ -297,7 +316,8 @@ export default function CustomerPage() {
 				bag={bag}
 				onQuantityChange={handleQuantityChange}
 				onDelete={handleDelete}
-				onCheckout={handleCheckout} //trigger screen toggle
+				onCheckout={handleCheckout} 
+                isHighContrast={isHighContrast}
 			/>
 
 			{selectedItem && (
@@ -307,6 +327,7 @@ export default function CustomerPage() {
 					onAddToBag={handleAddToBag}
 					itemName={selectedItem.item_name || 'Unknown Item'}
 					basePrice={Number(selectedItem.item_price) || 0}
+                    isHighContrast={isHighContrast}
 				/>
 			)}
 		</div>

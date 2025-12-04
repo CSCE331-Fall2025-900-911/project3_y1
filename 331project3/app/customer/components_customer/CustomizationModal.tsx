@@ -13,6 +13,7 @@ interface CustomizationModalProps {
   }) => void;
   itemName: string;
   basePrice: number;
+  isHighContrast: boolean;
 }
 
 const CustomizationModal: React.FC<CustomizationModalProps> = ({ 
@@ -20,7 +21,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   onClose, 
   onAddToBag,
   itemName,
-  basePrice 
+  basePrice,
+  isHighContrast
 }) => {
   const [size, setSize] = useState<string>('Medium');
   const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
@@ -52,7 +54,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       setToppings((prevToppings) => prevToppings.filter((topping) => topping !== value));
     }
   };
-
+  
   // Calculate price
   let finalPrice = Number(basePrice) || 0;
   if (size === 'Small') finalPrice -= 0.50;
@@ -60,160 +62,82 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   finalPrice += toppings.length * 0.50;
 
   const availableToppings = [
-    'boba',
-    'crystal boba',
-    'popping boba',
-    'pudding',
-    'aloe vera',
-    'grass jelly',
-    'red bean',
-    'cheese foam'
+    'boba', 'crystal boba', 'popping boba', 'pudding',
+    'aloe vera', 'grass jelly', 'red bean', 'cheese foam'
   ];
+  
+  // High Contrast Styles
+  const bgClass = isHighContrast ? "bg-black border-4 border-white" : "bg-white";
+  const textClass = isHighContrast ? "text-white" : "text-black";
+  const priceBgClass = isHighContrast ? "bg-black border-2 border-white" : "bg-gray-100";
+  const buttonBase = "flex-1 py-3 px-4 rounded font-bold border-2";
+  
+  // Custom button styles for contrast
+  const primaryBtn = isHighContrast 
+    ? "bg-white text-black border-white hover:bg-gray-200"
+    : "bg-blue-600 text-white border-transparent hover:bg-blue-700";
+    
+  const secondaryBtn = isHighContrast
+    ? "bg-black text-white border-white hover:bg-white hover:text-black"
+    : "bg-gray-300 text-gray-800 border-transparent hover:bg-gray-400";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-black">{itemName}</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className={`${bgClass} rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto`}>
+        <h2 className={`text-2xl font-bold mb-4 ${textClass} border-b-2 ${isHighContrast ? 'border-white' : 'border-transparent'}`}>{itemName}</h2>
         
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2 text-black">Size</h3>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="size"
-              value="Small"
-              checked={size === 'Small'}
-              onChange={(e) => setSize(e.target.value)}
-              className="mr-2"
-            />
-            Small (-$0.50)
-          </label>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="size"
-              value="Medium"
-              checked={size === 'Medium'}
-              onChange={(e) => setSize(e.target.value)}
-              className="mr-2"
-            />
-            Medium
-          </label>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="size"
-              value="Large"
-              checked={size === 'Large'}
-              onChange={(e) => setSize(e.target.value)}
-              className="mr-2"
-            />
-            Large (+$0.70)
-          </label>
-        </div>
+        {/* Sections */}
+        {[
+            { title: "Size", options: ['Small', 'Medium', 'Large'], name: "size", current: size, set: setSize },
+            { title: "Ice Level", options: ['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'], name: "iceLevel", current: iceLevel, set: setIceLevel },
+            { title: "Sugar Level", options: ['0%', '25%', '50%', '75%', '100%'], name: "sugarLevel", current: sugarLevel, set: setSugarLevel }
+        ].map((section) => (
+            <div key={section.title} className="mb-4">
+                <h3 className={`font-bold mb-2 ${textClass}`}>{section.title}</h3>
+                {section.options.map((opt) => (
+                    <label key={opt} className={`block mb-2 font-medium ${textClass} cursor-pointer`}>
+                        <input
+                            type="radio"
+                            name={section.name}
+                            value={opt}
+                            checked={section.current === opt}
+                            onChange={(e) => section.set(e.target.value)}
+                            className={`mr-3 transform scale-125 ${isHighContrast ? 'accent-white' : ''}`}
+                        />
+                        {opt} {section.name === 'size' && (opt === 'Small' ? '(-$0.50)' : opt === 'Large' ? '(+$0.70)' : '')}
+                    </label>
+                ))}
+            </div>
+        ))}
 
         <div className="mb-4">
-          <h3 className="font-semibold mb-2 text-black">Ice Level</h3>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Regular Ice"
-              checked={iceLevel === 'Regular Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-              className="mr-2"
-            />
-            Regular Ice
-          </label>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Less Ice"
-              checked={iceLevel === 'Less Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-              className="mr-2"
-            />
-            Less Ice
-          </label>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="iceLevel"
-              value="No Ice"
-              checked={iceLevel === 'No Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-              className="mr-2"
-            />
-            No Ice
-          </label>
-          <label className="block mb-2 text-black">
-            <input
-              type="radio"
-              name="iceLevel"
-              value="Extra Ice"
-              checked={iceLevel === 'Extra Ice'}
-              onChange={(e) => setIceLevel(e.target.value)}
-              className="mr-2"
-            />
-            Extra Ice
-          </label>
-        </div>
-
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2 text-black">Sugar Level</h3>
-          {['0%', '25%', '50%', '75%', '100%'].map((level) => (
-            <label key={level} className="block mb-2 text-black">
-              <input
-                type="radio"
-                name="sugarLevel"
-                value={level}
-                checked={sugarLevel === level}
-                onChange={(e) => setSugarLevel(e.target.value)}
-                className="mr-2"
-              />
-              {level}
-            </label>
-          ))}
-        </div>
-
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2 text-black">Toppings (+$0.50 each)</h3>
+          <h3 className={`font-bold mb-2 ${textClass}`}>Toppings (+$0.50 each)</h3>
           {availableToppings.map((topping) => (
-            <label key={topping} className="block mb-2 capitalize text-black">
+            <label key={topping} className={`block mb-2 capitalize font-medium ${textClass} cursor-pointer`}>
               <input
                 type="checkbox"
                 value={topping}
                 checked={toppings.includes(topping)}
                 onChange={handleToppingChange}
-                className="mr-2"
+                className={`mr-3 transform scale-125 ${isHighContrast ? 'accent-white' : ''}`}
               />
               {topping}
             </label>
           ))}
         </div>
 
-        <div className="mb-4 p-3 bg-gray-100 rounded">
-          <p className="font-semibold text-black">Price: ${finalPrice.toFixed(2)}</p>
+        <div className={`mb-6 p-4 ${priceBgClass} rounded`}>
+          <p className={`text-xl font-bold ${textClass}`}>Price: ${finalPrice.toFixed(2)}</p>
         </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={handleAddToBag}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-          >
+        <div className="flex gap-2 flex-col sm:flex-row">
+          <button onClick={handleAddToBag} className={`${buttonBase} ${primaryBtn}`}>
             Add to Bag
           </button>
-          <button
-            onClick={handleReset}
-            className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400"
-          >
+          <button onClick={handleReset} className={`${buttonBase} ${secondaryBtn}`}>
             Reset
           </button>
-          <button
-            onClick={onClose}
-            className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400"
-          >
+          <button onClick={onClose} className={`${buttonBase} ${secondaryBtn}`}>
             Cancel
           </button>
         </div>
