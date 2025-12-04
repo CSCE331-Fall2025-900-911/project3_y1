@@ -9,35 +9,47 @@ import "./styles_cashier/menulist.css";
 import "./styles_cashier/ordersummary.css";
 import "./styles_cashier/customizationModal.css";
 
-const MENU_ITEMS: MenuItem[] = [
-  { id: 1, name: "Classic Pearl Milk Tea 2", price: 5.80 },
-  { id: 2, name: "Honey Pearl Milk Tea", price: 6.00 },
-  { id: 3, name: "Coffee Creama", price: 6.00 },
-  { id: 4, name: "Coffee Milk Tea w/ Coffee Jelly", price: 6.25 },
-  { id: 5, name: "Hokkaido Pearl Milk Tea", price: 6.25 },
-  { id: 6, name: "Thai Pearl Milk Tea", price: 6.25 },
-  { id: 7, name: "Mango Green Tea", price: 5.80 },
-  { id: 9, name: "Honey Lemonade", price: 5.20 },
-  { id: 10, name: "Mango & Passion Fruit Tea", price: 6.25 },
-  { id: 11, name: "Tiger Passion Cheese", price: 6.25 }, // Corrected name
-  { id: 12, name: "Mango Boba", price: 6.50 },
-  { id: 13, name: "Strawberry Coconut", price: 6.50 },
-  { id: 14, name: "Halo Halo", price: 6.95 },
-  { id: 15, name: "Matcha Pearl Milk Tea", price: 6.50 },
-  { id: 16, name: "Strawberry Matcha Fresh Milk", price: 6.45 },
-  { id: 17, name: "Matcha Fresh Milk", price: 6.25 },
-  { id: 18, name: "Mango Matcha Fresh Milk", price: 6.50 },
-  { id: 19, name: "Oreo w/ Pearl", price: 6.75 },
-  { id: 20, name: "Taro w/ Pudding", price: 6.75 },
-  { id: 21, name: "Thai Tea w/ Pearl", price: 6.75 },
-  { id: 22, name: "Coffee w/ Ice Cream", price: 6.75 },
-];
-
 export default function HomePage() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(MENU_ITEMS);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [order, setOrder] = useState<CustomOrderItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [loadingMenu, setLoadingMenu] = useState(true);
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        setLoadingMenu(true);
+        const res = await fetch("/api/cashier");
+        if (!res.ok) throw new Error("Failed to fetch menu items");
+        
+        type BackendMenuItem = {
+          item_id: number | string;
+          item_name: string;
+          item_price: number | string;
+        };
+
+        const data = await res.json() as BackendMenuItem[];
+        
+        const mappedMenu: MenuItem[] = data.map((item: BackendMenuItem) => ({
+          id: Number(item.item_id),
+          name: String(item.item_name),
+          price: Number(item.item_price),
+        }));
+
+        console.log("Fetched Menu Items:", mappedMenu);
+
+        setMenuItems(mappedMenu);
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching menu items.");
+      } finally {
+        setLoadingMenu(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const subtotal = order.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const total = subtotal;
@@ -52,13 +64,53 @@ export default function HomePage() {
     setSelectedItem(null);
   };
 
-  const handleAddToOrder = async (customizations: any) => {
+  type customizations = {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: Record<string, number>; 
+    sizeId?: number;
+  };
+
+  // Fetch sizeId from backend
+  async function fetchSizeId(menuItemId: number, sizeName: string): Promise<number> {
+    const res = await fetch(
+      `/api/cashier/getSizeId?menuItemId=${menuItemId}&sizeName=${sizeName}`
+    );
+    if (!res.ok) throw new Error("Failed to fetch sizeId");
+    const data = await res.json();
+    return Number(data.sizeId);
+  }
+
+  // Fetch price for selected size
+  async function fetchPriceForSize(menuItemId: number, sizeId: number): Promise<number> {
+    const res = await fetch(
+      `/api/cashier/getPrice?menuItemId=${menuItemId}&sizeId=${sizeId}`
+    );
+    if (!res.ok) throw new Error("Failed to fetch price");
+    const data = await res.json();
+    return Number(data.price);
+  }
+
+  const handleAddToOrder = async (customizations: customizations) => {
     if (!selectedItem) return;
 
+    // get size id from backend
+    const sizeId = await fetchSizeId(selectedItem.id, customizations.size);
+    customizations.sizeId = sizeId;
+    const currentBasePrice = await fetchPriceForSize(selectedItem.id, sizeId);
+    if (isNaN(currentBasePrice)) {
+      console.error(`Price fetch failed for item ${selectedItem.id}, sizeId ${sizeId}`);
+      alert("Failed to fetch item price. Please try again.");
+      return;
+    }
+
+    /*
     // Get Base Price
     let currentBasePrice = selectedItem.price; 
     if (customizations.size === 'Small') currentBasePrice -= 0.50;
     if (customizations.size === 'Large') currentBasePrice += 0.70;
+    */
 
     // Calculate Toppings Cost with Defaults Logic
     let toppingsCost = 0;
@@ -104,8 +156,9 @@ export default function HomePage() {
 
     const newOrderItem: CustomOrderItem = {
       uniqueId: `${selectedItem.id}-${new Date().getTime()}`,
+      item_id: selectedItem.id,
       name: selectedItem.name,
-      basePrice: selectedItem.price,
+      basePrice: currentBasePrice,
       quantity: 1,
       customizations: {
         ...customizations,
@@ -117,6 +170,39 @@ export default function HomePage() {
     setOrder((prevOrder) => [...prevOrder, newOrderItem]);
     handleCloseModal();
   };
+
+const handleCheckout = async () => {
+  try {
+    // Transform the order into the format backend expects
+    const itemsToSend = order.map(item => ({
+      //item_id: item.item_id,                     // database column item_id
+      sizeId: item.customizations.sizeId || 1,   // make sure sizeId exists
+      finalPrice: item.finalPrice,
+      //quantity: item.quantity
+    }));
+
+    const res = await fetch("/api/cashier/submitOrder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: itemsToSend })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Checkout failed:", data);
+      alert("Checkout failed");
+      return;
+    }
+
+    alert(`Order complete! Order ID: ${data.orderId}`);
+    setOrder([]);
+  } catch (err) {
+    console.error(err);
+    alert("Checkout failed");
+  }
+};
+
 
   const handleDeleteItem = (uniqueId: string) => {
     setOrder(prev => prev.filter(item => item.uniqueId !== uniqueId));
@@ -140,7 +226,11 @@ export default function HomePage() {
 
       <div className="pos-main-content">
         <section className="pos-section">
-          <MenuList menuItems={menuItems} onSelectItem={handleSelectItem} />
+          {loadingMenu ? (
+            <div className="loading-message">Loading menu...</div>
+          ) : (
+            <MenuList menuItems={menuItems} onSelectItem={handleSelectItem} />
+          )}
         </section>
 
         <section className="pos-section">
@@ -165,7 +255,7 @@ export default function HomePage() {
           <div className="total-row"><span>Tax:</span><span>$0.00</span></div>
           <div className="total-row final-total"><span>Total:</span><span>${total.toFixed(2)}</span></div>
         </div>
-        <button className="checkout-btn">Proceed to Payment</button>
+        <button className="checkout-btn" onClick={handleCheckout}>Proceed to Payment</button>
       </div>
 
       <CustomizationModal

@@ -1,0 +1,49 @@
+11/12/2025, 6:10 pm - 6:25 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Finished the backend functions
+- Will work on:
+    - Work on connection between backend and frontend
+- Roadblocks:
+    - 
+
+Vishal:
+- Worked on:
+    - Finished updating the backend functions for customer side
+- Will work on:
+    - Working on integrating some APIs
+- Roadblock:
+    - 
+
+Paola:
+- Worked on:
+    - Implemented some stuff for color scheme of cashier stuff
+Will work on:
+    - Updating inventory button
+Roadblocks:
+    - 
+
+Arya:
+- Worked on:
+    - Worked on backend database connection
+- Will work on:
+    - Finish integrating databsae backend connection
+- Roadblocks:
+    - 
+
+Martin:
+- Worked on:
+    - Finished setting up all the different tabs and added tables linked to database
+- Will work on: 
+    - Adding edit/add/delete functionaltiy to all of teh tables which is linekd to the database
+- Roadblocks:
+    - 
+
+Other:
+    - N/A 

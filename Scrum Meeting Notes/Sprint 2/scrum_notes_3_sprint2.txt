@@ -1,0 +1,51 @@
+11/19/2025, 6:30 pm - 6:45 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Integrated backend menu items
+- Will work on:
+    - Integrating APIs moving to help others
+    - linking more backend with frontend
+- Roadblocks:
+    - Merge conflicts
+
+Vishal:
+- Worked on:
+    - Google translate API integration
+- Will work on:
+    - Weather API
+- Roadblock:
+    - Google translate button looks a bit weird rn
+
+Paola:
+- Worked on:
+    - Styling for the cashier view
+Will work on:
+    - Styling for customer
+Roadblocks:
+    - N/A
+
+Arya:
+- Worked on:
+    - 
+- Will work on:
+    - 
+- Roadblocks:
+    - 
+
+Martin:
+- Worked on:
+    - Finalizing UI and functionaltiy for manager view
+    - Implemented Google OAuth API
+- Will work on: 
+    - Help with customer page impleneting UIs etc
+- Roadblocks:
+    - implementing auth :c
+
+Other:
+    - N/A 

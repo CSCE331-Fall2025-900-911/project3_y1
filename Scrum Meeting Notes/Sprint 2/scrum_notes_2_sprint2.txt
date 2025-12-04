@@ -1,0 +1,51 @@
+11/17/2025, 6:20 pm - 6:35 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Added some APIs for a few of the functions
+    - connected the menu items database part with the cashier side
+- Will work on:
+    - Working on fetching price and updating with inventory accordingly
+- Roadblocks:
+    - 
+
+Vishal:
+- Worked on:
+    - Worked on weather API
+- Will work on:
+    - Implemneted the google translate
+- Roadblock:
+    - 
+
+Paola:
+- Worked on:
+    - Design of overall cashier page design
+Will work on:
+    - Finish working on cashier page design based on new backend stuff
+Roadblocks:
+    - 
+
+Arya:
+- Worked on:
+    - Almost done with menu items backend function
+- Will work on:
+    - APIs
+- Roadblocks:
+    - 
+
+Martin:
+- Worked on:
+    - Added edit/add/delete for all the tables of employees,menu items, and item invetory in manager view
+- Will work on: 
+    - Adding some basic trends pages and working on UI touches
+    - OAuth API for login page
+- Roadblocks:
+    - 
+
+Other:
+    - N/A 
