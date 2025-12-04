@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MenuItem } from '@/types/menu';
+import { MenuItem, NUTRITION_DATA, NutritionInfo } from '@/types/menu';
 import CustomizationModal from './components_customer/CustomizationModal';
 import OrderBag, { BagItem } from './components_customer/OrderBag';
 import MenuItemButton from './components_customer/MenuItemButton';
+import NutritionModal from './components_customer/NutritionModal';
 
 declare global {
   interface Window {
@@ -20,6 +21,8 @@ export default function CustomerPage() {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const translateElementRef = useRef<HTMLDivElement>(null);
+  const [isNutritionOpen, setIsNutritionOpen] = useState(false);
+  const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
 
   useEffect(() => {
     fetchMenuItems();
@@ -115,6 +118,18 @@ export default function CustomerPage() {
     setSelectedItem(null);
   };
 
+  const handleOpenNutrition = (item: MenuItem) => {
+    const nutrition = NUTRITION_DATA[item.item_id];
+    if (!nutrition) return;
+    setNutritionItem({ ...item, ...nutrition });
+    setIsNutritionOpen(true);
+  };
+
+  const handleCloseNutrition = () => {
+    setIsNutritionOpen(false);
+    setNutritionItem(null);
+  };
+
   const handleAddToBag = (customizations: {
     size: string;
     iceLevel: string;
@@ -197,9 +212,12 @@ export default function CustomerPage() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
             {menuItems.map((item) => (
-              <div key={item.item_id} onClick={() => handleItemClick(item)}>
-                <MenuItemButton item={item} />
-              </div>
+              <MenuItemButton
+                key={item.item_id}
+                item={item}
+                onClick={() => handleItemClick(item)}          // opens customization modal
+                onNutritionClick={() => handleOpenNutrition(item)} // opens nutrition modal
+              />
             ))}
           </div>
           
@@ -216,6 +234,13 @@ export default function CustomerPage() {
         onRemoveItem={handleRemoveItem}
         onCheckout={handleCheckout}
       />
+
+      <NutritionModal
+        isOpen={isNutritionOpen}
+        onClose={handleCloseNutrition}
+        item={nutritionItem}
+      />
+
 
       {selectedItem && (
         <CustomizationModal
