@@ -1,0 +1,52 @@
+12/3/2025, 6:20 pm - 6:35 pm
+
+Agenda:
+- What we each worked on since last meeting
+- What we will work on until next meeting
+- Any roadblocks?
+
+Yuqing: 
+- Worked on:
+    - Nutrition facts for each drink
+- Will work on:
+    - Finish implementing nutrition facts
+- Roadblocks:
+    - Connecting data to the page
+
+Vishal:
+- Worked on:
+    - 
+- Will work on:
+    - 
+- Roadblock:
+    - 
+
+Paola:
+- Worked on:
+    - Contrast stuff
+Will work on:
+    - Potentially changing it
+    - Working on UI for customer kiosk page
+Roadblocks:
+    - 
+
+Arya:
+- Worked on:
+    - Started work on weather API
+- Will work on:
+    - Finalizing weather API
+- Roadblocks:
+    - 
+
+Martin:
+- Worked on:
+    - Added order notifications (email :C)
+    - Added ability to add/remove item from cart in customer page
+    - Added ability to edit an item after in cart for customer page
+- Will work on: 
+    - More UX improvements for customer page
+- Roadblocks:
+    - 
+
+Other:
+    - N/A 
