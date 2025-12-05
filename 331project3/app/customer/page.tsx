@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MenuItem } from '@/types/menu';
+import { MenuItem, NUTRITION_DATA, NutritionInfo } from '@/types/menu';
 import CustomizationModal from './components_customer/CustomizationModal';
 import OrderBag, { BagItem } from './components_customer/OrderBag';
 import MenuItemButton from './components_customer/MenuItemButton';
 import CheckoutScreen from './components_customer/CheckoutScreen';
+import NutritionModal from './components_customer/NutritionModal';
 
 declare global {
 	interface Window {
@@ -25,6 +26,14 @@ export default function CustomerPage() {
 	const translateElementRef = useRef<HTMLDivElement>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [bag, setBag] = useState<BagItem[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const translateElementRef = useRef<HTMLDivElement>(null);
+  const [isNutritionOpen, setIsNutritionOpen] = useState(false);
+  const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
 
 	useEffect(() => {
 		fetchMenuItems();
@@ -232,6 +241,28 @@ export default function CustomerPage() {
 	//finaliz eorder
 	const handleFinalizeOrder = async (customerEmail: string | null) => {
 		if (bag.length === 0) return;
+  const handleOpenNutrition = (item: MenuItem) => {
+    const nutrition = NUTRITION_DATA[item.item_name || ''];
+    if (nutrition) {
+      setNutritionItem({ ...item, ...nutrition });
+      setIsNutritionOpen(true);
+    } else {
+      console.warn('No nutrition data found for item:', item.item_name);
+    }
+  };
+
+  const handleCloseNutrition = () => {
+    setIsNutritionOpen(false);
+    setNutritionItem(null);
+  };
+
+  const handleAddToBag = (customizations: {
+    size: string;
+    iceLevel: string;
+    sugarLevel: string;
+    toppings: string[];
+  }) => {
+    if (!selectedItem) return;
 
 		const flattenedItems = bag.flatMap(groupedItem => 
             Array(groupedItem.quantity).fill({
@@ -321,6 +352,35 @@ export default function CustomerPage() {
 					)}
 				</div>
 			</main>
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <div className="w-full">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-black dark:text-zinc-50">
+              Menu Items
+            </h1>
+            <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+            {menuItems.map((item) => (
+              <MenuItemButton
+                key={item.item_id}
+                item={item}
+                onClick={() => handleItemClick(item)}          // opens customization modal
+                onNutritionClick={() => handleOpenNutrition(item)} // opens nutrition modal
+              />
+            ))}
+          </div>
+          
+          {menuItems.length === 0 && (
+            <p className="text-zinc-600 dark:text-zinc-400">
+              No menu items found.
+            </p>
+          )}
+        </div>
+      </main>
 
 			<OrderBag
 				bag={bag}
@@ -345,4 +405,22 @@ export default function CustomerPage() {
 			)}
 		</div>
 	);
+      <NutritionModal
+        isOpen={isNutritionOpen}
+        onClose={handleCloseNutrition}
+        item={nutritionItem}
+      />
+
+
+      {selectedItem && (
+        <CustomizationModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onAddToBag={handleAddToBag}
+          itemName={selectedItem.item_name || 'Unknown Item'}
+          basePrice={Number(selectedItem.item_price) || 0}
+        />
+      )}
+    </div>
+  );
 }
