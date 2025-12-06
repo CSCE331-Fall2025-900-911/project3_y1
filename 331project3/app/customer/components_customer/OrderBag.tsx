@@ -21,10 +21,10 @@ interface OrderBagProps {
   bag: BagItem[];
   onQuantityChange: (uniqueId: string, delta: number) => void;
   onDelete: (uniqueId: string) => void;
-  onEdit: (uniqueId: string) => void;       // From HEAD
+  onEdit: (uniqueId: string) => void;
   onCheckout: () => void;
-  editingItemId: string | null;             // From HEAD
-  isHighContrast: boolean;                  // From Contrast Branch
+  editingItemId: string | null;
+  isHighContrast: boolean;
 }
 
 export default function OrderBag({ 
@@ -39,7 +39,6 @@ export default function OrderBag({
   
   const total = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity || 0), 0);
     
-  // Dynamic styles based on contrast mode
   const containerClass = isHighContrast 
       ? "bg-black border-l-4 border-white text-white" 
       : "bg-white text-black shadow-lg";
@@ -52,7 +51,6 @@ export default function OrderBag({
       ? `border-2 border-white hover:bg-white hover:text-black ${buttonBaseClass}`
       : `hover:bg-gray-100 ${buttonBaseClass}`;
 
-  // Action Button Styles (Edit/Delete)
   const editBtnClass = isHighContrast
       ? "text-white border border-white hover:bg-white hover:text-black font-bold px-2 py-1 rounded"
       : "text-blue-600 p-1 hover:bg-blue-50 rounded";
