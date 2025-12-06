@@ -239,7 +239,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       
                       // Check if this specific topping is a "free default"
                       const isDefault = getDefaultToppingsList(itemName).includes(topping);
-                      const priceDisplay = isDefault && qty <= 1 ? "Included" : "+$0.50";
+                      const priceDisplay = qty > 0
+                        ? (isDefault && qty <= 1 ? '(Included)' : `(+$${((isDefault ? qty-1 : qty) * 0.50).toFixed(2)})`)
+                        : '';
 
                       return (
                           <div key={topping} className={`flex justify-between items-center ${optionBase} ${isActive ? optionSelected : optionDefault}`}>
@@ -247,7 +249,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                             
                             <div className="flex items-center gap-3">
                               <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-purple-200' : 'text-purple-600') : 'text-gray-400'}`}>
-                                {qty > 0 ? (qty === 1 && isDefault ? '(Included)' : `(+$${((isDefault ? qty-1 : qty) * 0.50).toFixed(2)})`) : ''}
+                                {priceDisplay}
                               </span>
 
                               <div className={`flex items-center gap-2 rounded-full px-1 py-1 ${isHighContrast ? 'bg-black/20' : 'bg-gray-100'}`} onClick={(e) => e.preventDefault()}>
