@@ -127,9 +127,22 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     ? "bg-black text-white border-white hover:bg-white hover:text-black"
     : "bg-gray-300 text-gray-800 border-transparent hover:bg-gray-400";
 
+    const closeBtnClass = isHighContrast 
+		? "bg-white text-black border-2 border-black hover:bg-gray-200"
+		: "bg-gray-300 text-gray-800 hover:bg-gray-400";
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className={`${bgClass} rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto`}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50">
+      <div className={`${bgClass} rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto relative`}>
+
+        <button 
+					onClick={onClose} 
+					className={`absolute top-2 right-2 w-8 h-8 rounded-full text-xl font-bold ${closeBtnClass}`}
+					title="Close"
+				>
+					&times;
+				</button>
+
         {/* Header: Uses 'New' styles but 'Current' logic for Edit vs Add title */}
         <h2 className={`text-2xl font-bold mb-4 ${textClass} border-b-2 ${isHighContrast ? 'border-white' : 'border-transparent'}`}>
             {isEditing ? `Edit ${itemName}` : itemName}
