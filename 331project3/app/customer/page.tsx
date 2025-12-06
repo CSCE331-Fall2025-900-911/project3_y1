@@ -30,10 +30,27 @@ export default function CustomerPage() {
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const accessibilityRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (accessibilityRef.current && !accessibilityRef.current.contains(event.target as Node)) {
+            setIsAccessibilityOpen(false);
+        }
+    };
+
+    if (isAccessibilityOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAccessibilityOpen]);
 
   useEffect(() => {
     const initGoogleTranslate = () => {
@@ -342,7 +359,6 @@ export default function CustomerPage() {
       ? "bg-[#333333] border-gray-600 shadow-xl" 
       : "bg-white border-gray-100 shadow-xl";
 
-
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
       <style dangerouslySetInnerHTML={{__html: `
@@ -390,7 +406,7 @@ export default function CustomerPage() {
             </h1>
             
             {/* Accessibility Button & Menu */}
-            <div className="relative z-30">
+            <div className="relative z-30" ref={accessibilityRef}>
                 <button
                     onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
                     className={`px-4 py-2 rounded-lg transition-colors font-bold border-2 flex items-center gap-2 ${accButtonClass}`}
@@ -488,7 +504,6 @@ export default function CustomerPage() {
         />
       )}
 
-      {/* Remove early return of checkoiutscreen and made it just render on top so it doesnt mess up translate */}
       {isCheckingOut && (
         <CheckoutScreen
           bag={bag}
