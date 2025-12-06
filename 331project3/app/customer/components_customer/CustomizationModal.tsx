@@ -3,21 +3,21 @@
 import React, { useState, useEffect } from 'react';
 
 interface Customizations {
-	size: string;
-	iceLevel: string;
-	sugarLevel: string;
-	toppings: string[];
+  size: string;
+  iceLevel: string;
+  sugarLevel: string;
+  toppings: string[];
 }
 
 interface CustomizationModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	onAddToBag: (
+  isOpen: boolean;
+  onClose: () => void;
+  onAddToBag: (
         customizations: Customizations, 
         originalQuantity?: number
     ) => void; 
-	itemName: string;
-	basePrice: number;
+  itemName: string;
+  basePrice: number;
   initialCustomizations?: Customizations; 
   isEditing: boolean;
   currentQuantity?: number;
@@ -25,20 +25,20 @@ interface CustomizationModalProps {
 }
 
 const CustomizationModal: React.FC<CustomizationModalProps> = ({ 
-	isOpen, 
-	onClose, 
-	onAddToBag,
-	itemName,
-	basePrice,
+  isOpen, 
+  onClose, 
+  onAddToBag,
+  itemName,
+  basePrice,
   initialCustomizations,
   isEditing,            
   currentQuantity,     
   isHighContrast,
 }) => {
-	const [size, setSize] = useState<string>('Medium');
-	const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
-	const [sugarLevel, setSugarLevel] = useState<string>('50%');
-	const [toppingQuantities, setToppingQuantities] = useState<Record<string, number>>({});
+  const [size, setSize] = useState<string>('Medium');
+  const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
+  const [sugarLevel, setSugarLevel] = useState<string>('50%');
+  const [toppingQuantities, setToppingQuantities] = useState<Record<string, number>>({});
 
   const availableToppings = [
     'boba', 'crystal boba', 'popping boba', 'pudding',
@@ -57,7 +57,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     return defaults;
   };
 
-    useEffect(() => {
+   useEffect(() => {
     if (!isOpen) return;
 
     const timeoutId: ReturnType<typeof setTimeout> = setTimeout(() => {
@@ -93,9 +93,9 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   }, [isOpen, isEditing, initialCustomizations, itemName]);
 
 
-	if (!isOpen) return null;
+  if (!isOpen) return null;
 
-	const handleReset = () => {
+  const handleReset = () => {
     setSize('Medium');
     setIceLevel('Regular Ice');
     setSugarLevel('50%');
@@ -184,6 +184,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   const secondaryBtn = isHighContrast
     ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-purple-400"
     : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-purple-300 hover:text-purple-600";
+  
+  // Close Button Style
+  const closeBtnClass = isHighContrast 
+    ? "text-gray-300 hover:text-white hover:bg-gray-700"
+    : "text-gray-400 hover:text-gray-800 hover:bg-gray-100";
 
   // Qty Control Styles
   const qtyBtnBase = "w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none transition-colors";
@@ -198,10 +203,24 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     <div className={`fixed inset-0 flex items-center justify-center z-50 ${overlayClass}`}>
       <div className={`${bgClass} rounded-2xl p-0 max-w-lg w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col`}>
         
-        <div className="p-6 pb-2">
+        <div className="p-6 pb-2 flex items-center justify-between">
+            {/* Invisible spacer to keep title centered */}
+            <div className="w-8"></div>
+            
             <h2 className={`text-2xl font-extrabold ${textClass} text-center`}>
                 {isEditing ? `Edit ${itemName}` : itemName}
             </h2>
+
+            {/* Close Button */}
+            <button 
+                onClick={onClose}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${closeBtnClass}`}
+                title="Close"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
         
         <div className="overflow-y-auto px-8 py-4 flex-1">
