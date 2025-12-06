@@ -40,17 +40,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 	const [sugarLevel, setSugarLevel] = useState<string>('50%');
 	const [toppings, setToppings] = useState<string[]>([]);
 
-  //prefill the form if already existed
 	useEffect(() => {
 		if (!isOpen) {
 			return;
 		}
 
-    //timeout to defer the state updates
 		let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
 		if (isEditing && initialCustomizations) {
-      //load existing values
 			timeoutId = setTimeout(() => {
 				setSize(initialCustomizations.size);
 				setIceLevel(initialCustomizations.iceLevel);
@@ -58,7 +55,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 				setToppings(initialCustomizations.toppings);
 			}, 0);
 		} else {
-			//new item load defaults
 			timeoutId = setTimeout(() => {
 				setSize('Medium');
 				setIceLevel('Regular Ice');
@@ -87,7 +83,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
   const handleSave = () => {
-    // Preserved logic from 'Current' to ensure data is passed correctly
     onAddToBag({ size, iceLevel, sugarLevel, toppings }, isEditing ? currentQuantity : 1); 
     onClose();
   };
@@ -101,7 +96,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     }
   };
 
-  // Calculate price
   let finalPrice = Number(basePrice) || 0;
   if (size === 'Small') finalPrice -= 0.50;
   if (size === 'Large') finalPrice += 0.70;
@@ -112,84 +106,111 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     'aloe vera', 'grass jelly', 'red bean', 'cheese foam'
   ];
 
-  // High Contrast Styles (From 'New')
-  const bgClass = isHighContrast ? "bg-black border-4 border-white" : "bg-white";
-  const textClass = isHighContrast ? "text-white" : "text-black";
-  const priceBgClass = isHighContrast ? "bg-black border-2 border-white" : "bg-gray-100";
-  const buttonBase = "flex-1 py-3 px-4 rounded font-bold border-2";
+  // STYLES
+  const overlayClass = "bg-black/60 backdrop-blur-sm";
+  const bgClass = isHighContrast 
+    ? "bg-[#333333] border border-gray-600 shadow-2xl" 
+    : "bg-white shadow-2xl";
+  const textClass = isHighContrast ? "text-white" : "text-gray-800";
+  const sectionTitleClass = isHighContrast 
+    ? "text-gray-300 uppercase text-xs font-bold tracking-wider border-b border-gray-600 pb-2" 
+    : "text-gray-500 uppercase text-xs font-bold tracking-wider border-b border-gray-200 pb-2";
+  const optionBase = "cursor-pointer px-4 py-3 border rounded-lg text-sm font-medium flex items-center transition-all select-none";
+  
+  const optionDefault = isHighContrast 
+      ? "bg-[#333333] border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500" 
+      : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300";
+      
+  const optionSelected = isHighContrast
+      ? "bg-purple-600 text-white border-purple-500 font-bold shadow-sm"
+      : "bg-purple-50 border-purple-500 text-purple-700 font-semibold shadow-sm";
 
-  // Custom button styles for contrast
+  // BUTTONS
+  const buttonBase = "flex-1 py-3.5 px-6 rounded-xl font-bold text-sm transition-transform active:scale-95";
   const primaryBtn = isHighContrast 
-    ? "bg-white text-black border-white hover:bg-gray-200"
-    : "bg-blue-600 text-white border-transparent hover:bg-blue-700";
+    ? "bg-purple-600 text-white shadow-lg shadow-gray-900 hover:bg-purple-700 hover:shadow-xl hover:-translate-y-0.5"
+    : "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5";
     
   const secondaryBtn = isHighContrast
-    ? "bg-black text-white border-white hover:bg-white hover:text-black"
-    : "bg-gray-300 text-gray-800 border-transparent hover:bg-gray-400";
+    ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-purple-400"
+    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-purple-300 hover:text-purple-600";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className={`${bgClass} rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto`}>
-        {/* Header: Uses 'New' styles but 'Current' logic for Edit vs Add title */}
-        <h2 className={`text-2xl font-bold mb-4 ${textClass} border-b-2 ${isHighContrast ? 'border-white' : 'border-transparent'}`}>
-            {isEditing ? `Edit ${itemName}` : itemName}
-        </h2>
+    <div className={`fixed inset-0 flex items-center justify-center z-50 ${overlayClass}`}>
+      <div className={`${bgClass} rounded-2xl p-0 max-w-lg w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col`}>
         
-        {/* Sections: Uses 'New' compact mapping structure */}
-        {[
-            { title: "Size", options: ['Small', 'Medium', 'Large'], name: "size", current: size, set: setSize },
-            { title: "Ice Level", options: ['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'], name: "iceLevel", current: iceLevel, set: setIceLevel },
-            { title: "Sugar Level", options: ['0%', '25%', '50%', '75%', '100%'], name: "sugarLevel", current: sugarLevel, set: setSugarLevel }
-        ].map((section) => (
-            <div key={section.title} className="mb-4">
-                <h3 className={`font-bold mb-2 ${textClass}`}>{section.title}</h3>
-                {section.options.map((opt) => (
-                    <label key={opt} className={`block mb-2 font-medium ${textClass} cursor-pointer`}>
+        <div className="p-6 pb-2">
+            <h2 className={`text-2xl font-extrabold ${textClass} text-center`}>
+                {isEditing ? `Edit ${itemName}` : itemName}
+            </h2>
+        </div>
+        
+        <div className="overflow-y-auto px-8 py-4 flex-1">
+            {[
+                { title: "Size", options: ['Small', 'Medium', 'Large'], name: "size", current: size, set: setSize },
+                { title: "Ice Level", options: ['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'], name: "iceLevel", current: iceLevel, set: setIceLevel },
+                { title: "Sugar Level", options: ['0%', '25%', '50%', '75%', '100%'], name: "sugarLevel", current: sugarLevel, set: setSugarLevel }
+            ].map((section) => (
+                <div key={section.title} className="mb-6">
+                    <h3 className={`mb-3 ${sectionTitleClass}`}>{section.title}</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {section.options.map((opt) => (
+                            <label key={opt} className={`${optionBase} ${section.current === opt ? optionSelected : optionDefault}`}>
+                                <input
+                                    type="radio"
+                                    name={section.name}
+                                    value={opt}
+                                    checked={section.current === opt}
+                                    onChange={(e) => section.set(e.target.value)}
+                                    className="hidden"
+                                />
+                                {opt} {section.name === 'size' && (opt === 'Small' ? '(-$0.50)' : opt === 'Large' ? '(+$0.70)' : '')}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            ))}
+
+            <div className="mb-6">
+            <h3 className={`mb-3 ${sectionTitleClass}`}>Toppings (+$0.50 each)</h3>
+            <div className="grid grid-cols-2 gap-2">
+                {availableToppings.map((topping) => {
+                    const isActive = toppings.includes(topping);
+                    return (
+                        <label key={topping} className={`flex justify-between items-center ${optionBase} ${isActive ? optionSelected : optionDefault}`}>
+                        <span className="capitalize">{topping}</span>
                         <input
-                            type="radio"
-                            name={section.name}
-                            value={opt}
-                            checked={section.current === opt}
-                            onChange={(e) => section.set(e.target.value)}
-                            className={`mr-3 transform scale-125 ${isHighContrast ? 'accent-white' : ''}`}
+                            type="checkbox"
+                            value={topping}
+                            checked={isActive}
+                            onChange={handleToppingChange}
+                            className="hidden"
                         />
-                        {opt} {section.name === 'size' && (opt === 'Small' ? '(-$0.50)' : opt === 'Large' ? '(+$0.70)' : '')}
-                    </label>
-                ))}
+                        {isActive && <span className={isHighContrast ? "text-white font-bold" : "text-purple-600 font-bold"}>✓</span>}
+                        </label>
+                    );
+                })}
             </div>
-        ))}
-
-        <div className="mb-4">
-          <h3 className={`font-bold mb-2 ${textClass}`}>Toppings (+$0.50 each)</h3>
-          {availableToppings.map((topping) => (
-            <label key={topping} className={`block mb-2 capitalize font-medium ${textClass} cursor-pointer`}>
-              <input
-                type="checkbox"
-                value={topping}
-                checked={toppings.includes(topping)}
-                onChange={handleToppingChange}
-                className={`mr-3 transform scale-125 ${isHighContrast ? 'accent-white' : ''}`}
-              />
-              {topping}
-            </label>
-          ))}
+            </div>
         </div>
 
-        <div className={`mb-6 p-4 ${priceBgClass} rounded`}>
-          <p className={`text-xl font-bold ${textClass}`}>Price: ${finalPrice.toFixed(2)}</p>
-        </div>
+        <div className={`p-6 border-t ${isHighContrast ? 'border-gray-600 bg-[#333333]' : 'border-gray-100 bg-gray-50'}`}>
+            <div className="flex justify-between items-center mb-4">
+                 <span className={`text-lg font-bold ${textClass}`}>Total</span>
+                 <span className={`text-2xl font-extrabold ${isHighContrast ? 'text-purple-400' : 'text-purple-600'}`}>${finalPrice.toFixed(2)}</span>
+            </div>
 
-        <div className="flex gap-2 flex-col sm:flex-row">
-          {/* Buttons: Uses 'New' styles but 'Current' handlers/logic */}
-          <button onClick={handleSave} className={`${buttonBase} ${primaryBtn}`}>
-            {isEditing ? 'Save Changes' : 'Add to Bag'}
-          </button>
-          <button onClick={handleReset} className={`${buttonBase} ${secondaryBtn}`}>
-            Reset
-          </button>
-          <button onClick={onClose} className={`${buttonBase} ${secondaryBtn}`}>
-            Cancel
-          </button>
+            <div className="flex gap-3">
+                <button onClick={onClose} className={`${buttonBase} ${secondaryBtn}`}>
+                    Cancel
+                </button>
+                <button onClick={handleReset} className={`${buttonBase} ${secondaryBtn}`}>
+                    Reset
+                </button>
+                <button onClick={handleSave} className={`${buttonBase} ${primaryBtn} flex-grow-[2]`}>
+                    {isEditing ? 'Save Changes' : 'Add to Bag'}
+                </button>
+            </div>
         </div>
       </div>
     </div>

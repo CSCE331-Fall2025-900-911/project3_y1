@@ -39,95 +39,97 @@ export default function OrderBag({
   
   const total = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity || 0), 0);
     
+  // CONTAINER: Fixed width, shadows on both.
   const containerClass = isHighContrast 
-      ? "bg-black border-l-4 border-white text-white" 
-      : "bg-white text-black shadow-lg";
+      ? "bg-[#333333] border-l border-gray-600 text-white shadow-2xl" 
+      : "bg-white text-gray-800 shadow-2xl border-l border-gray-200";
   
-  const textClass = isHighContrast ? "text-white" : "text-black";
-  const borderClass = isHighContrast ? "border-white border-b-2" : "border-b";
+  const textClass = isHighContrast ? "text-white" : "text-gray-800";
+  const subTextClass = isHighContrast ? "text-gray-400" : "text-gray-500";
+  const borderClass = isHighContrast ? "border-gray-600 border-b" : "border-gray-100 border-b";
   
-  const buttonBaseClass = "w-8 h-8 rounded-full text-lg font-bold flex items-center justify-center";
+  const buttonBaseClass = "w-7 h-7 rounded-full text-sm font-bold flex items-center justify-center transition-all";
+  
   const incDecButtonClass = isHighContrast
-      ? `border-2 border-white hover:bg-white hover:text-black ${buttonBaseClass}`
-      : `hover:bg-gray-100 ${buttonBaseClass}`;
+      ? `border border-gray-500 text-white hover:border-purple-400 hover:text-purple-400 ${buttonBaseClass}`
+      : `bg-white border border-gray-200 text-gray-600 hover:border-purple-500 hover:bg-purple-50 hover:text-purple-600 ${buttonBaseClass}`;
 
   const editBtnClass = isHighContrast
-      ? "text-white border border-white hover:bg-white hover:text-black font-bold px-2 py-1 rounded"
-      : "text-blue-600 p-1 hover:bg-blue-50 rounded";
+      ? "text-purple-400 hover:text-purple-300 text-sm font-medium hover:underline"
+      : "text-purple-600 hover:text-purple-800 text-sm font-medium hover:underline";
 
   const deleteBtnClass = isHighContrast
-      ? "text-white border border-white hover:bg-red-600 hover:border-red-600 font-bold px-2 py-1 rounded"
-      : "text-red-600 p-1 hover:bg-red-50 rounded";
+      ? "text-red-400 hover:text-red-300 text-sm font-medium hover:underline"
+      : "text-red-500 hover:text-red-700 text-sm font-medium hover:underline";
 
   return (
-    <div className={`fixed right-0 top-0 h-full w-80 p-4 overflow-y-auto ${containerClass}`}>
-      <h2 className={`text-2xl font-bold mb-4 ${textClass}`}>Your Bag</h2>
+    <div className={`fixed right-0 top-0 h-full w-80 flex flex-col z-40 ${containerClass}`}>
+      <div className={`p-6 border-b ${isHighContrast ? 'border-gray-600' : 'border-gray-200'}`}>
+        <h2 className={`text-xl font-bold ${textClass}`}>Your Bag</h2>
+        <p className={`text-sm mt-1 ${subTextClass}`}>{bag.length} items</p>
+      </div>
 
-      {bag.length === 0 ? (
-        <p className={textClass}>Your bag is empty.</p>
-      ) : (
-        <>
-          <ul className="space-y-4 mb-4">
+      <div className="flex-1 overflow-y-auto p-4">
+        {bag.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-50">
+                <p className={textClass}>Your bag is empty.</p>
+            </div>
+        ) : (
+          <ul className="space-y-4">
             {bag.map((item) => {
               const isEditing = item.uniqueId === editingItemId;
 
               const activeClass = isEditing 
-                ? (isHighContrast ? "border-2 border-yellow-400 p-2 rounded" : "bg-blue-50 rounded p-2 border border-blue-200")
+                ? (isHighContrast ? "bg-gray-700/50 rounded-lg p-3 border border-purple-500" : "bg-purple-50 rounded-lg p-3 border border-purple-200")
                 : "";
 
               return (
-                <li key={item.uniqueId} className={`${borderClass} pb-4 ${activeClass}`}>
+                <li key={item.uniqueId} className={`${borderClass} pb-4 last:border-0 ${activeClass}`}>
                   <div className="flex justify-between items-start mb-1">
-                    <span className={`font-bold ${textClass}`}>
+                    <span className={`font-bold text-sm ${textClass} leading-tight`}>
                         {item.name} 
-                        {isEditing && <span className="text-xs ml-2 uppercase text-blue-500 font-bold">(Editing)</span>}
+                        {isEditing && <span className="text-xs ml-2 uppercase text-purple-400 font-bold">(Editing)</span>}
                     </span>
-                    <span className={`font-bold ${textClass}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
+                    <span className={`font-bold text-sm ${isHighContrast ? 'text-purple-400' : 'text-gray-800'}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
                   </div>
 
-                  <div className={`text-sm mb-2 font-medium ${textClass}`}>
-                    <p>{item.customizations.size}</p>
-                    <p>{item.customizations.iceLevel}</p>
-                    <p>{item.customizations.sugarLevel}</p>
+                  <div className={`text-xs mb-3 font-medium ${subTextClass}`}>
+                    <p>{item.customizations.size} • {item.customizations.iceLevel} • {item.customizations.sugarLevel}</p>
                     {item.customizations.toppings.length > 0 && (
-                      <p>Toppings: {item.customizations.toppings.join(', ')}</p>
+                      <p className="mt-1">+ {item.customizations.toppings.join(', ')}</p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between">
                     {/* Quantity Controls */}
-                    <div className={`flex items-center gap-2 ${isHighContrast ? '' : 'border rounded-full p-1'}`}>
+                    <div className={`flex items-center gap-2 px-2 py-1 ${isHighContrast ? 'bg-gray-800 rounded-full border border-gray-600' : 'bg-gray-50 rounded-full'}`}>
                       <button
                         onClick={() => onQuantityChange(item.uniqueId, -1)}
                         className={incDecButtonClass}
                         disabled={item.quantity <= 1}
-                        title="Decrease quantity"
                       >
                         −
                       </button>
-                      <span className={`w-4 text-center font-bold ${textClass}`}>{item.quantity}</span>
+                      <span className={`w-4 text-center font-bold text-sm ${textClass}`}>{item.quantity}</span>
                       <button
                         onClick={() => onQuantityChange(item.uniqueId, 1)}
                         className={incDecButtonClass}
-                        title="Increase quantity"
                       >
                         +
                       </button>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <button
                         onClick={() => onEdit(item.uniqueId)}
                         disabled={isEditing}
                         className={`${editBtnClass} ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        title="Edit customizations"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => onDelete(item.uniqueId)}
                         className={deleteBtnClass}
-                        title="Delete item permanently"
                       >
                         Delete
                       </button>
@@ -137,25 +139,27 @@ export default function OrderBag({
               );
             })}
           </ul>
+        )}
+      </div>
 
-          <div className={`border-t-4 pt-4 ${isHighContrast ? 'border-white' : 'border-gray-200'}`}>
-            <div className={`flex justify-between text-xl font-bold mb-4 ${textClass}`}>
-              <span>Total:</span>
+      {bag.length > 0 && (
+          <div className={`p-6 border-t ${isHighContrast ? 'bg-[#333333] border-gray-600' : 'bg-white border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]'}`}>
+            <div className={`flex justify-between text-xl font-extrabold mb-4 ${textClass}`}>
+              <span>Total</span>
               <span>${total.toFixed(2)}</span>
             </div>
 
             <button
               onClick={onCheckout}
-              className={`w-full py-4 px-4 rounded font-bold text-lg ${
+              className={`w-full py-4 px-4 rounded-xl font-bold text-lg transition-transform active:scale-95 ${
                 isHighContrast 
-                ? 'bg-white text-black border-2 border-white hover:bg-gray-200' 
-                : 'bg-green-600 text-white hover:bg-green-700'
+                ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg' 
+                : 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5'
               }`}
             >
               Checkout
             </button>
           </div>
-        </>
       )}
     </div>
   );

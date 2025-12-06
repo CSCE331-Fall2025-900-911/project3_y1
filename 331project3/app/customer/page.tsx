@@ -28,14 +28,13 @@ export default function CustomerPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
-	const [isHighContrast, setIsHighContrast] = useState(false);
+  const [isHighContrast, setIsHighContrast] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
   useEffect(() => {
-    // Wait for the DOM element to be available
     const initGoogleTranslate = () => {
       const element = document.getElementById('google_translate_element');
       if (!element) {
@@ -261,40 +260,51 @@ export default function CustomerPage() {
         }),
       });
 
-			if (response.ok) {
-				const result = await response.json();
-				alert(`Order placed successfully! Order ID: ${result.orderId}\n${customerEmail ? `A notification email will be sent to ${customerEmail} when your order is ready.` : ''}`);
-				setBag([]); // Clear the bag
-			} else {
-				const error = await response.json();
-				alert(`Failed to place order: ${error.message}`);
-			}
-		} catch (error) {
-			console.error('Checkout error:', error);
-			alert('Failed to place order. Please try again.');
-		} finally {
-			setIsCheckingOut(false);
-		}
-	};
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Order placed successfully! Order ID: ${result.orderId}\n${customerEmail ? `A notification email will be sent to ${customerEmail} when your order is ready.` : ''}`);
+        setBag([]); // Clear the bag
+      } else {
+        const error = await response.json();
+        alert(`Failed to place order: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to place order. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
     
-    const toggleContrast = () => {
-        setIsHighContrast(!isHighContrast);
-    };
+  const toggleContrast = () => {
+      setIsHighContrast(!isHighContrast);
+  };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Loading menu...</p>
+      <div className={`flex min-h-screen items-center justify-center ${isHighContrast ? 'bg-[#333333] text-white' : 'bg-gray-100 text-gray-600'}`}>
+        <p className="font-medium text-lg">Loading menu...</p>
       </div>
     );
   }
 
   const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
+  const mainBgClass = isHighContrast ? "bg-[#333333]" : "bg-gray-100";
+  const contentBgClass = isHighContrast ? "bg-[#333333]" : "bg-transparent"; 
+  const headerClass = isHighContrast 
+    ? "text-white" 
+    : "text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500";
+  
+  const headerContainerClass = isHighContrast
+    ? "bg-[#333333] border border-gray-600 shadow-sm"
+    : "bg-white shadow-sm border border-gray-100";
 
-  const mainBgClass = isHighContrast ? "bg-black" : "bg-zinc-50 dark:bg-black";
-  const contentBgClass = isHighContrast ? "bg-black" : "bg-white dark:bg-black";
-  const textClass = isHighContrast ? "text-white" : "text-black dark:text-zinc-50";
+  const contrastBtnClass = isHighContrast
+    ? "bg-purple-600 text-white border-2 border-purple-400 hover:bg-purple-700 font-bold"
+    : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 font-bold border";
+
+  const noItemsClass = isHighContrast ? "text-gray-300" : "text-gray-500";
 
   if (isCheckingOut) {
     return (
@@ -310,10 +320,26 @@ export default function CustomerPage() {
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
-      <main className={`flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 ${contentBgClass} sm:items-start transition-none`}>
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className={`text-4xl font-bold ${textClass}`}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .goog-te-gadget {
+            color: transparent !important;
+            font-size: 0 !important;
+        }
+        .goog-te-gadget span {
+            display: none !important;
+        }
+        .goog-te-gadget .goog-te-combo {
+            color: black !important;
+            font-size: 14px !important;
+            padding: 4px;
+            border-radius: 4px;
+        }
+      `}} />
+
+      <main className={`flex min-h-screen w-full max-w-7xl items-start justify-center gap-8 py-12 px-4 sm:px-8 ${contentBgClass} transition-none`}>
+        <div className="w-full max-w-4xl mr-80"> 
+          <div className={`flex justify-between items-center mb-8 p-6 rounded-2xl ${headerContainerClass}`}>
+            <h1 className={`text-3xl font-extrabold ${headerClass}`}>
               Menu Items
             </h1>
             
@@ -321,11 +347,7 @@ export default function CustomerPage() {
                 <button
                     onClick={toggleContrast}
                     aria-pressed={isHighContrast}
-                    className={`px-4 py-2 rounded-lg font-bold border-2 ${
-                        isHighContrast 
-                        ? 'bg-yellow-400 text-black border-yellow-400 hover:bg-yellow-300' 
-                        : 'bg-white text-black border-black hover:bg-gray-100'
-                    }`}
+                    className={`px-4 py-2 rounded-lg transition-colors ${contrastBtnClass}`}
                 >
                     {isHighContrast ? 'Disable Contrast' : 'High Contrast'}
                 </button>
@@ -333,7 +355,7 @@ export default function CustomerPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {menuItems.map((item) => (
               <MenuItemButton
                 key={item.item_id}
@@ -346,7 +368,7 @@ export default function CustomerPage() {
           </div>
 
           {menuItems.length === 0 && (
-            <p className={isHighContrast ? "text-white font-medium" : "text-zinc-600 dark:text-zinc-400"}>
+            <p className={`text-center py-10 font-medium ${noItemsClass}`}>
               No menu items found.
             </p>
           )}
@@ -363,7 +385,6 @@ export default function CustomerPage() {
         isHighContrast={isHighContrast}
       />
 
-      {/* Passed isHighContrast to Nutrition Modal as well for consistency */}
       <NutritionModal
         isOpen={isNutritionOpen}
         onClose={handleCloseNutrition}
