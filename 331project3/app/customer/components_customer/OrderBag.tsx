@@ -68,63 +68,74 @@ export default function OrderBag({
       ) : (
         <>
           <ul className="space-y-4 mb-4">
-            {bag.map((item) => (
-              <li key={item.uniqueId} className={`${borderClass} pb-4`}>
-                <div className="flex justify-between items-start mb-1">
-                  <span className={`font-bold ${textClass}`}>{item.name}</span>
-                  <span className={`font-bold ${textClass}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
-                </div>
+            {bag.map((item) => {
+              const isEditing = item.uniqueId === editingItemId;
 
-                <div className={`text-sm mb-2 font-medium ${textClass}`}>
-                  <p>{item.customizations.size}</p>
-                  <p>{item.customizations.iceLevel}</p>
-                  <p>{item.customizations.sugarLevel}</p>
-                  {item.customizations.toppings.length > 0 && (
-                    <p>Toppings: {item.customizations.toppings.join(', ')}</p>
-                  )}
-                </div>
+              const activeClass = isEditing 
+                ? (isHighContrast ? "border-2 border-yellow-400 p-2 rounded" : "bg-blue-50 rounded p-2 border border-blue-200")
+                : "";
 
-                <div className="flex items-center justify-between text-sm">
-                  {/* Quantity Controls */}
-                  <div className={`flex items-center gap-2 ${isHighContrast ? '' : 'border rounded-full p-1'}`}>
-                    <button
-                      onClick={() => onQuantityChange(item.uniqueId, -1)}
-                      className={incDecButtonClass}
-                      disabled={item.quantity <= 1}
-                      title="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span className={`w-4 text-center font-bold ${textClass}`}>{item.quantity}</span>
-                    <button
-                      onClick={() => onQuantityChange(item.uniqueId, 1)}
-                      className={incDecButtonClass}
-                      title="Increase quantity"
-                    >
-                      +
-                    </button>
+              return (
+                <li key={item.uniqueId} className={`${borderClass} pb-4 ${activeClass}`}>
+                  <div className="flex justify-between items-start mb-1">
+                    <span className={`font-bold ${textClass}`}>
+                        {item.name} 
+                        {isEditing && <span className="text-xs ml-2 uppercase text-blue-500 font-bold">(Editing)</span>}
+                    </span>
+                    <span className={`font-bold ${textClass}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
                   </div>
 
-                  {/* Action Buttons (Merged Edit & Delete) */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(item.uniqueId)}
-                      className={editBtnClass}
-                      title="Edit customizations"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDelete(item.uniqueId)}
-                      className={deleteBtnClass}
-                      title="Delete item permanently"
-                    >
-                      Delete
-                    </button>
+                  <div className={`text-sm mb-2 font-medium ${textClass}`}>
+                    <p>{item.customizations.size}</p>
+                    <p>{item.customizations.iceLevel}</p>
+                    <p>{item.customizations.sugarLevel}</p>
+                    {item.customizations.toppings.length > 0 && (
+                      <p>Toppings: {item.customizations.toppings.join(', ')}</p>
+                    )}
                   </div>
-                </div>
-              </li>
-            ))}
+
+                  <div className="flex items-center justify-between text-sm">
+                    {/* Quantity Controls */}
+                    <div className={`flex items-center gap-2 ${isHighContrast ? '' : 'border rounded-full p-1'}`}>
+                      <button
+                        onClick={() => onQuantityChange(item.uniqueId, -1)}
+                        className={incDecButtonClass}
+                        disabled={item.quantity <= 1}
+                        title="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className={`w-4 text-center font-bold ${textClass}`}>{item.quantity}</span>
+                      <button
+                        onClick={() => onQuantityChange(item.uniqueId, 1)}
+                        className={incDecButtonClass}
+                        title="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => onEdit(item.uniqueId)}
+                        disabled={isEditing}
+                        className={`${editBtnClass} ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        title="Edit customizations"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDelete(item.uniqueId)}
+                        className={deleteBtnClass}
+                        title="Delete item permanently"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
 
           <div className={`border-t-4 pt-4 ${isHighContrast ? 'border-white' : 'border-gray-200'}`}>
