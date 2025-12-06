@@ -40,6 +40,27 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 	const [sugarLevel, setSugarLevel] = useState<string>('50%');
 	const [toppings, setToppings] = useState<string[]>([]);
 
+  // Helper to determine default toppings based on drink name
+  const getDefaultToppings = (name: string): string[] => {
+    const defaults: string[] = [];
+    const lowerName = name.toLowerCase();
+    
+    // Check for Boba/Pearl
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) {
+      defaults.push('boba');
+    }
+    // Check for Pudding
+    if (lowerName.includes('pudding')) {
+      defaults.push('pudding');
+    }
+    // Check for Cheese
+    if (lowerName.includes('cheese')) {
+      defaults.push('cheese foam');
+    }
+    
+    return defaults;
+  };
+
 	useEffect(() => {
 		if (!isOpen) {
 			return;
@@ -59,7 +80,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 				setSize('Medium');
 				setIceLevel('Regular Ice');
 				setSugarLevel('50%');
-				setToppings([]);
+        // Use the helper to set defaults instead of empty array
+				setToppings(getDefaultToppings(itemName));
 			}, 0);
 		}
 
@@ -68,7 +90,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 				clearTimeout(timeoutId);
 			}
 		};
-	}, [isOpen, isEditing, initialCustomizations]);
+	}, [isOpen, isEditing, initialCustomizations, itemName]);
 
 
 	if (!isOpen) {
@@ -79,7 +101,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     setSize('Medium');
     setIceLevel('Regular Ice');
     setSugarLevel('50%');
-    setToppings([]);
+    // Reset to defaults based on item name
+    setToppings(getDefaultToppings(itemName));
   };
 
   const handleSave = () => {
