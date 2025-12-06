@@ -145,6 +145,19 @@ export default function CustomerPage() {
       return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
   };
 
+  // Helper duplicated from Modal to ensure consistency
+  const getDefaultToppingsList = (name: string): string[] => {
+    const defaults: string[] = [];
+    const lowerName = name.toLowerCase();
+    
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) defaults.push('boba');
+    if (lowerName.includes('pudding')) defaults.push('pudding');
+    if (lowerName.includes('cheese')) defaults.push('cheese foam');
+    if (lowerName.includes('grass jelly')) defaults.push('grass jelly');
+    
+    return defaults;
+  };
+
   const handleAddToBag = (customizations: {
     size: string;
     iceLevel: string;
@@ -155,10 +168,30 @@ export default function CustomerPage() {
   ) => {
     if (!selectedItem) return;
 
+    // Calculate Base Price
     let finalPrice = Number(selectedItem.item_price) || 0;
     if (customizations.size === 'Small') finalPrice -= 0.50;
     if (customizations.size === 'Large') finalPrice += 0.70;
-    finalPrice += customizations.toppings.length * 0.50;
+
+    // Calculate Toppings Price (Logic: First one of a default topping is free)
+    const defaults = getDefaultToppingsList(selectedItem.item_name || '');
+    const toppingCounts: Record<string, number> = {};
+    
+    // Count occurrences of each topping
+    customizations.toppings.forEach(t => {
+      toppingCounts[t] = (toppingCounts[t] || 0) + 1;
+    });
+
+    let toppingsCost = 0;
+    Object.entries(toppingCounts).forEach(([name, count]) => {
+      let chargeableCount = count;
+      if (defaults.includes(name)) {
+        chargeableCount = Math.max(0, count - 1);
+      }
+      toppingsCost += chargeableCount * 0.50;
+    });
+
+    finalPrice += toppingsCost;
 
     const newBagItem: BagItem = {
         uniqueId: `${selectedItem.item_id}-${Date.now()}`,

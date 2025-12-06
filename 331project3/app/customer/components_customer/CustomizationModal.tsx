@@ -38,96 +38,131 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 	const [size, setSize] = useState<string>('Medium');
 	const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
 	const [sugarLevel, setSugarLevel] = useState<string>('50%');
-	const [toppings, setToppings] = useState<string[]>([]);
-
-  // Helper to determine default toppings based on drink name
-  const getDefaultToppings = (name: string): string[] => {
-    const defaults: string[] = [];
-    const lowerName = name.toLowerCase();
-    
-    // Check for Boba/Pearl
-    if (lowerName.includes('pearl') || lowerName.includes('boba')) {
-      defaults.push('boba');
-    }
-    // Check for Pudding
-    if (lowerName.includes('pudding')) {
-      defaults.push('pudding');
-    }
-    // Check for Cheese
-    if (lowerName.includes('cheese')) {
-      defaults.push('cheese foam');
-    }
-    
-    return defaults;
-  };
-
-	useEffect(() => {
-		if (!isOpen) {
-			return;
-		}
-
-		let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-		if (isEditing && initialCustomizations) {
-			timeoutId = setTimeout(() => {
-				setSize(initialCustomizations.size);
-				setIceLevel(initialCustomizations.iceLevel);
-				setSugarLevel(initialCustomizations.sugarLevel);
-				setToppings(initialCustomizations.toppings);
-			}, 0);
-		} else {
-			timeoutId = setTimeout(() => {
-				setSize('Medium');
-				setIceLevel('Regular Ice');
-				setSugarLevel('50%');
-        // Use the helper to set defaults instead of empty array
-				setToppings(getDefaultToppings(itemName));
-			}, 0);
-		}
-
-		return () => {
-			if (timeoutId !== undefined) {
-				clearTimeout(timeoutId);
-			}
-		};
-	}, [isOpen, isEditing, initialCustomizations, itemName]);
-
-
-	if (!isOpen) {
-		return null;
-	}
-
-	const handleReset = () => {
-    setSize('Medium');
-    setIceLevel('Regular Ice');
-    setSugarLevel('50%');
-    // Reset to defaults based on item name
-    setToppings(getDefaultToppings(itemName));
-  };
-
-  const handleSave = () => {
-    onAddToBag({ size, iceLevel, sugarLevel, toppings }, isEditing ? currentQuantity : 1); 
-    onClose();
-  };
-
-  const handleToppingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setToppings((prevToppings) => [...prevToppings, value]);
-    } else {
-      setToppings((prevToppings) => prevToppings.filter((topping) => topping !== value));
-    }
-  };
-
-  let finalPrice = Number(basePrice) || 0;
-  if (size === 'Small') finalPrice -= 0.50;
-  if (size === 'Large') finalPrice += 0.70;
-  finalPrice += toppings.length * 0.50;
+  // Changed to Record to track quantities
+	const [toppingQuantities, setToppingQuantities] = useState<Record<string, number>>({});
 
   const availableToppings = [
     'boba', 'crystal boba', 'popping boba', 'pudding',
     'aloe vera', 'grass jelly', 'red bean', 'cheese foam'
   ];
+
+  // Helper to determine default toppings based on drink name
+  // Returns a list of strings (e.g. ['boba'])
+  const getDefaultToppingsList = (name: string): string[] => {
+    const defaults: string[] = [];
+    const lowerName = name.toLowerCase();
+    
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) defaults.push('boba');
+    if (lowerName.includes('pudding')) defaults.push('pudding');
+    if (lowerName.includes('cheese')) defaults.push('cheese foam');
+    if (lowerName.includes('grass jelly')) defaults.push('grass jelly');
+    
+    return defaults;
+  };
+
+	useEffect(() => {
+		if (!isOpen) return;
+
+		let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+		timeoutId = setTimeout(() => {
+      if (isEditing && initialCustomizations) {
+        setSize(initialCustomizations.size);
+				setIceLevel(initialCustomizations.iceLevel);
+				setSugarLevel(initialCustomizations.sugarLevel);
+        
+        // Convert string array ['boba', 'boba'] back to count {boba: 2}
+        const qtyMap: Record<string, number> = {};
+        initialCustomizations.toppings.forEach(t => {
+          qtyMap[t] = (qtyMap[t] || 0) + 1;
+        });
+        setToppingQuantities(qtyMap);
+
+      } else {
+        // Defaults
+				setSize('Medium');
+				setIceLevel('Regular Ice');
+				setSugarLevel('50%');
+
+        // Initialize defaults with Quantity 1
+        const defaults = getDefaultToppingsList(itemName);
+        const qtyMap: Record<string, number> = {};
+        defaults.forEach(t => {
+          qtyMap[t] = 1;
+        });
+				setToppingQuantities(qtyMap);
+      }
+		}, 0);
+
+		return () => {
+			if (timeoutId !== undefined) clearTimeout(timeoutId);
+		};
+	}, [isOpen, isEditing, initialCustomizations, itemName]);
+
+
+	if (!isOpen) return null;
+
+	const handleReset = () => {
+    setSize('Medium');
+    setIceLevel('Regular Ice');
+    setSugarLevel('50%');
+    
+    const defaults = getDefaultToppingsList(itemName);
+    const qtyMap: Record<string, number> = {};
+    defaults.forEach(t => {
+      qtyMap[t] = 1;
+    });
+    setToppingQuantities(qtyMap);
+  };
+
+  const handleSave = () => {
+    // Convert counts {boba: 2, pudding: 1} -> ['boba', 'boba', 'pudding']
+    const flatToppings: string[] = [];
+    Object.entries(toppingQuantities).forEach(([name, count]) => {
+      for (let i = 0; i < count; i++) {
+        flatToppings.push(name);
+      }
+    });
+
+    onAddToBag({ size, iceLevel, sugarLevel, toppings: flatToppings }, isEditing ? currentQuantity : 1); 
+    onClose();
+  };
+
+  const updateToppingCount = (name: string, delta: number) => {
+    setToppingQuantities(prev => {
+      const current = prev[name] || 0;
+      const next = Math.max(0, current + delta);
+      
+      const newMap = { ...prev };
+      if (next === 0) {
+        delete newMap[name];
+      } else {
+        newMap[name] = next;
+      }
+      return newMap;
+    });
+  };
+
+  // Price Calculation Logic
+  let finalPrice = Number(basePrice) || 0;
+  if (size === 'Small') finalPrice -= 0.50;
+  if (size === 'Large') finalPrice += 0.70;
+
+  // Calculate topping cost
+  const defaultToppings = getDefaultToppingsList(itemName);
+  let toppingCost = 0;
+  
+  Object.entries(toppingQuantities).forEach(([name, count]) => {
+    let chargeableCount = count;
+    // If this topping is a default one, the first one is free
+    if (defaultToppings.includes(name)) {
+      chargeableCount = Math.max(0, count - 1);
+    }
+    toppingCost += chargeableCount * 0.50;
+  });
+
+  finalPrice += toppingCost;
+
 
   // STYLES
   const overlayClass = "bg-black/60 backdrop-blur-sm";
@@ -157,6 +192,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   const secondaryBtn = isHighContrast
     ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-purple-400"
     : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-purple-300 hover:text-purple-600";
+
+  // Qty Control Styles
+  const qtyBtnBase = "w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none transition-colors";
+  const qtyBtnMinus = isHighContrast 
+    ? "text-red-400 hover:bg-red-900/30 disabled:opacity-30 disabled:hover:bg-transparent"
+    : "text-red-500 hover:bg-red-50 disabled:text-gray-300 disabled:hover:bg-transparent";
+  const qtyBtnPlus = isHighContrast
+    ? "bg-purple-600 text-white hover:bg-purple-500"
+    : "bg-purple-100 text-purple-700 hover:bg-purple-200";
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 ${overlayClass}`}>
@@ -195,25 +239,42 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
             ))}
 
             <div className="mb-6">
-            <h3 className={`mb-3 ${sectionTitleClass}`}>Toppings (+$0.50 each)</h3>
-            <div className="grid grid-cols-2 gap-2">
-                {availableToppings.map((topping) => {
-                    const isActive = toppings.includes(topping);
-                    return (
-                        <label key={topping} className={`flex justify-between items-center ${optionBase} ${isActive ? optionSelected : optionDefault}`}>
-                        <span className="capitalize">{topping}</span>
-                        <input
-                            type="checkbox"
-                            value={topping}
-                            checked={isActive}
-                            onChange={handleToppingChange}
-                            className="hidden"
-                        />
-                        {isActive && <span className={isHighContrast ? "text-white font-bold" : "text-purple-600 font-bold"}>✓</span>}
-                        </label>
-                    );
-                })}
-            </div>
+              <h3 className={`mb-3 ${sectionTitleClass}`}>Toppings (+$0.50 each)</h3>
+              <div className="grid grid-cols-1 gap-2">
+                  {availableToppings.map((topping) => {
+                      const qty = toppingQuantities[topping] || 0;
+                      const isActive = qty > 0;
+                      
+                      // Check if this specific topping is a "free default"
+                      const isDefault = getDefaultToppingsList(itemName).includes(topping);
+                      const priceDisplay = isDefault && qty <= 1 ? "Included" : "+$0.50";
+
+                      return (
+                          <div key={topping} className={`flex justify-between items-center ${optionBase} ${isActive ? optionSelected : optionDefault}`}>
+                            <span className="capitalize font-semibold">{topping}</span>
+                            
+                            <div className="flex items-center gap-3">
+                              <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-purple-200' : 'text-purple-600') : 'text-gray-400'}`}>
+                                {qty > 0 ? (qty === 1 && isDefault ? '(Included)' : `(+$${((isDefault ? qty-1 : qty) * 0.50).toFixed(2)})`) : ''}
+                              </span>
+
+                              <div className={`flex items-center gap-2 rounded-full px-1 py-1 ${isHighContrast ? 'bg-black/20' : 'bg-gray-100'}`} onClick={(e) => e.preventDefault()}>
+                                <button 
+                                  className={`${qtyBtnBase} ${qtyBtnMinus}`}
+                                  onClick={() => updateToppingCount(topping, -1)}
+                                  disabled={qty === 0}
+                                >−</button>
+                                <span className="w-4 text-center font-bold">{qty}</span>
+                                <button 
+                                  className={`${qtyBtnBase} ${qtyBtnPlus}`}
+                                  onClick={() => updateToppingCount(topping, 1)}
+                                >+</button>
+                              </div>
+                            </div>
+                          </div>
+                      );
+                  })}
+              </div>
             </div>
         </div>
 
