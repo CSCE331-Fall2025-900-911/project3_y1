@@ -57,16 +57,14 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     return defaults;
   };
 
-	useEffect(() => {
-		if (!isOpen) return;
+    useEffect(() => {
+    if (!isOpen) return;
 
-		let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-		timeoutId = setTimeout(() => {
+    const timeoutId: ReturnType<typeof setTimeout> = setTimeout(() => {
       if (isEditing && initialCustomizations) {
         setSize(initialCustomizations.size);
-				setIceLevel(initialCustomizations.iceLevel);
-				setSugarLevel(initialCustomizations.sugarLevel);
+        setIceLevel(initialCustomizations.iceLevel);
+        setSugarLevel(initialCustomizations.sugarLevel);
         
         const qtyMap: Record<string, number> = {};
         initialCustomizations.toppings.forEach(t => {
@@ -76,23 +74,23 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
       } else {
         // Defaults
-				setSize('Medium');
-				setIceLevel('Regular Ice');
-				setSugarLevel('50%');
+        setSize('Medium');
+        setIceLevel('Regular Ice');
+        setSugarLevel('50%');
 
         const defaults = getDefaultToppingsList(itemName);
         const qtyMap: Record<string, number> = {};
         defaults.forEach(t => {
           qtyMap[t] = 1;
         });
-				setToppingQuantities(qtyMap);
+        setToppingQuantities(qtyMap);
       }
-		}, 0);
+    }, 0);
 
-		return () => {
-			if (timeoutId !== undefined) clearTimeout(timeoutId);
-		};
-	}, [isOpen, isEditing, initialCustomizations, itemName]);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isOpen, isEditing, initialCustomizations, itemName]);
 
 
 	if (!isOpen) return null;
