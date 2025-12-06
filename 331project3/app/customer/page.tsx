@@ -320,19 +320,40 @@ export default function CustomerPage() {
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
+      {/* Styles to hide 'Powered by Google Translate' text and match Contrast Button */}
       <style dangerouslySetInnerHTML={{__html: `
         .goog-te-gadget {
             color: transparent !important;
-            font-size: 0 !important;
+            font-size: 0px !important;
         }
         .goog-te-gadget span {
             display: none !important;
         }
+        
         .goog-te-gadget .goog-te-combo {
-            color: black !important;
-            font-size: 14px !important;
-            padding: 4px;
-            border-radius: 4px;
+            padding: 8px 16px !important; 
+            border-radius: 0.5rem !important; /* rounded-lg */
+            font-weight: 700 !important; /* font-bold */
+            font-size: 1rem !important;
+            cursor: pointer !important;
+            outline: none !important;
+            font-family: inherit !important;
+            margin: 0 !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        /* Dynamic Colors based on isHighContrast */
+        .goog-te-gadget .goog-te-combo {
+            background-color: ${isHighContrast ? '#9333ea' : 'white'} !important;
+            color: ${isHighContrast ? 'white' : '#4b5563'} !important;
+            border: ${isHighContrast ? '2px solid #c084fc' : '1px solid #e5e7eb'} !important;
+        }
+
+        /* Hover States */
+        .goog-te-gadget .goog-te-combo:hover {
+            background-color: ${isHighContrast ? '#7e22ce' : '#faf5ff'} !important;
+            color: ${isHighContrast ? 'white' : '#9333ea'} !important;
+            border-color: ${isHighContrast ? '#c084fc' : '#e9d5ff'} !important;
         }
       `}} />
 
