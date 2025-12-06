@@ -29,6 +29,7 @@ export default function CustomerPage() {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
   const [isHighContrast, setIsHighContrast] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
@@ -300,11 +301,16 @@ export default function CustomerPage() {
     ? "bg-[#333333] border border-gray-600 shadow-sm"
     : "bg-white shadow-sm border border-gray-100";
 
-  const contrastBtnClass = isHighContrast
-    ? "bg-purple-600 text-white border-2 border-purple-400 hover:bg-purple-700 font-bold"
-    : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200 font-bold border";
-
   const noItemsClass = isHighContrast ? "text-gray-300" : "text-gray-500";
+  
+  // Styles for Accessibility Menu
+  const accButtonClass = isHighContrast
+    ? "bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
+    : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";
+
+  const accDropdownClass = isHighContrast 
+      ? "bg-[#333333] border-gray-600 shadow-xl" 
+      : "bg-white border-gray-100 shadow-xl";
 
   if (isCheckingOut) {
     return (
@@ -320,7 +326,6 @@ export default function CustomerPage() {
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
-      {/* Styles to hide 'Powered by Google Translate' text and match Contrast Button */}
       <style dangerouslySetInnerHTML={{__html: `
         .goog-te-gadget {
             color: transparent !important;
@@ -331,29 +336,30 @@ export default function CustomerPage() {
         }
         
         .goog-te-gadget .goog-te-combo {
-            padding: 8px 16px !important; 
+            padding: 8px 12px !important; 
             border-radius: 0.5rem !important; /* rounded-lg */
             font-weight: 700 !important; /* font-bold */
-            font-size: 1rem !important;
+            font-size: 0.875rem !important; /* text-sm */
             cursor: pointer !important;
             outline: none !important;
             font-family: inherit !important;
             margin: 0 !important;
             transition: all 0.2s ease-in-out !important;
+            width: 100% !important; /* Full width for dropdown */
         }
 
         /* Dynamic Colors based on isHighContrast */
         .goog-te-gadget .goog-te-combo {
-            background-color: ${isHighContrast ? '#9333ea' : 'white'} !important;
+            background-color: ${isHighContrast ? '#4b5563' : 'white'} !important;
             color: ${isHighContrast ? 'white' : '#4b5563'} !important;
-            border: ${isHighContrast ? '2px solid #c084fc' : '1px solid #e5e7eb'} !important;
+            border: ${isHighContrast ? '1px solid #6b7280' : '1px solid #e5e7eb'} !important;
         }
 
         /* Hover States */
         .goog-te-gadget .goog-te-combo:hover {
-            background-color: ${isHighContrast ? '#7e22ce' : '#faf5ff'} !important;
+            background-color: ${isHighContrast ? '#374151' : '#faf5ff'} !important;
             color: ${isHighContrast ? 'white' : '#9333ea'} !important;
-            border-color: ${isHighContrast ? '#c084fc' : '#e9d5ff'} !important;
+            border-color: ${isHighContrast ? '#9333ea' : '#e9d5ff'} !important;
         }
       `}} />
 
@@ -364,15 +370,51 @@ export default function CustomerPage() {
               Menu Items
             </h1>
             
-            <div className="flex items-center gap-4">
+            {/* Accessibility Button & Menu */}
+            <div className="relative z-30">
                 <button
-                    onClick={toggleContrast}
-                    aria-pressed={isHighContrast}
-                    className={`px-4 py-2 rounded-lg transition-colors ${contrastBtnClass}`}
+                    onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
+                    className={`px-4 py-2 rounded-lg transition-colors font-bold border-2 flex items-center gap-2 ${accButtonClass}`}
+                    aria-expanded={isAccessibilityOpen}
+                    aria-label="Accessibility Options"
                 >
-                    {isHighContrast ? 'Disable Contrast' : 'High Contrast'}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 7.5a1.5 1.5 0 0 1 1.5-1.5h.09c.86.06 1.66.4 2.24 1.03l3.66 3.66a1 1 0 0 1-1.42 1.42l-2.57-2.57V21a1 1 0 0 1-2 0v-4h-3v4a1 1 0 0 1-2 0v-9.46l-2.57 2.57a1 1 0 0 1-1.42-1.42l3.66-3.66A3.01 3.01 0 0 1 12 9.5Z" />
+                    </svg>
+                    <span>Accessibility</span>
                 </button>
-                <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+
+                {/* Dropdown Container */}
+                <div className={`absolute right-0 top-full mt-3 w-64 p-4 rounded-xl border flex flex-col gap-4 transition-all ${accDropdownClass} ${isAccessibilityOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+                    
+                    {/* Contrast Option */}
+                    <div>
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Display</p>
+                        <button
+                            onClick={toggleContrast}
+                            className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between ${
+                                isHighContrast 
+                                ? "bg-purple-600 text-white shadow-lg" 
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                           <span>High Contrast</span>
+                           <div className={`w-8 h-4 rounded-full relative transition-colors ${isHighContrast ? 'bg-white/30' : 'bg-gray-300'}`}>
+                                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all ${isHighContrast ? 'left-4.5 translate-x-full ml-0.5' : 'left-0.5'}`}></div>
+                           </div>
+                        </button>
+                    </div>
+
+                    <div className={isHighContrast ? "border-t border-gray-600" : "border-t border-gray-100"}></div>
+
+                    {/* Language Option */}
+                    <div>
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Language</p>
+                        <div className="w-full">
+                            <div id="google_translate_element" ref={translateElementRef} className="w-full"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
 
