@@ -501,60 +501,6 @@ export default function CustomerPage() {
           isHighContrast={isHighContrast}
         />
       )}
-
-      {/* Accessibility Modal: cant use conditional rendering bc google translate requires the div to always exist so its just hdiden normally lol prob a sucffed solution but whatever */}
-      <div className={`fixed inset-0 z-[60] flex items-center justify-center ${isModalOpen ? '' : 'hidden'}`}>
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
-        
-        <div className={`relative z-10 w-full max-w-sm p-6 rounded-xl shadow-2xl flex flex-col gap-6 ${
-            isHighContrast 
-            ? 'bg-black border-4 border-white text-white' 
-            : 'bg-white text-black'
-        }`}>
-            <div className="flex justify-between items-center border-b pb-4 border-current">
-                <h2 className="text-2xl font-bold">Accessibility</h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-2xl font-bold leading-none hover:opacity-70">&times;</button>
-            </div>
-
-            <div className="space-y-6">
-                {/* Contrast Toggle Section */}
-                <div>
-                    <h3 className="font-bold text-lg mb-2">Display Mode</h3>
-                    <button
-                        onClick={toggleContrast}
-                        aria-pressed={isHighContrast}
-                        className={`w-full px-4 py-3 rounded-lg font-bold border-2 transition-all ${
-                            isHighContrast 
-                            ? 'bg-yellow-400 text-black border-yellow-400 hover:bg-yellow-300' 
-                            : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'
-                        }`}
-                    >
-                        {isHighContrast ? 'Disable High Contrast' : 'Enable High Contrast'}
-                    </button>
-                </div>
-
-                {/* Google Translate Section */}
-                <div>
-                    <h3 className="font-bold text-lg mb-2">Language</h3>
-                    <div className="p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
-                         <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button 
-                onClick={() => setIsModalOpen(false)}
-                className={`w-full py-3 rounded-lg font-bold border-2 ${
-                    isHighContrast
-                    ? 'bg-white text-black border-white hover:bg-gray-200'
-                    : 'bg-black text-white border-black hover:bg-gray-800'
-                }`}
-            >
-                Close Settings
-            </button>
-        </div>
-      </div>
-
     </div>
   );
 }

@@ -3,14 +3,14 @@
 import { MenuItem, NutritionInfo } from '@/types/menu';
 
 interface NutritionModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	item: (MenuItem & Partial<NutritionInfo>) | null;
-	isHighContrast: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  item: (MenuItem & Partial<NutritionInfo>) | null;
+  isHighContrast: boolean;
 }
 
 export default function NutritionModal({ isOpen, onClose, item, isHighContrast }: NutritionModalProps) {
-	if (!isOpen || !item) return null;
+  if (!isOpen || !item) return null;
 
   const overlayClass = "bg-black/60 backdrop-blur-sm";
   const containerClass = isHighContrast 

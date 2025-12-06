@@ -61,7 +61,7 @@ export default function CheckoutScreen({bag, total, onFinalizeOrder, onCancel, i
                         className={`w-full p-3.5 rounded-xl border ${inputClass} outline-none transition-all`} 
                         disabled={isProcessing} 
                     />
-					<p className={`mt-2 text-xs ${isHighContrast ? 'text-gray-400' : 'text-gray-400'}`}>We'll let you know when your order is ready.</p>
+					<p className={`mt-2 text-xs ${isHighContrast ? 'text-gray-400' : 'text-gray-400'}`}>We&apos;ll let you know when your order is ready.</p>
 				</div>
 				
 				<div className="space-y-3">
