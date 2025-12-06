@@ -39,10 +39,9 @@ export default function OrderBag({
   
   const total = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity || 0), 0);
     
-  // CONTAINER: Fixed width, shadows on both.
   const containerClass = isHighContrast 
-      ? "bg-[#333333] border-l border-gray-600 text-white shadow-2xl" 
-      : "bg-white text-gray-800 shadow-2xl border-l border-gray-200";
+      ? "bg-[#333333] border border-gray-600 text-white shadow-2xl rounded-2xl overflow-hidden" 
+      : "bg-white text-gray-800 shadow-2xl border border-gray-200 rounded-2xl overflow-hidden";
   
   const textClass = isHighContrast ? "text-white" : "text-gray-800";
   const subTextClass = isHighContrast ? "text-gray-400" : "text-gray-500";
@@ -63,7 +62,7 @@ export default function OrderBag({
       : "text-red-500 hover:text-red-700 text-sm font-medium hover:underline";
 
   return (
-    <div className={`fixed right-0 top-0 h-full w-80 flex flex-col z-40 ${containerClass}`}>
+    <div className={`fixed right-4 top-4 bottom-4 w-80 flex flex-col z-40 ${containerClass}`}>
       <div className={`p-6 border-b ${isHighContrast ? 'border-gray-600' : 'border-gray-200'}`}>
         <h2 className={`text-xl font-bold ${textClass}`}>Your Bag</h2>
         <p className={`text-sm mt-1 ${subTextClass}`}>{bag.length} items</p>
