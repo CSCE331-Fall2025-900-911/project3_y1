@@ -6,9 +6,10 @@ interface NutritionModalProps {
   isOpen: boolean;
   onClose: () => void;
   item: (MenuItem & Partial<NutritionInfo>) | null;
+  isHighContrast: boolean;
 }
 
-export default function NutritionModal({ isOpen, onClose, item }: NutritionModalProps) {
+export default function NutritionModal({ isOpen, onClose, item, isHighContrast }: NutritionModalProps) {
   if (!isOpen || !item) return null;
 
   return (

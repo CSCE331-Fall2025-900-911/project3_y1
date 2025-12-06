@@ -28,6 +28,7 @@ export default function CustomerPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
+	const [isHighContrast, setIsHighContrast] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
@@ -260,21 +261,25 @@ export default function CustomerPage() {
         }),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        alert(`Order placed successfully! Order ID: ${result.orderId}\n${customerEmail ? `A notification email will be sent to ${customerEmail} when your order is ready.` : ''}`);
-        setBag([]); // Clear the bag
-      } else {
-        const error = await response.json();
-        alert(`Failed to place order: ${error.message}`);
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      alert('Failed to place order. Please try again.');
-    } finally {
-      setIsCheckingOut(false);
-    }
-  };
+			if (response.ok) {
+				const result = await response.json();
+				alert(`Order placed successfully! Order ID: ${result.orderId}\n${customerEmail ? `A notification email will be sent to ${customerEmail} when your order is ready.` : ''}`);
+				setBag([]); // Clear the bag
+			} else {
+				const error = await response.json();
+				alert(`Failed to place order: ${error.message}`);
+			}
+		} catch (error) {
+			console.error('Checkout error:', error);
+			alert('Failed to place order. Please try again.');
+		} finally {
+			setIsCheckingOut(false);
+		}
+	};
+    
+    const toggleContrast = () => {
+        setIsHighContrast(!isHighContrast);
+    };
 
   if (isLoading) {
     return (
@@ -287,6 +292,10 @@ export default function CustomerPage() {
   const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
 
+  const mainBgClass = isHighContrast ? "bg-black" : "bg-zinc-50 dark:bg-black";
+  const contentBgClass = isHighContrast ? "bg-black" : "bg-white dark:bg-black";
+  const textClass = isHighContrast ? "text-white" : "text-black dark:text-zinc-50";
+
   if (isCheckingOut) {
     return (
       <CheckoutScreen
@@ -294,19 +303,34 @@ export default function CustomerPage() {
         total={totalAmount}
         onFinalizeOrder={handleFinalizeOrder}
         onCancel={() => setIsCheckingOut(false)}
+        isHighContrast={isHighContrast}
       />
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
+      <main className={`flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 ${contentBgClass} sm:items-start transition-none`}>
         <div className="w-full">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold text-black dark:text-zinc-50">
+            <h1 className={`text-4xl font-bold ${textClass}`}>
               Menu Items
             </h1>
-            <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+            
+            <div className="flex items-center gap-4">
+                <button
+                    onClick={toggleContrast}
+                    aria-pressed={isHighContrast}
+                    className={`px-4 py-2 rounded-lg font-bold border-2 ${
+                        isHighContrast 
+                        ? 'bg-yellow-400 text-black border-yellow-400 hover:bg-yellow-300' 
+                        : 'bg-white text-black border-black hover:bg-gray-100'
+                    }`}
+                >
+                    {isHighContrast ? 'Disable Contrast' : 'High Contrast'}
+                </button>
+                <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
@@ -316,12 +340,13 @@ export default function CustomerPage() {
                 item={item}
                 onClick={() => handleItemClick(item)} 
                 onNutritionClick={() => handleOpenNutrition(item)}
+                isHighContrast={isHighContrast}
               />
             ))}
           </div>
 
           {menuItems.length === 0 && (
-            <p className="text-zinc-600 dark:text-zinc-400">
+            <p className={isHighContrast ? "text-white font-medium" : "text-zinc-600 dark:text-zinc-400"}>
               No menu items found.
             </p>
           )}
@@ -335,12 +360,15 @@ export default function CustomerPage() {
         onCheckout={handleCheckout}
         onEdit={handleEditItem}
         editingItemId={editingItemId}
+        isHighContrast={isHighContrast}
       />
 
+      {/* Passed isHighContrast to Nutrition Modal as well for consistency */}
       <NutritionModal
         isOpen={isNutritionOpen}
         onClose={handleCloseNutrition}
         item={nutritionItem}
+        isHighContrast={isHighContrast}
       />
 
       {selectedItem && (
@@ -353,6 +381,7 @@ export default function CustomerPage() {
           initialCustomizations={itemBeingEdited ? itemBeingEdited.customizations : undefined}
           isEditing={isEditing}
           currentQuantity={itemBeingEdited ? itemBeingEdited.quantity : undefined}
+          isHighContrast={isHighContrast}
         />
       )}
     </div>
