@@ -81,6 +81,18 @@ export default function OrderBag({
               const activeClass = isEditing 
                 ? (isHighContrast ? "bg-gray-700/50 rounded-lg p-3 border border-purple-500" : "bg-purple-50 rounded-lg p-3 border border-purple-200")
                 : "";
+              
+              // Logic to group toppings: "boba, boba" -> "Boba x2"
+              const toppingCounts: Record<string, number> = {};
+              item.customizations.toppings.forEach(t => {
+                toppingCounts[t] = (toppingCounts[t] || 0) + 1;
+              });
+
+              const formattedToppings = Object.entries(toppingCounts).map(([name, count]) => {
+                // Capitalize first letter of each word
+                const displayName = name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                return count > 1 ? `${displayName} x${count}` : displayName;
+              }).join(', ');
 
               return (
                 <li key={item.uniqueId} className={`${borderClass} pb-4 last:border-0 ${activeClass}`}>
@@ -94,8 +106,8 @@ export default function OrderBag({
 
                   <div className={`text-xs mb-3 font-medium ${subTextClass}`}>
                     <p>{item.customizations.size} • {item.customizations.iceLevel} • {item.customizations.sugarLevel}</p>
-                    {item.customizations.toppings.length > 0 && (
-                      <p className="mt-1">+ {item.customizations.toppings.join(', ')}</p>
+                    {formattedToppings && (
+                      <p className="mt-1">+ {formattedToppings}</p>
                     )}
                   </div>
 

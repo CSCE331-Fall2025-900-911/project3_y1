@@ -38,7 +38,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 	const [size, setSize] = useState<string>('Medium');
 	const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
 	const [sugarLevel, setSugarLevel] = useState<string>('50%');
-  // Changed to Record to track quantities
 	const [toppingQuantities, setToppingQuantities] = useState<Record<string, number>>({});
 
   const availableToppings = [
@@ -46,8 +45,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     'aloe vera', 'grass jelly', 'red bean', 'cheese foam'
   ];
 
-  // Helper to determine default toppings based on drink name
-  // Returns a list of strings (e.g. ['boba'])
   const getDefaultToppingsList = (name: string): string[] => {
     const defaults: string[] = [];
     const lowerName = name.toLowerCase();
@@ -71,7 +68,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 				setIceLevel(initialCustomizations.iceLevel);
 				setSugarLevel(initialCustomizations.sugarLevel);
         
-        // Convert string array ['boba', 'boba'] back to count {boba: 2}
         const qtyMap: Record<string, number> = {};
         initialCustomizations.toppings.forEach(t => {
           qtyMap[t] = (qtyMap[t] || 0) + 1;
@@ -84,7 +80,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
 				setIceLevel('Regular Ice');
 				setSugarLevel('50%');
 
-        // Initialize defaults with Quantity 1
         const defaults = getDefaultToppingsList(itemName);
         const qtyMap: Record<string, number> = {};
         defaults.forEach(t => {
@@ -116,7 +111,6 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
   const handleSave = () => {
-    // Convert counts {boba: 2, pudding: 1} -> ['boba', 'boba', 'pudding']
     const flatToppings: string[] = [];
     Object.entries(toppingQuantities).forEach(([name, count]) => {
       for (let i = 0; i < count; i++) {
