@@ -110,6 +110,7 @@ export default function CustomerPage() {
     setSelectedItem(item);
     setIsEditing(false);
     setEditingItemId(null);
+    setIsAccessibilityOpen(false);
     setIsModalOpen(true);
   };
 
@@ -125,6 +126,7 @@ export default function CustomerPage() {
     if (nutrition) {
       setNutritionItem({ ...item, ...nutrition });
       setIsNutritionOpen(true);
+      setIsAccessibilityOpen(false);
     } else {
       console.warn('No nutrition data found for item:', item.item_name);
     }
@@ -145,7 +147,6 @@ export default function CustomerPage() {
       return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
   };
 
-  // Helper duplicated from Modal to ensure consistency
   const getDefaultToppingsList = (name: string): string[] => {
     const defaults: string[] = [];
     const lowerName = name.toLowerCase();
@@ -168,16 +169,13 @@ export default function CustomerPage() {
   ) => {
     if (!selectedItem) return;
 
-    // Calculate Base Price
     let finalPrice = Number(selectedItem.item_price) || 0;
     if (customizations.size === 'Small') finalPrice -= 0.50;
     if (customizations.size === 'Large') finalPrice += 0.70;
 
-    // Calculate Toppings Price (Logic: First one of a default topping is free)
     const defaults = getDefaultToppingsList(selectedItem.item_name || '');
     const toppingCounts: Record<string, number> = {};
     
-    // Count occurrences of each topping
     customizations.toppings.forEach(t => {
       toppingCounts[t] = (toppingCounts[t] || 0) + 1;
     });
@@ -336,7 +334,6 @@ export default function CustomerPage() {
 
   const noItemsClass = isHighContrast ? "text-gray-300" : "text-gray-500";
   
-  // Styles for Accessibility Menu
   const accButtonClass = isHighContrast
     ? "bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
     : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";
@@ -345,17 +342,6 @@ export default function CustomerPage() {
       ? "bg-[#333333] border-gray-600 shadow-xl" 
       : "bg-white border-gray-100 shadow-xl";
 
-  if (isCheckingOut) {
-    return (
-      <CheckoutScreen
-        bag={bag}
-        total={totalAmount}
-        onFinalizeOrder={handleFinalizeOrder}
-        onCancel={() => setIsCheckingOut(false)}
-        isHighContrast={isHighContrast}
-      />
-    );
-  }
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
@@ -501,6 +487,18 @@ export default function CustomerPage() {
           isHighContrast={isHighContrast}
         />
       )}
+
+      {/* Remove early return of checkoiutscreen and made it just render on top so it doesnt mess up translate */}
+      {isCheckingOut && (
+        <CheckoutScreen
+          bag={bag}
+          total={totalAmount}
+          onFinalizeOrder={handleFinalizeOrder}
+          onCancel={() => setIsCheckingOut(false)}
+          isHighContrast={isHighContrast}
+        />
+      )}
+
     </div>
   );
 }
