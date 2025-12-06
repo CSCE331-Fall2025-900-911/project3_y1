@@ -37,4 +37,5 @@ export const NUTRITION_DATA: Record<string, NutritionInfo> = {
   'Coffee Creama': { calories: 768, sat_fat: 32, sodium: 471, carbs: 99, sugar: 52, caffeine: 350 },
   'Hokkaido Pearl Milk Team': { calories: 758, sat_fat: 15, sodium: 314, carbs: 150, sugar: 46, caffeine: 230 },
   'Coffee Milk Tea w/ Coffee Jelly': { calories: 584, sat_fat: 20, sodium: 145, carbs: 92, sugar: 59, caffeine: 330 },
+  'Honey Pearl Milk Tea': { calories: 892, sat_fat: 18, sodium: 164, carbs: 175, sugar: 64, caffeine: 135, },
 };
