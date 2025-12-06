@@ -21,56 +21,55 @@ export default function CheckoutScreen({bag, total, onFinalizeOrder, onCancel, i
 		onFinalizeOrder(emailToSend);
 	};
 
-    // Styling constants
-    const bgClass = isHighContrast ? "bg-black" : "bg-white";
-    const cardBgClass = isHighContrast ? "bg-black border-4 border-white" : "bg-gray-50 shadow-lg";
-    const textClass = isHighContrast ? "text-white" : "text-black";
-    const labelClass = isHighContrast ? "text-white" : "text-gray-700";
+    const bgClass = isHighContrast ? "bg-[#333333]" : "bg-gray-100";
+    const cardBgClass = isHighContrast ? "bg-[#333333] border border-gray-600 shadow-2xl" : "bg-white shadow-2xl border border-gray-100";
+    const textClass = isHighContrast ? "text-white" : "text-gray-800";
+    const labelClass = isHighContrast ? "text-gray-300 font-bold" : "text-gray-600 font-semibold";
     const inputClass = isHighContrast 
-        ? "bg-black text-white border-2 border-white focus:ring-white focus:border-white placeholder-gray-400" 
-        : "bg-white text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500";
-    
-    const confirmBtnClass = isHighContrast
-        ? "bg-white text-black border-2 border-white hover:bg-gray-200 disabled:opacity-50"
-        : "bg-green-600 text-white hover:bg-green-700 disabled:bg-green-400 shadow-md";
-        
+        ? "bg-[#2a2a2a] text-white border-gray-600 focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500" 
+        : "bg-gray-50 text-gray-900 border-gray-200 focus:ring-purple-500 focus:border-purple-500";
+        const confirmBtnClass = isHighContrast
+        ? "bg-purple-600 text-white shadow-lg hover:bg-purple-700 hover:-translate-y-0.5 disabled:opacity-50"
+        : "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5 disabled:opacity-50";
     const cancelBtnClass = isHighContrast
-        ? "bg-black text-white border-2 border-white hover:bg-white hover:text-black"
-        : "bg-gray-300 text-gray-800 hover:bg-gray-400";
+        ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700"
+        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:text-purple-600";
 
 	return (
-		<div className={`fixed inset-0 flex flex-col items-center justify-center p-8 z-50 ${bgClass}`}>
-			<h2 className={`text-4xl font-bold mb-8 ${textClass}`}>Final Checkout</h2>
+		<div className={`fixed inset-0 flex flex-col items-center justify-center p-4 z-50 ${bgClass} font-sans`}>
+			<div className={`w-full max-w-lg p-8 rounded-2xl ${cardBgClass}`}>
+                <div className="text-center mb-8">
+				    <h2 className={`text-3xl font-extrabold mb-2 ${textClass}`}>Checkout</h2>
+                    <p className={isHighContrast ? "text-gray-400" : "text-gray-500"}>Review your order details below</p>
+                </div>
 
-			<div className={`w-full max-w-xl p-6 rounded-xl ${cardBgClass}`}>
-				<h3 className={`text-2xl font-semibold mb-4 ${textClass}`}>Order Summary</h3>
-				<div className={`flex justify-between text-xl font-bold mb-4 border-t-2 pt-2 ${textClass} ${isHighContrast ? 'border-white' : 'border-gray-200'}`}>
-					<span>Grand Total:</span>
-					<span>${total.toFixed(2)}</span>
+				<div className={`flex justify-between items-center text-xl font-bold mb-8 pb-4 border-b-2 border-dashed ${textClass} ${isHighContrast ? 'border-gray-600' : 'border-gray-200'}`}>
+					<span>Total Amount</span>
+					<span className={isHighContrast ? "text-purple-400" : "text-purple-600"}>${total.toFixed(2)}</span>
 				</div>
 
-				<div className="mb-6">
-					<label htmlFor="customer-email" className={`block text-lg font-medium mb-2 ${labelClass}`}>
-						Email for Ready Notification (Optional)
+				<div className="mb-8">
+					<label htmlFor="customer-email" className={`block text-sm mb-2 ${labelClass}`}>
+						Email Receipt (Optional)
 					</label>
 					<input 
                         id="customer-email" 
                         type="email" 
                         value={customerEmail} 
                         onChange={(e) => setCustomerEmail(e.target.value)} 
-                        placeholder="e.g., waiting@example.com" 
-                        className={`w-full p-3 rounded-lg border ${inputClass}`} 
+                        placeholder="name@example.com" 
+                        className={`w-full p-3.5 rounded-xl border ${inputClass} outline-none transition-all`} 
                         disabled={isProcessing} 
                     />
-					<p className={`mt-1 text-sm ${isHighContrast ? 'text-gray-300' : 'text-gray-500'}`}>We will email you when your order is ready for pickup.</p>
+					<p className={`mt-2 text-xs ${isHighContrast ? 'text-gray-400' : 'text-gray-400'}`}>We&apos;ll let you know when your order is ready.</p>
 				</div>
-				<h3 className={`text-xl font-semibold mb-3 ${textClass}`}>Payment Method (Demo)</h3>
+				
 				<div className="space-y-3">
-					<button onClick={handleConfirm} className={`w-full py-4 text-lg rounded-xl font-bold ${confirmBtnClass}`} disabled={isProcessing || bag.length === 0}>
-						{isProcessing ? "Processing..." : "Confirm Payment (Confirm Order)"}
+					<button onClick={handleConfirm} className={`w-full py-4 text-lg rounded-xl font-bold transition-all ${confirmBtnClass}`} disabled={isProcessing || bag.length === 0}>
+						{isProcessing ? "Processing..." : `Pay $${total.toFixed(2)}`}
 					</button>
-					<button onClick={onCancel} className={`w-full py-3 text-lg rounded-xl font-bold ${cancelBtnClass}`} disabled={isProcessing}>
-						Go Back to Menu
+					<button onClick={onCancel} className={`w-full py-3 text-lg rounded-xl font-bold transition-all ${cancelBtnClass}`} disabled={isProcessing}>
+						Cancel
 					</button>
 				</div>
 			</div>

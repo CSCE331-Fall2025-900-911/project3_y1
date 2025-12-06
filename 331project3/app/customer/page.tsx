@@ -29,14 +29,13 @@ export default function CustomerPage() {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
   const [isHighContrast, setIsHighContrast] = useState(false);
-	const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
   useEffect(() => {
-    // Wait for the DOM element to be available
     const initGoogleTranslate = () => {
       const element = document.getElementById('google_translate_element');
       if (!element) {
@@ -111,6 +110,7 @@ export default function CustomerPage() {
     setSelectedItem(item);
     setIsEditing(false);
     setEditingItemId(null);
+    setIsAccessibilityOpen(false);
     setIsModalOpen(true);
   };
 
@@ -126,6 +126,7 @@ export default function CustomerPage() {
     if (nutrition) {
       setNutritionItem({ ...item, ...nutrition });
       setIsNutritionOpen(true);
+      setIsAccessibilityOpen(false);
     } else {
       console.warn('No nutrition data found for item:', item.item_name);
     }
@@ -146,6 +147,18 @@ export default function CustomerPage() {
       return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
   };
 
+  const getDefaultToppingsList = (name: string): string[] => {
+    const defaults: string[] = [];
+    const lowerName = name.toLowerCase();
+    
+    if (lowerName.includes('pearl') || lowerName.includes('boba')) defaults.push('boba');
+    if (lowerName.includes('pudding')) defaults.push('pudding');
+    if (lowerName.includes('cheese')) defaults.push('cheese foam');
+    if (lowerName.includes('grass jelly')) defaults.push('grass jelly');
+    
+    return defaults;
+  };
+
   const handleAddToBag = (customizations: {
     size: string;
     iceLevel: string;
@@ -159,7 +172,24 @@ export default function CustomerPage() {
     let finalPrice = Number(selectedItem.item_price) || 0;
     if (customizations.size === 'Small') finalPrice -= 0.50;
     if (customizations.size === 'Large') finalPrice += 0.70;
-    finalPrice += customizations.toppings.length * 0.50;
+
+    const defaults = getDefaultToppingsList(selectedItem.item_name || '');
+    const toppingCounts: Record<string, number> = {};
+    
+    customizations.toppings.forEach(t => {
+      toppingCounts[t] = (toppingCounts[t] || 0) + 1;
+    });
+
+    let toppingsCost = 0;
+    Object.entries(toppingCounts).forEach(([name, count]) => {
+      let chargeableCount = count;
+      if (defaults.includes(name)) {
+        chargeableCount = Math.max(0, count - 1);
+      }
+      toppingsCost += chargeableCount * 0.50;
+    });
+
+    finalPrice += toppingsCost;
 
     const newBagItem: BagItem = {
         uniqueId: `${selectedItem.item_id}-${Date.now()}`,
@@ -278,61 +308,136 @@ export default function CustomerPage() {
     }
   };
     
-    const toggleContrast = () => {
-        setIsHighContrast(!isHighContrast);
-    };
+  const toggleContrast = () => {
+      setIsHighContrast(!isHighContrast);
+  };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Loading menu...</p>
+      <div className={`flex min-h-screen items-center justify-center ${isHighContrast ? 'bg-[#333333] text-white' : 'bg-gray-100 text-gray-600'}`}>
+        <p className="font-medium text-lg">Loading menu...</p>
       </div>
     );
   }
 
   const totalAmount = bag.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
   const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
+  const mainBgClass = isHighContrast ? "bg-[#333333]" : "bg-gray-100";
+  const contentBgClass = isHighContrast ? "bg-[#333333]" : "bg-transparent"; 
+  const headerClass = isHighContrast 
+    ? "text-white" 
+    : "text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500";
+  
+  const headerContainerClass = isHighContrast
+    ? "bg-[#333333] border border-gray-600 shadow-sm"
+    : "bg-white shadow-sm border border-gray-100";
 
-  const mainBgClass = isHighContrast ? "bg-black" : "bg-zinc-50 dark:bg-black";
-  const contentBgClass = isHighContrast ? "bg-black" : "bg-white dark:bg-black";
-  const textClass = isHighContrast ? "text-white" : "text-black dark:text-zinc-50";
+  const noItemsClass = isHighContrast ? "text-gray-300" : "text-gray-500";
+  
+  const accButtonClass = isHighContrast
+    ? "bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
+    : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";
 
-  if (isCheckingOut) {
-    return (
-      <CheckoutScreen
-        bag={bag}
-        total={totalAmount}
-        onFinalizeOrder={handleFinalizeOrder}
-        onCancel={() => setIsCheckingOut(false)}
-        isHighContrast={isHighContrast}
-      />
-    );
-  }
+  const accDropdownClass = isHighContrast 
+      ? "bg-[#333333] border-gray-600 shadow-xl" 
+      : "bg-white border-gray-100 shadow-xl";
+
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
-      <main className={`flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 ${contentBgClass} sm:items-start transition-none`}>
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className={`text-4xl font-bold ${textClass}`}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .goog-te-gadget {
+            color: transparent !important;
+            font-size: 0px !important;
+        }
+        .goog-te-gadget span {
+            display: none !important;
+        }
+        
+        .goog-te-gadget .goog-te-combo {
+            padding: 8px 12px !important; 
+            border-radius: 0.5rem !important; /* rounded-lg */
+            font-weight: 700 !important; /* font-bold */
+            font-size: 0.875rem !important; /* text-sm */
+            cursor: pointer !important;
+            outline: none !important;
+            font-family: inherit !important;
+            margin: 0 !important;
+            transition: all 0.2s ease-in-out !important;
+            width: 100% !important; /* Full width for dropdown */
+        }
+
+        /* Dynamic Colors based on isHighContrast */
+        .goog-te-gadget .goog-te-combo {
+            background-color: ${isHighContrast ? '#4b5563' : 'white'} !important;
+            color: ${isHighContrast ? 'white' : '#4b5563'} !important;
+            border: ${isHighContrast ? '1px solid #6b7280' : '1px solid #e5e7eb'} !important;
+        }
+
+        /* Hover States */
+        .goog-te-gadget .goog-te-combo:hover {
+            background-color: ${isHighContrast ? '#374151' : '#faf5ff'} !important;
+            color: ${isHighContrast ? 'white' : '#9333ea'} !important;
+            border-color: ${isHighContrast ? '#9333ea' : '#e9d5ff'} !important;
+        }
+      `}} />
+
+      <main className={`flex min-h-screen w-full max-w-7xl items-start justify-center gap-8 py-12 px-4 sm:px-8 ${contentBgClass} transition-none`}>
+        <div className="w-full max-w-4xl mr-80"> 
+          <div className={`flex justify-between items-center mb-8 p-6 rounded-2xl ${headerContainerClass}`}>
+            <h1 className={`text-3xl font-extrabold ${headerClass}`}>
               Menu Items
             </h1>
             
-            <div className="flex items-center gap-4">
+            {/* Accessibility Button & Menu */}
+            <div className="relative z-30">
                 <button
-                    onClick={() => setIsAccessModalOpen(true)}
-                    className={`px-4 py-2 rounded-lg font-bold border-2 transition-colors ${
-                        isHighContrast 
-                        ? 'bg-black text-white border-white hover:bg-gray-900' 
-                        : 'bg-white text-black border-gray-200 hover:bg-gray-100'
-                    }`}
+                    onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
+                    className={`px-4 py-2 rounded-lg transition-colors font-bold border-2 flex items-center gap-2 ${accButtonClass}`}
+                    aria-expanded={isAccessibilityOpen}
+                    aria-label="Accessibility Options"
                 >
-                    Accessibility Settings
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 7.5a1.5 1.5 0 0 1 1.5-1.5h.09c.86.06 1.66.4 2.24 1.03l3.66 3.66a1 1 0 0 1-1.42 1.42l-2.57-2.57V21a1 1 0 0 1-2 0v-4h-3v4a1 1 0 0 1-2 0v-9.46l-2.57 2.57a1 1 0 0 1-1.42-1.42l3.66-3.66A3.01 3.01 0 0 1 12 9.5Z" />
+                    </svg>
+                    <span>Accessibility</span>
                 </button>
+
+                {/* Dropdown Container */}
+                <div className={`absolute right-0 top-full mt-3 w-64 p-4 rounded-xl border flex flex-col gap-4 transition-all ${accDropdownClass} ${isAccessibilityOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+                    
+                    {/* Contrast Option */}
+                    <div>
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Display</p>
+                        <button
+                            onClick={toggleContrast}
+                            className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between ${
+                                isHighContrast 
+                                ? "bg-purple-600 text-white shadow-lg" 
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                        >
+                           <span>High Contrast</span>
+                           <div className={`w-8 h-4 rounded-full relative transition-colors ${isHighContrast ? 'bg-white/30' : 'bg-gray-300'}`}>
+                                <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all ${isHighContrast ? 'translate-x-4' : ''}`}></div>
+                           </div>
+                        </button>
+                    </div>
+
+                    <div className={isHighContrast ? "border-t border-gray-600" : "border-t border-gray-100"}></div>
+
+                    {/* Language Option */}
+                    <div>
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Language</p>
+                        <div className="w-full">
+                            <div id="google_translate_element" ref={translateElementRef} className="w-full"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             {menuItems.map((item) => (
               <MenuItemButton
                 key={item.item_id}
@@ -345,7 +450,7 @@ export default function CustomerPage() {
           </div>
 
           {menuItems.length === 0 && (
-            <p className={isHighContrast ? "text-white font-medium" : "text-zinc-600 dark:text-zinc-400"}>
+            <p className={`text-center py-10 font-medium ${noItemsClass}`}>
               No menu items found.
             </p>
           )}
@@ -383,58 +488,16 @@ export default function CustomerPage() {
         />
       )}
 
-      {/* Accessibility Modal: cant use conditional rendering bc google translate requires the div to always exist so its just hdiden normally lol prob a sucffed solution but whatever */}
-      <div className={`fixed inset-0 z-[60] flex items-center justify-center ${isAccessModalOpen ? '' : 'hidden'}`}>
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAccessModalOpen(false)} />
-        
-        <div className={`relative z-10 w-full max-w-sm p-6 rounded-xl shadow-2xl flex flex-col gap-6 ${
-            isHighContrast 
-            ? 'bg-black border-4 border-white text-white' 
-            : 'bg-white text-black'
-        }`}>
-            <div className="flex justify-between items-center border-b pb-4 border-current">
-                <h2 className="text-2xl font-bold">Accessibility</h2>
-                <button onClick={() => setIsAccessModalOpen(false)} className="text-2xl font-bold leading-none hover:opacity-70">&times;</button>
-            </div>
-
-            <div className="space-y-6">
-                {/* Contrast Toggle Section */}
-                <div>
-                    <h3 className="font-bold text-lg mb-2">Display Mode</h3>
-                    <button
-                        onClick={toggleContrast}
-                        aria-pressed={isHighContrast}
-                        className={`w-full px-4 py-3 rounded-lg font-bold border-2 transition-all ${
-                            isHighContrast 
-                            ? 'bg-yellow-400 text-black border-yellow-400 hover:bg-yellow-300' 
-                            : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-200'
-                        }`}
-                    >
-                        {isHighContrast ? 'Disable High Contrast' : 'Enable High Contrast'}
-                    </button>
-                </div>
-
-                {/* Google Translate Section */}
-                <div>
-                    <h3 className="font-bold text-lg mb-2">Language</h3>
-                    <div className="p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
-                         <div id="google_translate_element" ref={translateElementRef} className="translate-button"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button 
-                onClick={() => setIsAccessModalOpen(false)}
-                className={`w-full py-3 rounded-lg font-bold border-2 ${
-                    isHighContrast
-                    ? 'bg-white text-black border-white hover:bg-gray-200'
-                    : 'bg-black text-white border-black hover:bg-gray-800'
-                }`}
-            >
-                Close Settings
-            </button>
-        </div>
-      </div>
+      {/* Remove early return of checkoiutscreen and made it just render on top so it doesnt mess up translate */}
+      {isCheckingOut && (
+        <CheckoutScreen
+          bag={bag}
+          total={totalAmount}
+          onFinalizeOrder={handleFinalizeOrder}
+          onCancel={() => setIsCheckingOut(false)}
+          isHighContrast={isHighContrast}
+        />
+      )}
 
     </div>
   );
