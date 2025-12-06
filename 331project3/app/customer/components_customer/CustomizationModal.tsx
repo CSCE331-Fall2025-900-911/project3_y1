@@ -102,8 +102,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   finalPrice += toppings.length * 0.50;
 
   const availableToppings = [
-    'boba', 'crystal boba', 'popping boba', 'pudding',
-    'aloe vera', 'grass jelly', 'red bean', 'cheese foam'
+    'Boba', 'Crystal Boba', 'Popping Boba', 'Pudding',
+    'Aloe Vera', 'Grass Jelly', 'Red Bean', 'Cheese Foam'
   ];
 
   const bgClass = isHighContrast ? "bg-black border-4 border-white" : "bg-white";
