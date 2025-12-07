@@ -1,7 +1,44 @@
+"use client";
 
-
-
+import { useEffect, useState } from "react";
 import Image from "next/image";
+
+const LAT = 30.6280;
+const LON = -96.3344;
+
+function useWeather() {
+  const [weather, setWeather] = useState<{ tempF: number | null; type: string | null }>({ tempF: null, type: null });
+  useEffect(() => {
+    async function fetchWeather() {
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`);
+        const data = await res.json();
+        const tempC = data.current_weather?.temperature ?? null;
+        const tempF = tempC !== null ? Math.round((tempC * 9) / 5 + 32) : null;
+        const code = data.current_weather?.weathercode;
+        const type = code !== undefined ? weatherCodeToType(code) : null;
+        setWeather({ tempF, type });
+      } catch {
+        setWeather({ tempF: null, type: null });
+      }
+    }
+    fetchWeather();
+  }, []);
+  return weather;
+}
+
+function weatherCodeToType(code: number): string {
+  if (code === 0) return "Clear";
+  if (code === 1 || code === 2 || code === 3) return "Partly Cloudy";
+  if (code === 45 || code === 48) return "Foggy";
+  if (code === 51 || code === 53 || code === 55) return "Drizzle";
+  if (code === 61 || code === 63 || code === 65) return "Rainy";
+  if (code === 80 || code === 81 || code === 82) return "Rain Showers";
+  if (code === 71 || code === 73 || code === 75) return "Snow";
+  if (code === 95) return "Thunderstorm";
+  if (code === 96 || code === 99) return "Thunderstorm & Hail";
+  return "Unknown";
+}
 
 const menuItems = [
   { id: 1, name: "Classic Pearl Milk Tea 2", price: 5.80 },
@@ -28,8 +65,14 @@ const menuItems = [
 ];
 
 export default function Home() {
+  const weather = useWeather();
   return (
-    <div style={{ minHeight: "100vh", background: "#22223b", display: "flex", justifyContent: "center", alignItems: "center" }}>
+    <div style={{ minHeight: "100vh", background: "#22223b", display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+      {/* Temperature and weather in top right */}
+      <div style={{ position: "absolute", top: 24, right: 36, zIndex: 10, background: "#fff", borderRadius: 12, padding: "8px 18px", fontSize: 22, fontWeight: 700, color: "#4a7c59", boxShadow: "0 2px 8px rgba(0,0,0,0.10)", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+        <span>{weather.tempF !== null ? `${weather.tempF}°F` : "--"}</span>
+        <span style={{ fontSize: 16, fontWeight: 500, color: "#22223b", marginTop: 2 }}>{weather.type ?? ""}</span>
+      </div>
       <div style={{ background: "#fff", borderRadius: 24, boxShadow: "0 8px 32px rgba(0,0,0,0.15)", padding: 48, minWidth: 900, maxWidth: 1300, width: "95%" }}>
         <h1 style={{ fontSize: 54, fontWeight: 900, marginBottom: 48, textAlign: "center", letterSpacing: 2, color: "#22223b", textShadow: "0 2px 8px #e0e1dd" }}>Drinks Menu</h1>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 36 }}>
