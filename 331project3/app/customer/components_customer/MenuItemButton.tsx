@@ -7,12 +7,17 @@ interface MenuItemButtonProps {
   onClick?: () => void;
   onNutritionClick?: () => void;
   isHighContrast: boolean;
+  isDrinkOfTheDay?: boolean;
 }
 
-export default function MenuItemButton({ item, onClick, onNutritionClick, isHighContrast }: MenuItemButtonProps) {
-  const containerClasses = isHighContrast 
-    ? "bg-[#333333] border border-gray-600 shadow-sm hover:border-purple-400 hover:shadow-lg hover:-translate-y-0.5" 
-    : "bg-white border border-gray-200 shadow-sm hover:border-purple-300 hover:shadow-lg hover:-translate-y-0.5";
+export default function MenuItemButton({ item, onClick, onNutritionClick, isHighContrast, isDrinkOfTheDay = false }: MenuItemButtonProps) {
+  const containerClasses = isDrinkOfTheDay
+    ? isHighContrast
+      ? "bg-[#333333] border-2 border-yellow-500 shadow-xl hover:border-yellow-400 hover:shadow-2xl hover:-translate-y-1"
+      : "bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-400 shadow-xl hover:border-yellow-500 hover:shadow-2xl hover:-translate-y-1"
+    : isHighContrast
+      ? "bg-[#333333] border border-gray-600 shadow-sm hover:border-purple-400 hover:shadow-lg hover:-translate-y-0.5"
+      : "bg-white border border-gray-200 shadow-sm hover:border-purple-300 hover:shadow-lg hover:-translate-y-0.5";
 
   const titleClass = isHighContrast ? "text-white" : "text-gray-700";
   const metaClass = isHighContrast ? "text-gray-400" : "text-gray-400 uppercase tracking-wider text-xs";
@@ -100,11 +105,16 @@ export default function MenuItemButton({ item, onClick, onNutritionClick, isHigh
 
   const imageSrc = getItemImage(item.item_name);
 
+  const minHeight = isDrinkOfTheDay ? "min-h-[200px]" : "min-h-[140px]";
+  const titleSize = isDrinkOfTheDay ? "text-2xl" : "text-lg";
+  const priceSize = isDrinkOfTheDay ? "text-2xl" : "text-xl";
+  const padding = isDrinkOfTheDay ? "p-8" : "p-5";
+
   return (
-    <div className={`relative flex flex-col rounded-xl transition-all duration-200 cursor-pointer min-h-[140px] overflow-hidden ${containerClasses}`} onClick={onClick}>
+    <div className={`relative flex flex-col rounded-xl ${padding} transition-all duration-200 cursor-pointer ${minHeight} ${containerClasses}`} onClick={onClick}>
       
       {/* Image Section */}
-      <div className="w-full h-54 bg-gray-100 relative border-b border-gray-100/50">
+      <div className="w-full h-55 bg-gray-100 relative border-b border-gray-100/50">
         <img 
             src={imageSrc}
             alt={item.item_name}
@@ -117,18 +127,23 @@ export default function MenuItemButton({ item, onClick, onNutritionClick, isHigh
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex flex-col items-start w-full text-left flex-1 font-sans">
-            {item.item_category && (
-                <p className={`mb-2 font-bold ${metaClass}`}>
-                {item.item_category}
-                </p>
-            )}
+            {isDrinkOfTheDay && (
+          <p className={`mb-2 font-bold text-yellow-600 ${isHighContrast ? 'text-yellow-400' : ''} uppercase tracking-wider text-xs`}>
+            ⭐ Drink of the Day
+          </p>
+        )}
+        {!isDrinkOfTheDay && item.item_category && (
+              <p className={`mb-2 font-bold ${metaClass}`}>
+              {item.item_category}
+              </p>
+          )}
 
-            <h2 className={`text-lg font-bold mb-1 leading-snug ${titleClass}`}>
+            <h2 className={`${titleSize} font-bold mb-1 leading-snug ${titleClass}`}>
             {item.item_name}
             </h2>
             
             {item.item_price && (
-            <p className={`text-xl font-bold mt-2 ${priceClass}`}>
+            <p className={`${priceSize} font-bold mt-2 ${priceClass}`}>
                 ${Number(item.item_price).toFixed(2)}
             </p>
             )}

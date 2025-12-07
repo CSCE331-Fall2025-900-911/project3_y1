@@ -17,6 +17,8 @@ export default function MenuitemsView() {
 		item_price: 0,
 	});
 	const [isAdding, setIsAdding] = useState(false);
+	const [drinkOfTheDayId, setDrinkOfTheDayId] = useState<number | null>(null);
+	const [isUpdatingDrinkOfTheDay, setIsUpdatingDrinkOfTheDay] = useState(false);
 
 	const fetchMenuItems = async () => {
 		setIsLoading(true);
@@ -39,8 +41,21 @@ export default function MenuitemsView() {
 		}
 	}
 
+	const fetchDrinkOfTheDay = async () => {
+		try {
+			const response = await fetch('/api/manager/drink-of-the-day');
+			if (response.ok) {
+				const data = await response.json();
+				setDrinkOfTheDayId(data.item_id);
+			}
+		} catch (error) {
+			console.error("Failed to fetch drink of the day", error);
+		}
+	}
+
 	useEffect(() => {
 		fetchMenuItems();
+		fetchDrinkOfTheDay();
 	}, [])
 
 	const handleNewItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,8 +130,34 @@ export default function MenuitemsView() {
 			}
 
 			setMenuItems((prev) => prev.filter(item => item.item_id !== item_id));
+			// If deleted item was drink of the day, clear it
+			if (drinkOfTheDayId === item_id) {
+				setDrinkOfTheDayId(null);
+			}
 		} catch (error) {
 			setError((error as Error).message);
+		}
+	}
+
+	const handleSetDrinkOfTheDay = async (item_id: number) => {
+		setIsUpdatingDrinkOfTheDay(true);
+		try {
+			const newDrinkOfTheDayId = drinkOfTheDayId === item_id ? null : item_id;
+			const response = await fetch('/api/manager/drink-of-the-day', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ item_id: newDrinkOfTheDayId }),
+			});
+
+			if (!response.ok) {
+				throw new Error(`Error: ${response.status}`);
+			}
+
+			setDrinkOfTheDayId(newDrinkOfTheDayId);
+		} catch (error) {
+			setError((error as Error).message);
+		} finally {
+			setIsUpdatingDrinkOfTheDay(false);
 		}
 	}
 
@@ -173,7 +214,7 @@ export default function MenuitemsView() {
 					<table className="min-w-full divide-y divide-gray-200">
 						<thead className="bg-blue-50">
 							<tr>
-								{['Item ID', 'Name', 'Category', 'Price', 'Actions'].map((header) => (
+								{['Item ID', 'Name', 'Category', 'Price', 'Drink of the Day', 'Actions'].map((header) => (
 									<th 
 										key={header}
 										scope="col"
@@ -185,52 +226,72 @@ export default function MenuitemsView() {
 							</tr>
 						</thead>
 						<tbody className="bg-white">
-							{menuItems.map((item, index) => (
-								<tr key={item.item_id} className={`border-b border-gray-200 last:border-b-0 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-100 transition-colors`}>
-									<td 
-										contentEditable
-										suppressContentEditableWarning={true}
-										onBlur={(e) => handleUpdateItem(item.item_id, 'item_id', e.currentTarget.textContent || '')}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-									>
-										{item.item_id}
-									</td>
-									<td 
-										contentEditable
-										suppressContentEditableWarning={true}
-										onBlur={(e) => handleUpdateItem(item.item_id, 'item_name', e.currentTarget.textContent || '')}
-										className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-									>
-										{item.item_name}
-									</td>
-									<td 
-										contentEditable
-										suppressContentEditableWarning={true}
-										onBlur={(e) => handleUpdateItem(item.item_id, 'item_category', e.currentTarget.textContent || '')}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-									>
-										<span className="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
-                                            {item.item_category}
-                                        </span>
-									</td>
-									<td 
-										contentEditable
-										suppressContentEditableWarning={true}
-										onBlur={(e) => handleUpdateItem(item.item_id, 'item_price', e.currentTarget.textContent.replace(/[$,]/g, '') || '')}
-										className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-700"
-									>
-										${item.item_price}
-									</td>
-									<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-										<Button
-											variant="danger"
-											onClick={() => handleDeletItem(item.item_id)}
+							{menuItems.map((item, index) => {
+								const isDrinkOfTheDay = drinkOfTheDayId === item.item_id;
+								return (
+									<tr key={item.item_id} className={`border-b border-gray-200 last:border-b-0 ${isDrinkOfTheDay ? 'bg-yellow-50 border-yellow-300' : index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-100 transition-colors`}>
+										<td 
+											contentEditable
+											suppressContentEditableWarning={true}
+											onBlur={(e) => handleUpdateItem(item.item_id, 'item_id', e.currentTarget.textContent || '')}
+											className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
 										>
-											Delete
-										</Button>
-									</td>
-								</tr>
-							))}
+											{item.item_id}
+										</td>
+										<td 
+											contentEditable
+											suppressContentEditableWarning={true}
+											onBlur={(e) => handleUpdateItem(item.item_id, 'item_name', e.currentTarget.textContent || '')}
+											className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+										>
+											<div className="flex items-center gap-2">
+												{item.item_name}
+												{isDrinkOfTheDay && (
+													<span className="px-2 py-0.5 text-xs font-bold text-yellow-800 bg-yellow-200 rounded-full">
+														⭐ Drink of the Day
+													</span>
+												)}
+											</div>
+										</td>
+										<td 
+											contentEditable
+											suppressContentEditableWarning={true}
+											onBlur={(e) => handleUpdateItem(item.item_id, 'item_category', e.currentTarget.textContent || '')}
+											className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+										>
+											<span className="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
+												{item.item_category}
+											</span>
+										</td>
+										<td 
+											contentEditable
+											suppressContentEditableWarning={true}
+											onBlur={(e) => handleUpdateItem(item.item_id, 'item_price', e.currentTarget.textContent.replace(/[$,]/g, '') || '')}
+											className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-700"
+										>
+											${item.item_price}
+										</td>
+										<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+											<Button
+												variant={isDrinkOfTheDay ? "secondary" : "primary"}
+												onClick={() => handleSetDrinkOfTheDay(item.item_id)}
+												disabled={isUpdatingDrinkOfTheDay}
+												isLoading={isUpdatingDrinkOfTheDay && drinkOfTheDayId === item.item_id}
+											>
+												{isDrinkOfTheDay ? 'Remove' : 'Set as Drink of the Day'}
+											</Button>
+										</td>
+										<td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+											<Button
+												variant="danger"
+												onClick={() => handleDeletItem(item.item_id)}
+											>
+												Delete
+											</Button>
+										</td>
+									</tr>
+								);
+							})}
 						</tbody>
 					</table>
 				</div>
