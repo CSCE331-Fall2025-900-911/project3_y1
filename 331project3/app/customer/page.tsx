@@ -18,6 +18,7 @@ declare global {
 
 export default function CustomerPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [drinkOfTheDayItem, setDrinkOfTheDayItem] = useState<MenuItem | null>(null);
   const [bag, setBag] = useState<BagItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -114,7 +115,20 @@ export default function CustomerPage() {
       const response = await fetch('/api/customer/menu-items');
       if (response.ok) {
         const data = await response.json();
-        setMenuItems(data);
+        const allItems: MenuItem[] = data.menuItems || [];
+        const drinkOfTheDayId: number | null = data.drinkOfTheDayItemId || null;
+        
+        // Separate drink of the day from regular menu items
+        if (drinkOfTheDayId !== null) {
+          const drinkOfTheDay = allItems.find(item => item.item_id === drinkOfTheDayId);
+          const regularItems = allItems.filter(item => item.item_id !== drinkOfTheDayId);
+          
+          setDrinkOfTheDayItem(drinkOfTheDay || null);
+          setMenuItems(regularItems);
+        } else {
+          setDrinkOfTheDayItem(null);
+          setMenuItems(allItems);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch menu items:', error);
@@ -453,19 +467,49 @@ export default function CustomerPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-            {menuItems.map((item) => (
-              <MenuItemButton
-                key={item.item_id}
-                item={item}
-                onClick={() => handleItemClick(item)} 
-                onNutritionClick={() => handleOpenNutrition(item)}
-                isHighContrast={isHighContrast}
-              />
-            ))}
-          </div>
+          {/* Drink of the Day Section */}
+          {drinkOfTheDayItem && (
+            <div className="mb-10">
+              <h2 className={`text-2xl font-bold mb-4 ${isHighContrast ? 'text-white' : 'text-gray-800'}`}>
+                ⭐ Drink of the Day
+              </h2>
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <MenuItemButton
+                    item={drinkOfTheDayItem}
+                    onClick={() => handleItemClick(drinkOfTheDayItem)} 
+                    onNutritionClick={() => handleOpenNutrition(drinkOfTheDayItem)}
+                    isHighContrast={isHighContrast}
+                    isDrinkOfTheDay={true}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
-          {menuItems.length === 0 && (
+          {/* Regular Menu Items */}
+          {menuItems.length > 0 && (
+            <>
+              {drinkOfTheDayItem && (
+                <h2 className={`text-2xl font-bold mb-4 mt-8 ${isHighContrast ? 'text-white' : 'text-gray-800'}`}>
+                  All Menu Items
+                </h2>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                {menuItems.map((item) => (
+                  <MenuItemButton
+                    key={item.item_id}
+                    item={item}
+                    onClick={() => handleItemClick(item)} 
+                    onNutritionClick={() => handleOpenNutrition(item)}
+                    isHighContrast={isHighContrast}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {menuItems.length === 0 && !drinkOfTheDayItem && (
             <p className={`text-center py-10 font-medium ${noItemsClass}`}>
               No menu items found.
             </p>
