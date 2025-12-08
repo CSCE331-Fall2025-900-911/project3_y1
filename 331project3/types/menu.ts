@@ -15,7 +15,7 @@ export interface NutritionInfo {
 }
 
 export const NUTRITION_DATA: Record<string, NutritionInfo> = {
-  'Thai Pearl Milk Team': { calories: 980, sat_fat: 16, sodium: 152, carbs: 202, sugar: 85, caffeine: 165 },
+  'Thai Pearl Milk Tea': { calories: 980, sat_fat: 16, sodium: 152, carbs: 202, sugar: 85, caffeine: 165 },
   'Mango Green Tea': { calories: 400, sat_fat: 0, sodium: 1, carbs: 100, sugar: 95, caffeine: 150 },
   'Mango & Passion Fruit Tea': { calories: 472, sat_fat: 0, sodium: 0, carbs: 118, sugar: 112, caffeine: 150 },
   'Mango Boba': { calories: 620, sat_fat: 3, sodium: 80, carbs: 130, sugar: 100, caffeine: 0 },
@@ -35,7 +35,7 @@ export const NUTRITION_DATA: Record<string, NutritionInfo> = {
   'Classic Pearl Milk Tea': { calories: 770, sat_fat: 17, sodium: 150, carbs: 148, sugar: 48, caffeine: 120 },
   'Honey Lemonade': { calories: 282, sat_fat: 0, sodium: 1, carbs: 72, sugar: 63, caffeine: 0 },
   'Coffee Creama': { calories: 768, sat_fat: 32, sodium: 471, carbs: 99, sugar: 52, caffeine: 350 },
-  'Hokkaido Pearl Milk Team': { calories: 758, sat_fat: 15, sodium: 314, carbs: 150, sugar: 46, caffeine: 230 },
+  'Hokkaido Pearl Milk Tea': { calories: 758, sat_fat: 15, sodium: 314, carbs: 150, sugar: 46, caffeine: 230 },
   'Coffee Milk Tea w/ Coffee Jelly': { calories: 584, sat_fat: 20, sodium: 145, carbs: 92, sugar: 59, caffeine: 330 },
   'Honey Pearl Milk Tea': { calories: 892, sat_fat: 18, sodium: 164, carbs: 175, sugar: 64, caffeine: 135, },
 };
