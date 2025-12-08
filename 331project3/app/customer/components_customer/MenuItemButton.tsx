@@ -29,7 +29,7 @@ export default function MenuItemButton({
 
   const titleClass = isHighContrast ? "text-white" : "text-gray-700";
   const metaClass = isHighContrast ? "text-gray-400" : "text-gray-400 uppercase tracking-wider text-xs";
-  const priceClass = isHighContrast ? "text-purple-400" : "text-purple-600";
+  const priceClass = isHighContrast ? "text-red-400" : "text-red-600";
   const nutritionBtnClass = isHighContrast
     ? "bg-[#333333] text-gray-300 border border-gray-500 hover:bg-gray-700 hover:border-purple-400 hover:text-white"
     : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";

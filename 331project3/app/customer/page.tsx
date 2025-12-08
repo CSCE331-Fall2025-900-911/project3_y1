@@ -357,7 +357,7 @@ export default function CustomerPage() {
   const contentBgClass = isHighContrast ? "bg-[#333333]" : "bg-transparent"; 
   const headerClass = isHighContrast 
     ? "text-white" 
-    : "text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500";
+    : "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500";
   
   const headerContainerClass = isHighContrast
     ? "bg-[#333333] border border-gray-600 shadow-sm"

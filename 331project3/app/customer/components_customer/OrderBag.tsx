@@ -50,12 +50,12 @@ export default function OrderBag({
   const buttonBaseClass = "w-7 h-7 rounded-full text-sm font-bold flex items-center justify-center transition-all";
   
   const incDecButtonClass = isHighContrast
-      ? `border border-gray-500 text-white hover:border-purple-400 hover:text-purple-400 ${buttonBaseClass}`
-      : `bg-white border border-gray-200 text-gray-600 hover:border-purple-500 hover:bg-purple-50 hover:text-purple-600 ${buttonBaseClass}`;
+      ? `border border-gray-500 text-white hover:border-blue-400 hover:text-blue-400 ${buttonBaseClass}`
+      : `bg-white border border-gray-200 text-gray-600 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 ${buttonBaseClass}`;
 
   const editBtnClass = isHighContrast
-      ? "text-purple-400 hover:text-purple-300 text-sm font-medium hover:underline"
-      : "text-purple-600 hover:text-purple-800 text-sm font-medium hover:underline";
+      ? "text-blue-400 hover:text-blue-300 text-sm font-medium hover:underline"
+      : "text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline";
 
   const deleteBtnClass = isHighContrast
       ? "text-red-400 hover:text-red-300 text-sm font-medium hover:underline"
@@ -79,7 +79,7 @@ export default function OrderBag({
               const isEditing = item.uniqueId === editingItemId;
 
               const activeClass = isEditing 
-                ? (isHighContrast ? "bg-gray-700/50 rounded-lg p-3 border border-purple-500" : "bg-purple-50 rounded-lg p-3 border border-purple-200")
+                ? (isHighContrast ? "bg-gray-700/50 rounded-lg p-3 border border-blue-500" : "bg-blue-50 rounded-lg p-3 border border-blue-200")
                 : "";
               
               // Logic to group toppings: "boba, boba" -> "Boba x2"
@@ -99,9 +99,9 @@ export default function OrderBag({
                   <div className="flex justify-between items-start mb-1">
                     <span className={`font-bold text-sm ${textClass} leading-tight`}>
                         {item.name} 
-                        {isEditing && <span className="text-xs ml-2 uppercase text-purple-400 font-bold">(Editing)</span>}
+                        {isEditing && <span className="text-xs ml-2 uppercase text-blue-400 font-bold">(Editing)</span>}
                     </span>
-                    <span className={`font-bold text-sm ${isHighContrast ? 'text-purple-400' : 'text-gray-800'}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
+                    <span className={`font-bold text-sm ${isHighContrast ? 'text-blue-400' : 'text-gray-800'}`}>${(item.finalPrice * item.quantity).toFixed(2)}</span>
                   </div>
 
                   <div className={`text-xs mb-3 font-medium ${subTextClass}`}>
@@ -164,8 +164,8 @@ export default function OrderBag({
               onClick={onCheckout}
               className={`w-full py-4 px-4 rounded-xl font-bold text-lg transition-transform active:scale-95 ${
                 isHighContrast 
-                ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg' 
-                : 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5'
+                ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg' 
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5'
               }`}
             >
               Checkout

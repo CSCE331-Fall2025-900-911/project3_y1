@@ -201,18 +201,18 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300";
       
   const optionSelected = isHighContrast
-      ? "bg-purple-600 text-white border-purple-500 font-bold shadow-sm"
-      : "bg-purple-50 border-purple-500 text-purple-700 font-semibold shadow-sm";
+      ? "bg-red-600 text-white border-red-500 font-bold shadow-sm"
+      : "bg-red-50 border-red-500 text-red-700 font-semibold shadow-sm";
 
   // BUTTONS
   const buttonBase = "flex-1 py-3.5 px-6 rounded-xl font-bold text-sm transition-transform active:scale-95";
   const primaryBtn = isHighContrast 
-    ? "bg-purple-600 text-white shadow-lg shadow-gray-900 hover:bg-purple-700 hover:shadow-xl hover:-translate-y-0.5"
-    : "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5";
+    ? "bg-red-600 text-white shadow-lg shadow-gray-900 hover:bg-red-700 hover:shadow-xl hover:-translate-y-0.5"
+    : "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-200 hover:shadow-red-300 hover:-translate-y-0.5";
     
   const secondaryBtn = isHighContrast
-    ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-purple-400"
-    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-purple-300 hover:text-purple-600";
+    ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-red-400"
+    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-red-300 hover:text-red-600";
   
   // Close Button Style
   const closeBtnClass = isHighContrast 
@@ -225,8 +225,8 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     ? "text-red-400 hover:bg-red-900/30 disabled:opacity-30 disabled:hover:bg-transparent"
     : "text-red-500 hover:bg-red-50 disabled:text-gray-300 disabled:hover:bg-transparent";
   const qtyBtnPlus = isHighContrast
-    ? "bg-purple-600 text-white hover:bg-purple-500"
-    : "bg-purple-100 text-purple-700 hover:bg-purple-200";
+    ? "bg-red-600 text-white hover:bg-red-500"
+    : "bg-red-100 text-red-700 hover:bg-red-200";
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 ${overlayClass}`}>
@@ -308,7 +308,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                             <span className="capitalize font-semibold">{topping}</span>
                             
                             <div className="flex items-center gap-3">
-                              <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-purple-200' : 'text-purple-600') : 'text-gray-400'}`}>
+                              <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-red-200' : 'text-red-600') : 'text-gray-400'}`}>
                                 {priceDisplay}
                               </span>
 
@@ -335,7 +335,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         <div className={`p-6 border-t ${isHighContrast ? 'border-gray-600 bg-[#333333]' : 'border-gray-100 bg-gray-50'}`}>
             <div className="flex justify-between items-center mb-4">
                  <span className={`text-lg font-bold ${textClass}`}>Total</span>
-                 <span className={`text-2xl font-extrabold ${isHighContrast ? 'text-purple-400' : 'text-purple-600'}`}>${finalPrice.toFixed(2)}</span>
+                 <span className={`text-2xl font-extrabold ${isHighContrast ? 'text-red-400' : 'text-red-600'}`}>${finalPrice.toFixed(2)}</span>
             </div>
 
             <div className="flex gap-3">
