@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { MenuItem } from '@/types/menu';
 
 interface MenuItemButtonProps {
@@ -70,18 +71,20 @@ export default function MenuItemButton({
       className={`relative flex flex-col rounded-xl overflow-hidden transition-all duration-200 cursor-pointer ${minHeight} ${containerClasses}`} 
       onClick={onClick}
     >
-      
       {/* 1. Image Section */}
       <div className="w-full h-48 bg-gray-100 relative border-b border-gray-100/10">
-        <img 
+        <Image 
             src={imageSrc}
             alt={item.item_name || 'Menu Item'}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
             }}
         />
         
+        {/* Drink of the Day Badge */}
         {/* Drink of the Day Badge */}
         {isDrinkOfTheDay && (
              <div className="absolute top-0 right-0 bg-yellow-400 text-black font-bold px-3 py-1 rounded-bl-lg text-xs shadow-sm z-10">
