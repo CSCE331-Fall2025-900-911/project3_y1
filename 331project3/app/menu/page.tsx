@@ -67,25 +67,34 @@ const menuItems = [
 export default function Home() {
   const weather = useWeather();
   return (
-    <div style={{ minHeight: "100vh", background: "#22223b", display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
-      {/* Temperature and weather in top right */}
-      <div style={{ position: "absolute", top: 24, right: 36, zIndex: 10, background: "#fff", borderRadius: 12, padding: "8px 18px", fontSize: 22, fontWeight: 700, color: "#4a7c59", boxShadow: "0 2px 8px rgba(0,0,0,0.10)", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+    <div style={{ minHeight: "100vh", background: "#f6f7fb", padding: 0, margin: 0, fontFamily: 'Inter, Arial, sans-serif', position: "relative" }}>
+      {/* Weather box fixed top right */}
+      <div style={{ position: "fixed", top: 24, right: 36, zIndex: 100, background: "#fff", borderRadius: 16, padding: "18px 32px", fontSize: 32, fontWeight: 800, color: "#7c3aed", boxShadow: "0 4px 16px rgba(124,58,237,0.13)", display: "flex", flexDirection: "column", alignItems: "flex-end", minWidth: 120, border: "2px solid #e9e5f7" }}>
         <span>{weather.tempF !== null ? `${weather.tempF}°F` : "--"}</span>
-        <span style={{ fontSize: 16, fontWeight: 500, color: "#22223b", marginTop: 2 }}>{weather.type ?? ""}</span>
+        <span style={{ fontSize: 22, fontWeight: 600, color: "#22223b", marginTop: 6 }}>{weather.type ?? ""}</span>
       </div>
-      <div style={{ background: "#fff", borderRadius: 24, boxShadow: "0 8px 32px rgba(0,0,0,0.15)", padding: 48, minWidth: 900, maxWidth: 1300, width: "95%" }}>
-        <h1 style={{ fontSize: 54, fontWeight: 900, marginBottom: 48, textAlign: "center", letterSpacing: 2, color: "#22223b", textShadow: "0 2px 8px #e0e1dd" }}>Drinks Menu</h1>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 36 }}>
-          {menuItems.map((item) => (
-            <div key={item.id} style={{ background: "#f8fafc", borderRadius: 18, boxShadow: "0 2px 12px rgba(0,0,0,0.07)", padding: 24, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 340 }}>
-              <div style={{ width: 180, height: 180, background: "#e0e1dd", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 28, overflow: "hidden", fontSize: 64, color: '#bcbcbc', fontWeight: 700, letterSpacing: 2 }}>
-                {/* Large image placeholder */}
-                <span role="img" aria-label="drink">🥤</span>
+      {/* Header */}
+      <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 32, marginBottom: 24 }}>
+        <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(124,58,237,0.07)", padding: "18px 40px", minWidth: 340 }}>
+          <h1 style={{ fontSize: 38, fontWeight: 900, color: "#a855f7", margin: 0, letterSpacing: 1 }}>Boba Tea Menu</h1>
+        </div>
+      </div>
+      {/* Menu grid */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 1200, padding: "0 24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 44 }}>
+            {menuItems.map((item) => (
+              <div key={item.id} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 4px 18px rgba(124,58,237,0.13)", padding: "40px 32px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 340, border: "3px solid #e9e5f7" }}>
+                {/* Large image placeholder for each drink */}
+                <div style={{ width: 180, height: 180, background: "#f3f0ff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, overflow: "hidden" }}>
+                  <span role="img" aria-label="drink" style={{ fontSize: 90 }}>🥤</span>
+                </div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: "#a855f7", letterSpacing: 1, marginBottom: 12 }}>DRINK · {item.id}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: "#22223b", marginBottom: 16, textAlign: "center" }}>{item.name}</div>
+                <div style={{ fontSize: 32, fontWeight: 700, color: "#a855f7" }}>${item.price.toFixed(2)}</div>
               </div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: "#22223b", marginBottom: 10, textAlign: "center", minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.name}</div>
-              <div style={{ fontSize: 24, fontWeight: 600, color: "#4a7c59", textAlign: "center", marginTop: 8 }}>${item.price.toFixed(2)}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
