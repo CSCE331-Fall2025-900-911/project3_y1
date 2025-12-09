@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 interface Customizations {
   size: string;
+  temperature: string;
   iceLevel: string;
   sugarLevel: string;
   toppings: string[];
@@ -17,6 +18,7 @@ interface CustomizationModalProps {
         originalQuantity?: number
     ) => void; 
   itemName: string;
+  itemCategory: string;
   basePrice: number;
   initialCustomizations?: Customizations; 
   isEditing: boolean;
@@ -29,6 +31,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   onClose, 
   onAddToBag,
   itemName,
+  itemCategory,
   basePrice,
   initialCustomizations,
   isEditing,            
@@ -36,6 +39,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
   isHighContrast,
 }) => {
   const [size, setSize] = useState<string>('Medium');
+  const [temperature, setTemperature] = useState<string>('Iced');
   const [iceLevel, setIceLevel] = useState<string>('Regular Ice');
   const [sugarLevel, setSugarLevel] = useState<string>('50%');
   const [toppingQuantities, setToppingQuantities] = useState<Record<string, number>>({});
@@ -86,12 +90,19 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     return defaults;
   };
 
+  const isBlendedDrink = (name: string, category: string): boolean => {
+      const lowerName = name.toLowerCase();
+      const lowerCat = category.toLowerCase();
+      return lowerName.includes('blended') || lowerName.includes('slush') || lowerCat.includes('blended') || lowerCat.includes('slush');
+  };
+
    useEffect(() => {
     if (!isOpen) return;
 
     const timeoutId: ReturnType<typeof setTimeout> = setTimeout(() => {
       if (isEditing && initialCustomizations) {
         setSize(initialCustomizations.size);
+        setTemperature(initialCustomizations.temperature);
         setIceLevel(initialCustomizations.iceLevel);
         setSugarLevel(initialCustomizations.sugarLevel);
         
@@ -104,6 +115,11 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       } else {
         // Defaults
         setSize('Medium');
+        
+        // Determine default temperature
+        const isBlended = isBlendedDrink(itemName, itemCategory);
+        setTemperature(isBlended ? 'Blended' : 'Iced');
+        
         setIceLevel('Regular Ice');
         setSugarLevel('50%');
 
@@ -119,13 +135,15 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [isOpen, isEditing, initialCustomizations, itemName]);
+  }, [isOpen, isEditing, initialCustomizations, itemName, itemCategory]);
 
 
   if (!isOpen) return null;
 
   const handleReset = () => {
     setSize('Medium');
+    const isBlended = isBlendedDrink(itemName, itemCategory);
+    setTemperature(isBlended ? 'Blended' : 'Iced');
     setIceLevel('Regular Ice');
     setSugarLevel('50%');
     
@@ -145,7 +163,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       }
     });
 
-    onAddToBag({ size, iceLevel, sugarLevel, toppings: flatToppings }, isEditing ? currentQuantity : 1); 
+    onAddToBag({ size, temperature, iceLevel, sugarLevel, toppings: flatToppings }, isEditing ? currentQuantity : 1); 
     onClose();
   };
 
@@ -265,9 +283,34 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                 </div>
             </div>
 
+            {/* Temperature Section */}
+            <div className="mb-6">
+                <h3 className={`mb-3 ${sectionTitleClass}`}>Temperature</h3>
+                <div className="flex flex-wrap gap-2">
+                    {['Iced', 'Blended', 'Hot'].map((opt) => (
+                        <label key={opt} className={`${optionBase} ${temperature === opt ? optionSelected : optionDefault}`}>
+                            <input
+                                type="radio"
+                                name="temperature"
+                                value={opt}
+                                checked={temperature === opt}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setTemperature(val);
+                                }}
+                                className="hidden"
+                            />
+                            {opt}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            {/* Dynamic Sections */}
             {[
                 { title: "Size", options: ['Small', 'Medium', 'Large'], name: "size", current: size, set: setSize },
-                { title: "Ice Level", options: ['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'], name: "iceLevel", current: iceLevel, set: setIceLevel },
+                // Show Ice Level only if NOT Hot and NOT Blended
+                ...((temperature !== 'Hot' && temperature !== 'Blended') ? [{ title: "Ice Level", options: ['Regular Ice', 'Less Ice', 'No Ice', 'Extra Ice'], name: "iceLevel", current: iceLevel, set: setIceLevel }] : []),
                 { title: "Sugar Level", options: ['0%', '25%', '50%', '75%', '100%'], name: "sugarLevel", current: sugarLevel, set: setSugarLevel }
             ].map((section) => (
                 <div key={section.title} className="mb-6">

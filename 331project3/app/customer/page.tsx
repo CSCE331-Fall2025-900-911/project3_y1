@@ -170,12 +170,13 @@ export default function CustomerPage() {
 
   const getCustomizationKey = (customizations: {
     size: string;
+    temperature: string;
     iceLevel: string;
     sugarLevel: string;
     toppings: string[];
   }) => {
       const toppingsString = [...customizations.toppings].sort().join(',');
-      return `${customizations.size}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
+      return `${customizations.size}-${customizations.temperature}-${customizations.iceLevel}-${customizations.sugarLevel}-${toppingsString}`;
   };
 
   const getDefaultToppingsList = (name: string): string[] => {
@@ -192,6 +193,7 @@ export default function CustomerPage() {
 
   const handleAddToBag = (customizations: {
     size: string;
+    temperature: string;
     iceLevel: string;
     sugarLevel: string;
     toppings: string[];
@@ -523,6 +525,7 @@ export default function CustomerPage() {
           onClose={handleCloseModal}
           onAddToBag={handleAddToBag}
           itemName={selectedItem.item_name || 'Unknown Item'}
+          itemCategory={selectedItem.item_category || ''}
           basePrice={Number(selectedItem.item_price) || 0}
           initialCustomizations={itemBeingEdited ? itemBeingEdited.customizations : undefined}
           isEditing={isEditing}

@@ -11,6 +11,7 @@ export interface BagItem {
   quantity: number;
   customizations: {
     size: string;
+    temperature: string;
     iceLevel: string;
     sugarLevel: string;
     toppings: string[];
@@ -105,7 +106,11 @@ export default function OrderBag({
                   </div>
 
                   <div className={`text-xs mb-3 font-medium ${subTextClass}`}>
-                    <p>{item.customizations.size} • {item.customizations.iceLevel} • {item.customizations.sugarLevel}</p>
+                    <p>
+                        {item.customizations.size} • {item.customizations.temperature}
+                        {(item.customizations.temperature !== 'Hot' && item.customizations.temperature !== 'Blended') && ` • ${item.customizations.iceLevel}`}
+                        • {item.customizations.sugarLevel}
+                    </p>
                     {formattedToppings && (
                       <p className="mt-1">+ {formattedToppings}</p>
                     )}
