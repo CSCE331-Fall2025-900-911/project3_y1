@@ -29,7 +29,7 @@ export default function MenuItemButton({
 
   const titleClass = isHighContrast ? "text-white" : "text-gray-700";
   const metaClass = isHighContrast ? "text-gray-400" : "text-gray-400 uppercase tracking-wider text-xs";
-  const priceClass = isHighContrast ? "text-red-400" : "text-red-600";
+  const priceClass = isHighContrast ? "text-[#38B9EA]" : "text-[#38B9EA]";
   const nutritionBtnClass = isHighContrast
     ? "bg-[#333333] text-gray-300 border border-gray-500 hover:bg-gray-700 hover:border-purple-400 hover:text-white"
     : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";
@@ -84,7 +84,6 @@ export default function MenuItemButton({
             }}
         />
         
-        {/* Drink of the Day Badge */}
         {/* Drink of the Day Badge */}
         {isDrinkOfTheDay && (
              <div className="absolute top-0 right-0 bg-yellow-400 text-black font-bold px-3 py-1 rounded-bl-lg text-xs shadow-sm z-10">

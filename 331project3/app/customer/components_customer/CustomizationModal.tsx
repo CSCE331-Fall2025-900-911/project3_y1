@@ -219,32 +219,29 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
       : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300";
       
   const optionSelected = isHighContrast
-      ? "bg-red-600 text-white border-red-500 font-bold shadow-sm"
-      : "bg-red-50 border-red-500 text-red-700 font-semibold shadow-sm";
+      ? "bg-[#38B9EA] text-white border-[#38B9EA] font-bold shadow-sm"
+      : "bg-[#38B9EA]/10 border-[#38B9EA] text-[#38B9EA] font-semibold shadow-sm";
 
-  // BUTTONS
   const buttonBase = "flex-1 py-3.5 px-6 rounded-xl font-bold text-sm transition-transform active:scale-95";
   const primaryBtn = isHighContrast 
-    ? "bg-red-600 text-white shadow-lg shadow-gray-900 hover:bg-red-700 hover:shadow-xl hover:-translate-y-0.5"
-    : "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-200 hover:shadow-red-300 hover:-translate-y-0.5";
+    ? "bg-[#38B9EA] text-white shadow-lg shadow-gray-900 hover:bg-[#38B9EA]/90 hover:shadow-xl hover:-translate-y-0.5"
+    : "bg-gradient-to-r from-[#38B9EA] to-[#38B9EA] text-white shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5";
     
   const secondaryBtn = isHighContrast
-    ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-red-400"
-    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-red-300 hover:text-red-600";
+    ? "bg-[#333333] text-white border border-gray-500 hover:bg-gray-700 hover:text-[#38B9EA]"
+    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 hover:border-[#38B9EA] hover:text-[#38B9EA]";
   
-  // Close Button Style
   const closeBtnClass = isHighContrast 
     ? "text-gray-300 hover:text-white hover:bg-gray-700"
     : "text-gray-400 hover:text-gray-800 hover:bg-gray-100";
 
-  // Qty Control Styles
   const qtyBtnBase = "w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none transition-colors";
   const qtyBtnMinus = isHighContrast 
-    ? "text-red-400 hover:bg-red-900/30 disabled:opacity-30 disabled:hover:bg-transparent"
-    : "text-red-500 hover:bg-red-50 disabled:text-gray-300 disabled:hover:bg-transparent";
+    ? "text-[#38B9EA] hover:bg-blue-900/30 disabled:opacity-30 disabled:hover:bg-transparent"
+    : "text-[#38B9EA] hover:bg-blue-50 disabled:text-gray-300 disabled:hover:bg-transparent";
   const qtyBtnPlus = isHighContrast
-    ? "bg-red-600 text-white hover:bg-red-500"
-    : "bg-red-100 text-red-700 hover:bg-red-200";
+    ? "bg-[#38B9EA] text-white hover:bg-[#38B9EA]/90"
+    : "bg-[#38B9EA]/10 text-[#38B9EA] hover:bg-[#38B9EA]/20";
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 ${overlayClass}`}>
@@ -351,7 +348,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
                             <span className="capitalize font-semibold">{topping}</span>
                             
                             <div className="flex items-center gap-3">
-                              <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-red-200' : 'text-red-600') : 'text-gray-400'}`}>
+                              <span className={`text-xs mr-2 font-normal ${isActive ? (isHighContrast ? 'text-[#38B9EA]' : 'text-[#38B9EA]') : 'text-gray-400'}`}>
                                 {priceDisplay}
                               </span>
 
@@ -378,7 +375,7 @@ const CustomizationModal: React.FC<CustomizationModalProps> = ({
         <div className={`p-6 border-t ${isHighContrast ? 'border-gray-600 bg-[#333333]' : 'border-gray-100 bg-gray-50'}`}>
             <div className="flex justify-between items-center mb-4">
                  <span className={`text-lg font-bold ${textClass}`}>Total</span>
-                 <span className={`text-2xl font-extrabold ${isHighContrast ? 'text-red-400' : 'text-red-600'}`}>${finalPrice.toFixed(2)}</span>
+                 <span className={`text-2xl font-extrabold ${isHighContrast ? 'text-[#38B9EA]' : 'text-[#38B9EA]'}`}>${finalPrice.toFixed(2)}</span>
             </div>
 
             <div className="flex gap-3">

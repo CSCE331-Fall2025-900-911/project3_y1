@@ -16,6 +16,8 @@ declare global {
   }
 }
 
+const CATEGORIES = ["All", "Milky", "Fruity", "Matcha", "Ice Blended", "Non Caffeinated", "Seasonal"];
+
 export default function CustomerPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [drinkOfTheDayItem, setDrinkOfTheDayItem] = useState<MenuItem | null>(null);
@@ -31,6 +33,7 @@ export default function CustomerPage() {
   const [nutritionItem, setNutritionItem] = useState<MenuItem & NutritionInfo | null>(null);
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const accessibilityRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -345,6 +348,42 @@ export default function CustomerPage() {
       setIsHighContrast(!isHighContrast);
   };
 
+  // --- Filtering Logic ---
+  const filterItem = (item: MenuItem) => {
+    if (selectedCategory === "All") return true;
+
+    const name = item.item_name.toLowerCase();
+    const category = (item.item_category || "").toLowerCase();
+
+    if (selectedCategory === "Milky") {
+      if (name.includes("matcha") || category.includes("matcha")) return false;
+      
+      return category.includes("milk") || category.includes("creama") || category.includes("coffee") || category.includes("latte") || name.includes("milk") || name.includes("latte");
+    }
+    if (selectedCategory === "Fruity") {
+      if (name.includes("milk")) return false;
+      return category.includes("fruit") || category.includes("tea") || name.includes("mango") || name.includes("strawberry") || name.includes("passion") || name.includes("lemon") || name.includes("grapefruit");
+    }
+    if (selectedCategory === "Matcha") {
+      return name.includes("matcha") || category.includes("matcha");
+    }
+    if (selectedCategory === "Ice Blended") {
+      return category.includes("blended") || category.includes("slush") || name.includes("blended") || name.includes("slush");
+    }
+    if (selectedCategory === "Non Caffeinated") {
+      const nutrition = NUTRITION_DATA[item.item_name];
+      return nutrition && nutrition.caffeine === 0;
+    }
+    if (selectedCategory === "Seasonal") {
+      return category.includes("seasonal") || category.includes("limited") || name.includes("seasonal");
+    }
+
+    return true;
+  };
+
+  const filteredMenuItems = menuItems.filter(filterItem);
+  const showDrinkOfTheDay = drinkOfTheDayItem && filterItem(drinkOfTheDayItem);
+
   if (isLoading) {
     return (
       <div className={`flex min-h-screen items-center justify-center ${isHighContrast ? 'bg-[#333333] text-white' : 'bg-gray-100 text-gray-600'}`}>
@@ -357,9 +396,10 @@ export default function CustomerPage() {
   const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
   const mainBgClass = isHighContrast ? "bg-[#333333]" : "bg-gray-100";
   const contentBgClass = isHighContrast ? "bg-[#333333]" : "bg-transparent"; 
+  // Updated header gradient to use #38B9EA
   const headerClass = isHighContrast 
     ? "text-white" 
-    : "text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-pink-500";
+    : "text-transparent bg-clip-text bg-gradient-to-r from-[#38B9EA] to-pink-500";
   
   const headerContainerClass = isHighContrast
     ? "bg-[#333333] border border-gray-600 shadow-sm"
@@ -368,12 +408,21 @@ export default function CustomerPage() {
   const noItemsClass = isHighContrast ? "text-gray-300" : "text-gray-500";
   
   const accButtonClass = isHighContrast
-    ? "bg-purple-600 text-white border-purple-400 hover:bg-purple-700"
-    : "bg-white text-gray-600 border-gray-200 hover:bg-purple-50 hover:text-purple-600 hover:border-purple-200";
+    ? "bg-[#38B9EA] text-white border-[#38B9EA] hover:bg-[#38B9EA]"
+    : "bg-white text-gray-600 border-gray-200 hover:bg-[#38B9EA] hover:text-black-600 hover:border-blue-200";
 
   const accDropdownClass = isHighContrast 
       ? "bg-[#333333] border-gray-600 shadow-xl" 
       : "bg-white border-gray-100 shadow-xl";
+
+  const categoryBtnBase = "px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border";
+  // Updated category button styles to use #38B9EA
+  const categoryBtnActive = isHighContrast 
+    ? "bg-[#38B9EA] text-white border-[#38B9EA]" 
+    : "bg-[#38B9EA] text-white border-[#38B9EA] shadow-md transform scale-105";
+  const categoryBtnInactive = isHighContrast
+    ? "bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600"
+    : "bg-white text-gray-600 border-gray-200 hover:border-[#38B9EA] hover:text-[#38B9EA] hover:bg-[#38B9EA]/10";
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
@@ -409,69 +458,93 @@ export default function CustomerPage() {
         /* Hover States */
         .goog-te-gadget .goog-te-combo:hover {
             background-color: ${isHighContrast ? '#374151' : '#faf5ff'} !important;
-            color: ${isHighContrast ? 'white' : '#9333ea'} !important;
-            border-color: ${isHighContrast ? '#9333ea' : '#e9d5ff'} !important;
+            color: ${isHighContrast ? 'white' : '#38B9EA'} !important;
+            border-color: ${isHighContrast ? '#38B9EA' : '#d5f7ffff'} !important;
+        }
+        
+        /* Hide scrollbar for category list */
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}} />
 
       <main className={`flex min-h-screen w-full max-w-7xl items-start justify-center gap-8 py-12 px-4 sm:px-8 ${contentBgClass} transition-none`}>
         <div className="w-full max-w-4xl mr-80"> 
-          <div className={`flex justify-between items-center mb-8 p-6 rounded-2xl ${headerContainerClass}`}>
-            <h1 className={`text-3xl font-extrabold ${headerClass}`}>
-              Menu Items
-            </h1>
-            
-            {/* Accessibility Button & Menu */}
-            <div className="relative z-30" ref={accessibilityRef}>
-                <button
-                    onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
-                    className={`px-4 py-2 rounded-lg transition-colors font-bold border-2 flex items-center gap-2 ${accButtonClass}`}
-                    aria-expanded={isAccessibilityOpen}
-                    aria-label="Accessibility Options"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 7.5a1.5 1.5 0 0 1 1.5-1.5h.09c.86.06 1.66.4 2.24 1.03l3.66 3.66a1 1 0 0 1-1.42 1.42l-2.57-2.57V21a1 1 0 0 1-2 0v-4h-3v4a1 1 0 0 1-2 0v-9.46l-2.57 2.57a1 1 0 0 1-1.42-1.42l3.66-3.66A3.01 3.01 0 0 1 12 9.5Z" />
-                    </svg>
-                    <span>Accessibility</span>
-                </button>
+          <div className={`flex flex-col gap-6 mb-8 p-6 rounded-2xl ${headerContainerClass}`}>
+            <div className="flex justify-between items-center">
+                <h1 className={`text-3xl font-extrabold ${headerClass}`}>
+                Menu Items
+                </h1>
+                
+                {/* Accessibility Button & Menu */}
+                <div className="relative z-30" ref={accessibilityRef}>
+                    <button
+                        onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
+                        className={`px-4 py-2 rounded-lg transition-colors font-bold border-2 flex items-center gap-2 ${accButtonClass}`}
+                        aria-expanded={isAccessibilityOpen}
+                        aria-label="Accessibility Options"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 7.5a1.5 1.5 0 0 1 1.5-1.5h.09c.86.06 1.66.4 2.24 1.03l3.66 3.66a1 1 0 0 1-1.42 1.42l-2.57-2.57V21a1 1 0 0 1-2 0v-4h-3v4a1 1 0 0 1-2 0v-9.46l-2.57 2.57a1 1 0 0 1-1.42-1.42l3.66-3.66A3.01 3.01 0 0 1 12 9.5Z" />
+                        </svg>
+                        <span>Accessibility</span>
+                    </button>
 
-                {/* Dropdown Container */}
-                <div className={`absolute right-0 top-full mt-3 w-64 p-4 rounded-xl border flex flex-col gap-4 transition-all ${accDropdownClass} ${isAccessibilityOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
-                    
-                    {/* Contrast Option */}
-                    <div>
-                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Display</p>
-                        <button
-                            onClick={toggleContrast}
-                            className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between ${
-                                isHighContrast 
-                                ? "bg-purple-600 text-white shadow-lg" 
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                        >
-                           <span>High Contrast</span>
-                           <div className={`w-8 h-4 rounded-full relative transition-colors ${isHighContrast ? 'bg-white/30' : 'bg-gray-300'}`}>
-                                <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all ${isHighContrast ? 'translate-x-4' : ''}`}></div>
-                           </div>
-                        </button>
-                    </div>
+                    {/* Dropdown Container */}
+                    <div className={`absolute right-0 top-full mt-3 w-64 p-4 rounded-xl border flex flex-col gap-4 transition-all ${accDropdownClass} ${isAccessibilityOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+                        
+                        {/* Contrast Option */}
+                        <div>
+                            <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Display</p>
+                            <button
+                                onClick={toggleContrast}
+                                className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-between ${
+                                    isHighContrast 
+                                    ? "bg-[#38B9EA] text-white shadow-lg" 
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                }`}
+                            >
+                            <span>High Contrast</span>
+                            <div className={`w-8 h-4 rounded-full relative transition-colors ${isHighContrast ? 'bg-white/30' : 'bg-gray-300'}`}>
+                                    <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all ${isHighContrast ? 'translate-x-4' : ''}`}></div>
+                            </div>
+                            </button>
+                        </div>
 
-                    <div className={isHighContrast ? "border-t border-gray-600" : "border-t border-gray-100"}></div>
+                        <div className={isHighContrast ? "border-t border-gray-600" : "border-t border-gray-100"}></div>
 
-                    {/* Language Option */}
-                    <div>
-                        <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Language</p>
-                        <div className="w-full">
-                            <div id="google_translate_element" ref={translateElementRef} className="w-full"></div>
+                        {/* Language Option */}
+                        <div>
+                            <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Language</p>
+                            <div className="w-full">
+                                <div id="google_translate_element" ref={translateElementRef} className="w-full"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Category Filter Bar */}
+            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                {CATEGORIES.map((cat) => (
+                    <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`${categoryBtnBase} ${selectedCategory === cat ? categoryBtnActive : categoryBtnInactive}`}
+                    >
+                        {cat}
+                    </button>
+                ))}
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             
-            {drinkOfTheDayItem && (
+            {showDrinkOfTheDay && drinkOfTheDayItem && (
               <MenuItemButton
                 key={drinkOfTheDayItem.item_id}
                 item={drinkOfTheDayItem}
@@ -483,7 +556,7 @@ export default function CustomerPage() {
             )}
 
             {/* Regular Menu Items */}
-            {menuItems.map((item) => (
+            {filteredMenuItems.map((item) => (
               <MenuItemButton
                 key={item.item_id}
                 item={item}
@@ -494,9 +567,9 @@ export default function CustomerPage() {
             ))}
           </div>
 
-          {menuItems.length === 0 && !drinkOfTheDayItem && (
+          {filteredMenuItems.length === 0 && !showDrinkOfTheDay && (
             <p className={`text-center py-10 font-medium ${noItemsClass}`}>
-              No menu items found.
+              No menu items found in this category.
             </p>
           )}
         </div>
