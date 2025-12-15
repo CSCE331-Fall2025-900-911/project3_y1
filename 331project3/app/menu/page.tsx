@@ -64,6 +64,34 @@ const menuItems = [
   { id: 22, name: "Coffee w/ Ice Cream", price: 6.75 },
 ];
 
+function getItemImage(name: string = '') {
+  if (name === 'Mango Green Tea') return '/images/Mango-Green-Tea.png';
+  if (name === 'Mango & Passion Fruit Tea') return '/images/Mango-&-Passion-Fruit-Tea.png';
+  if (name === 'Tiger Passion Chess') return '/images/Tiger-Passion-Chess.png';
+  if (name === 'Mango Boba') return '/images/Mango-Boba.png';
+  if (name === 'Strawberry Coconut') return '/images/Strawberry-Coconut.png';
+  if (name === 'Halo Halo') return '/images/Halo-Halo.png';
+  if (name === 'Matcha Pearl Milk Tea') return '/images/Matcha-Pearl-Milk-Tea.png';
+  if (name === 'Matcha Fresh Milk') return '/images/Matcha-Fresh-Milk.png';
+  if (name === 'Mango Matcha Fresh Milk') return '/images/Mango-Matcha-Fresh-Milk.png';
+  if (name === 'Oreo w/ Pearl') return '/images/Oreo-with-Pearl.png';
+  if (name === 'Taro w/ Pudding') return '/images/Taro-with-Pudding.png';
+  if (name === 'Thai Tea w/ Pearl') return '/images/Thai-Pearl-Milk-Tea.png';
+  if (name === 'Coffee w/ Ice Cream') return '/images/Coffee-with-Ice-Cream.png';
+  if (name === 'Strawberry Matcha Fresh Milk') return '/images/Strawberry-Matcha-Fresh-Milk.png';
+  if (name === 'Passion Chess 2') return '/images/Tiger-Passion-Chess.png';
+  if (name === 'New Seasonal Item') return '/images/Tiger-Passion-Chess.png';
+  if (name === 'Seasonal Item') return '/images/Tiger-Passion-Chess.png';
+  if (name === 'Classic Pearl Milk Tea 2') return '/images/Classic-Pearl-Milk-Tea.png';
+  if (name === 'Honey Lemonade') return '/images/Honey-Lemonade.png';
+  if (name === 'Coffee Creama') return '/images/Coffee-Creama.png';
+  if (name === 'Hokkaido Pearl Milk Team') return '/images/Hokkaido-Pearl-Milk-Tea.png';
+  if (name === 'Coffee Milk Tea w/ Coffee Jelly') return '/images/Coffee-Milk-Tea-with-Coffee-Jelly.png';
+  if (name === 'Honey Pearl Milk Tea') return '/images/Honey-Pearl-Milk-Tea.png';
+
+  return '/images/Thai-Pearl-Milk-Tea.png';
+}
+
 export default function Home() {
   const weather = useWeather();
   return (
@@ -86,8 +114,14 @@ export default function Home() {
             {menuItems.map((item) => (
               <div key={item.id} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 4px 18px rgba(124,58,237,0.13)", padding: "40px 32px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 340, border: "3px solid #e9e5f7" }}>
                 {/* Large image placeholder for each drink */}
-                <div style={{ width: 180, height: 180, background: "#f3f0ff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, overflow: "hidden" }}>
-                  <span role="img" aria-label="drink" style={{ fontSize: 90 }}>🥤</span>
+                <div style={{ width: 180, height: 180, background: "#f3f0ff", borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, overflow: "hidden", position: 'relative' }}>
+                  <Image
+                    src={getItemImage(item.name)}
+                    alt={item.name}
+                    width={180}
+                    height={180}
+                    style={{ objectFit: 'cover', borderRadius: 18 }}
+                  />
                 </div>
                 <div style={{ fontSize: 17, fontWeight: 700, color: "#a855f7", letterSpacing: 1, marginBottom: 12 }}>DRINK · {item.id}</div>
                 <div style={{ fontSize: 28, fontWeight: 700, color: "#22223b", marginBottom: 16, textAlign: "center" }}>{item.name}</div>
