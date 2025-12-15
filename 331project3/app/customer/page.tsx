@@ -34,6 +34,8 @@ export default function CustomerPage() {
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  
   const accessibilityRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -350,6 +352,15 @@ export default function CustomerPage() {
 
   // --- Filtering Logic ---
   const filterItem = (item: MenuItem) => {
+    //text search
+    if (searchQuery.trim() !== "") {
+        const searchLower = searchQuery.toLowerCase();
+        if (!item.item_name.toLowerCase().includes(searchLower)) {
+            return false;
+        }
+    }
+
+    // category filter
     if (selectedCategory === "All") return true;
 
     const name = item.item_name.toLowerCase();
@@ -396,7 +407,6 @@ export default function CustomerPage() {
   const itemBeingEdited = editingItemId ? bag.find(item => item.uniqueId === editingItemId) : null;
   const mainBgClass = isHighContrast ? "bg-[#333333]" : "bg-gray-100";
   const contentBgClass = isHighContrast ? "bg-[#333333]" : "bg-transparent"; 
-  // Updated header gradient to use #38B9EA
   const headerClass = isHighContrast 
     ? "text-white" 
     : "text-transparent bg-clip-text bg-gradient-to-r from-[#38B9EA] to-pink-500";
@@ -416,13 +426,16 @@ export default function CustomerPage() {
       : "bg-white border-gray-100 shadow-xl";
 
   const categoryBtnBase = "px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border";
-  // Updated category button styles to use #38B9EA
   const categoryBtnActive = isHighContrast 
     ? "bg-[#38B9EA] text-white border-[#38B9EA]" 
     : "bg-[#38B9EA] text-white border-[#38B9EA] shadow-md transform scale-105";
   const categoryBtnInactive = isHighContrast
     ? "bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600"
     : "bg-white text-gray-600 border-gray-200 hover:border-[#38B9EA] hover:text-[#38B9EA] hover:bg-[#38B9EA]/10";
+
+  const searchContainerClass = isHighContrast
+    ? "bg-[#2a2a2a] border-gray-600 text-white focus-within:border-[#38B9EA]"
+    : "bg-gray-50 border-gray-200 text-gray-800 focus-within:border-[#38B9EA] focus-within:bg-white";
 
   return (
     <div className={`flex min-h-screen items-center justify-center font-sans ${mainBgClass}`}>
@@ -462,7 +475,6 @@ export default function CustomerPage() {
             border-color: ${isHighContrast ? '#38B9EA' : '#d5f7ffff'} !important;
         }
         
-        /* Hide scrollbar for category list */
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -480,7 +492,6 @@ export default function CustomerPage() {
                 Menu Items
                 </h1>
                 
-                {/* Accessibility Button & Menu */}
                 <div className="relative z-30" ref={accessibilityRef}>
                     <button
                         onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
@@ -494,10 +505,8 @@ export default function CustomerPage() {
                         <span>Accessibility</span>
                     </button>
 
-                    {/* Dropdown Container */}
                     <div className={`absolute right-0 top-full mt-3 w-64 p-4 rounded-xl border flex flex-col gap-4 transition-all ${accDropdownClass} ${isAccessibilityOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
                         
-                        {/* Contrast Option */}
                         <div>
                             <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Display</p>
                             <button
@@ -517,7 +526,6 @@ export default function CustomerPage() {
 
                         <div className={isHighContrast ? "border-t border-gray-600" : "border-t border-gray-100"}></div>
 
-                        {/* Language Option */}
                         <div>
                             <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${isHighContrast ? 'text-gray-400' : 'text-gray-500'}`}>Language</p>
                             <div className="w-full">
@@ -526,6 +534,32 @@ export default function CustomerPage() {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className={`relative flex items-center w-full rounded-xl border-2 transition-colors ${searchContainerClass}`}>
+                <div className="pl-4 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="Search menu items..." 
+                    className="w-full p-3 bg-transparent outline-none font-medium placeholder-gray-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                    <button 
+                        onClick={() => setSearchQuery('')}
+                        className="pr-4 text-gray-400 hover:text-[#38B9EA] transition-colors"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                    </button>
+                )}
             </div>
 
             {/* Category Filter Bar */}
@@ -555,7 +589,6 @@ export default function CustomerPage() {
               />
             )}
 
-            {/* Regular Menu Items */}
             {filteredMenuItems.map((item) => (
               <MenuItemButton
                 key={item.item_id}
@@ -569,7 +602,7 @@ export default function CustomerPage() {
 
           {filteredMenuItems.length === 0 && !showDrinkOfTheDay && (
             <p className={`text-center py-10 font-medium ${noItemsClass}`}>
-              No menu items found in this category.
+              No menu items found.
             </p>
           )}
         </div>
